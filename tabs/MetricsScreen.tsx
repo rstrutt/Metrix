@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { readMetricsFromFile, saveMetricsToFile } from './fileUtils';
+import { readMetricsFromFile, saveMetricsToFile } from '../fileUtils.ts';
 
 const MetricsScreen = () => {
     const [metrics, setMetrics] = useState<string[]>([]);

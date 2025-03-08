@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Di
 import MultiSelect from 'react-native-multiple-select';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { LineChart, BarChart } from 'react-native-chart-kit';
-import { readMetricValuesFromFile, updateMetricValueInFile, deleteMetricValueFromFile } from './fileUtils';
+import { readMetricValuesFromFile, updateMetricValueInFile, deleteMetricValueFromFile } from '../fileUtils.ts';
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);

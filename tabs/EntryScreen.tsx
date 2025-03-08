@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, RefreshCon
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { readMetricsFromFile, saveMetricValuesToFile } from './fileUtils';
+import { readMetricsFromFile, saveMetricValuesToFile } from '../fileUtils.ts';
 
 const EntryScreen = () => {
     const [metrics, setMetrics] = useState<string[]>([]);
@@ -35,6 +35,13 @@ const EntryScreen = () => {
         const floatValue = parseFloat(value);
         if (!isNaN(floatValue)) {
             setMetricValues({ ...metricValues, [metric]: floatValue });
+        }
+        else{
+            // Remove the metric from setMetricValues
+            const updatedMetricValues = { ...metricValues };
+            delete updatedMetricValues[metric];
+            setMetricValues(updatedMetricValues);
+
         }
     };
 
