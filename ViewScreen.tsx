@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { readMetricValuesFromFile, updateMetricValueInFile, deleteMetricValueFromFile } from './fileUtils';
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const loadEntries = async () => {
+        const loadedEntries = await readMetricValuesFromFile();
+        setEntries(loadedEntries);
+    };
 
     useEffect(() => {
-        const loadEntries = async () => {
-            const loadedEntries = await readMetricValuesFromFile();
-            setEntries(loadedEntries);
-        };
         loadEntries();
     }, []);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await loadEntries();
+        setRefreshing(false);
+    };
 
     const handleValueChange = (index: number, value: string) => {
         const updatedEntries = [...entries];
@@ -39,7 +47,12 @@ const ViewScreen = () => {
     };
 
     return (
-        <ScrollView style={{ flex: 1, padding: 16 }}>
+        <ScrollView
+            style={{ flex: 1, padding: 16 }}
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+        >
             {entries.map((entry, index) => (
                 <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
                     <Text style={{ flex: 1 }}>{`${formatDateTime(entry.dateTime)} ${entry.metric}`}</Text>
