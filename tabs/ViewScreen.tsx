@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Di
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+import { Svg, Line, G, Text as SvgText } from 'react-native-svg';
 import {
     readMetricValuesFromFile,
     updateMetricValueInFile,
@@ -21,19 +21,14 @@ const ViewScreen = () => {
     const [open, setOpen] = useState(false);
 
     const loadEntries = async () => {
-        // Load the metrics values and the metric names
         const loadedMericValues = await readMetricValuesFromFile();
         const loadedMetrics = await readMetricsFromFile();
-        // Store the loaded metric values
         setEntries(loadedMericValues);
-        // Build and save a set of metric names to use in the dropdown
-        // keeping it in the same order as the metrics file
         const metrics = Array.from(new Set(loadedMericValues.map(entry => entry.metric)));
-        // Order metrics in the same order that they are in the metrics file
         metrics.sort((a, b) => loadedMetrics.indexOf(a) - loadedMetrics.indexOf(b));
         setAllMetrics(metrics);
-        setSelectedMetrics(metrics); // Select all metrics by default
-        setLoadedMetrics(loadedMetrics); // Save the loaded metrics for ordering
+        setSelectedMetrics(metrics);
+        setLoadedMetrics(loadedMetrics);
     };
 
     useEffect(() => {
@@ -82,6 +77,51 @@ const ViewScreen = () => {
         return acc;
     }, {} as { [key: string]: { dateTime: string, metric: string, value: number }[] });
 
+    const renderChart = (data: { dateTime: string, value: number }[]) => {
+        const width = Dimensions.get('window').width - 32;
+        const height = 220;
+        const padding = 20;
+        const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
+        const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
+        const yMin = Math.min(...data.map(d => d.value));
+        const yMax = Math.max(...data.map(d => d.value));
+
+        const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - 2 * padding) + padding;
+        const scaleY = (value: number) => height - ((value - yMin) / (yMax - yMin)) * (height - 2 * padding) - padding;
+
+        return (
+            <Svg width={width} height={height}>
+                <G>
+                    {data.map((d, i) => (
+                        i > 0 && (
+                            <Line
+                                key={i}
+                                x1={scaleX(new Date(data[i - 1].dateTime).getTime())}
+                                y1={scaleY(data[i - 1].value)}
+                                x2={scaleX(new Date(d.dateTime).getTime())}
+                                y2={scaleY(d.value)}
+                                stroke="black"
+                                strokeWidth="2"
+                            />
+                        )
+                    ))}
+                    {data.map((d, i) => (
+                        <SvgText
+                            key={i}
+                            x={scaleX(new Date(d.dateTime).getTime())}
+                            y={height - padding / 2}
+                            fontSize="10"
+                            fill="black"
+                            textAnchor="middle"
+                        >
+                            {new Date(d.dateTime).toLocaleDateString()}
+                        </SvgText>
+                    ))}
+                </G>
+            </Svg>
+        );
+    };
+
     return (
         <View style={{ flex: 1, padding: 16 }}>
             <DropDownPicker
@@ -109,38 +149,7 @@ const ViewScreen = () => {
                     groupedEntries[metric] && (
                         <View key={metric} style={{ marginBottom: 16 }}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric}</Text>
-                            <LineChart
-                                data={{
-                                    labels: groupedEntries[metric].map(entry => formatDateTime(entry.dateTime)),
-                                    datasets: [
-                                        {
-                                            data: groupedEntries[metric].map(entry => entry.value)
-                                        }
-                                    ]
-                                }}
-                                width={Dimensions.get('window').width - 32} // from react-native
-                                height={220}
-                                yLabelsOffset={-10} // Adjust this value to position the label correctly
-                                chartConfig={{
-                                    backgroundColor: '#d3d3d3', // light grey
-                                    backgroundGradientFrom: '#d3d3d3', // light grey
-                                    backgroundGradientTo: '#d3d3d3', // light grey
-                                    decimalPlaces: 2, // optional, defaults to 2dp
-                                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // black line color
-                                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // black text color
-                                    style: {
-                                        borderRadius: 16
-                                    },
-                                    propsForDots: {
-                                        r: '3',
-                                    }
-                                }}
-                                bezier
-                                style={{
-                                    marginVertical: 8,
-                                    borderRadius: 16
-                                }}
-                            />
+                            {renderChart(groupedEntries[metric].map(entry => ({ dateTime: entry.dateTime, value: entry.value })))}
                             {groupedEntries[metric].map((entry) => (
                                 <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
                                     <Text style={{ flex: 1 , fontSize: 16}}>{formatDateTime(entry.dateTime)}</Text>
