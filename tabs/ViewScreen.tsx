@@ -42,9 +42,10 @@ const ViewScreen = () => {
     };
 
     const handleValueChange = (dateTime: string, metric: string, value: string) => {
+        const parsedValue = parseFloat(value);
         const updatedEntries = entries.map(entry =>
             entry.dateTime === dateTime && entry.metric === metric
-                ? { ...entry, value: parseFloat(value) }
+                ? { ...entry, value: isNaN(parsedValue) ? 0 : parsedValue }
                 : entry
         );
         setEntries(updatedEntries);

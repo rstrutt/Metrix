@@ -61,7 +61,7 @@ const MetricsScreen = () => {
                 data={metrics}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: '#e3e2e2', padding: 4, borderRadius: 10}}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: '#e3e2e2', padding: 4, borderRadius: 10, height: 50}}>
                         <Text style={{ flex: 1, fontSize: 16 }}>{item}</Text>
                         <TouchableOpacity onPress={() => moveMetric(index, 'up')} style={{ marginHorizontal: 8 }}>
                             <Icon name="arrow-up" size={20} color={isDarkMode ? '#888' : '#555'} />
