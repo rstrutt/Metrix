@@ -54,6 +54,14 @@ const ViewScreen = () => {
 
     const filteredEntries = entries.filter(entry => selectedMetrics.includes(entry.metric));
 
+    const groupedEntries = filteredEntries.reduce((acc, entry) => {
+        if (!acc[entry.metric]) {
+            acc[entry.metric] = [];
+        }
+        acc[entry.metric].push(entry);
+        return acc;
+    }, {} as { [key: string]: { dateTime: string, metric: string, value: number }[] });
+
     return (
         <View style={{ flex: 1, padding: 16 }}>
             <MultiSelect
@@ -79,21 +87,26 @@ const ViewScreen = () => {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                {filteredEntries.map((entry, index) => (
-                    <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-                        <Text style={{ flex: 1 }}>{`${formatDateTime(entry.dateTime)} ${entry.metric}`}</Text>
-                        <TextInput
-                            style={{ borderColor: 'gray', borderWidth: 1, paddingLeft: 4, paddingRight: 4, width: 50 }}
-                            keyboardType="numeric"
-                            value={entry.value.toString()}
-                            onChangeText={(value) => handleValueChange(index, value)}
-                        />
-                        <TouchableOpacity onPress={() => handleSave(index)} style={{ marginHorizontal: 8 }}>
-                            <Icon name="save" size={20} color="blue" />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => handleDelete(index)} style={{ marginHorizontal: 8 }}>
-                            <Icon name="trash" size={20} color="red" />
-                        </TouchableOpacity>
+                {Object.keys(groupedEntries).map(metric => (
+                    <View key={metric} style={{ marginBottom: 16 }}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric}</Text>
+                        {groupedEntries[metric].map((entry, index) => (
+                            <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+                                <Text style={{ flex: 1 }}>{formatDateTime(entry.dateTime)}</Text>
+                                <TextInput
+                                    style={{ borderColor: 'gray', borderWidth: 1, paddingLeft: 4, paddingRight: 4, width: 50 }}
+                                    keyboardType="numeric"
+                                    value={entry.value.toString()}
+                                    onChangeText={(value) => handleValueChange(index, value)}
+                                />
+                                <TouchableOpacity onPress={() => handleSave(index)} style={{ marginHorizontal: 8 }}>
+                                    <Icon name="save" size={20} color="blue" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleDelete(index)} style={{ marginHorizontal: 8 }}>
+                                    <Icon name="trash" size={20} color="red" />
+                                </TouchableOpacity>
+                            </View>
+                        ))}
                     </View>
                 ))}
             </ScrollView>
