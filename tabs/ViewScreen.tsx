@@ -218,7 +218,7 @@ const ViewScreen = () => {
             >
                 {loadedMetrics.map(metric => (
                     groupedEntries[metric] && (
-                        <View key={metric} style={{ marginBottom: 16 }}>
+                        <View key={metric} style={{ marginBottom: 16, backgroundColor: '#e3e2e2', padding: 16, borderRadius: 10 }}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric}</Text>
                             {renderChart(groupedEntries[metric].map(entry => ({ dateTime: entry.dateTime, value: entry.value })))}
                             {groupedEntries[metric].map((entry) => (
