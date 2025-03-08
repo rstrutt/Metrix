@@ -81,7 +81,7 @@ const ViewScreen = () => {
         const width = Dimensions.get('window').width - 32;
         const height = 220;
         const padding = 20;
-        const leftPadding = 25; // Increased left padding
+        const leftPadding = 20; // Increased left padding
         const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
         const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
         const yMin = Math.min(...data.map(d => d.value));
@@ -90,7 +90,7 @@ const ViewScreen = () => {
         const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - leftPadding - padding) + leftPadding;
         const scaleY = (value: number) => height - ((value - yMin) / (yMax - yMin)) * (height - 2 * padding) - padding;
 
-        const xTicks = data.map(d => new Date(d.dateTime).getTime());
+        const xTicks = Array.from({ length: 6 }, (_, i) => xMin + (i * (xMax - xMin)) / 5);
         const yTicks = Array.from({ length: 5 }, (_, i) => yMin + (i * (yMax - yMin)) / 4);
 
         return (
