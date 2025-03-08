@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Dimensions } from 'react-native';
 import MultiSelect from 'react-native-multiple-select';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { LineChart, BarChart } from 'react-native-chart-kit';
 import { readMetricValuesFromFile, updateMetricValueInFile, deleteMetricValueFromFile } from './fileUtils';
 
 const ViewScreen = () => {
@@ -90,6 +91,67 @@ const ViewScreen = () => {
                 {Object.keys(groupedEntries).map(metric => (
                     <View key={metric} style={{ marginBottom: 16 }}>
                         <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric}</Text>
+                        {/*<BarChart*/}
+                        {/*    // style={graphStyle}*/}
+                        {/*    data={{*/}
+                        {/*        labels: ['January', 'February', 'March', 'April', 'May', 'June'],*/}
+                        {/*        datasets: [*/}
+                        {/*            {*/}
+                        {/*                data: [20, 45, 28, 80, 99, 43],*/}
+                        {/*            },*/}
+                        {/*        ],*/}
+                        {/*    }}*/}
+                        {/*    width={100}*/}
+                        {/*    height={220}*/}
+                        {/*    yAxisLabel={'$'}*/}
+                        {/*    chartConfig={{*/}
+                        {/*        backgroundColor: '#e26a00',*/}
+                        {/*        backgroundGradientFrom: '#fb8c00',*/}
+                        {/*        backgroundGradientTo: '#ffa726',*/}
+                        {/*        decimalPlaces: 2, // optional, defaults to 2dp*/}
+                        {/*        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,*/}
+                        {/*        style: {*/}
+                        {/*            borderRadius: 16*/}
+                        {/*        }*/}
+                        {/*    }}*/}
+                        {/*    yAxisSuffix="xx"*/}
+                        {/*/>*/}
+                        <LineChart
+                            data={{
+                                labels: groupedEntries[metric].map(entry => formatDateTime(entry.dateTime)),
+                                datasets: [
+                                    {
+                                        data: groupedEntries[metric].map(entry => entry.value)
+                                    }
+                                ]
+                            }}
+                            width={Dimensions.get('window').width - 32} // from react-native
+                            height={220}
+                            // yAxisLabel={`${metric} `}
+                            // yAxisSuffix=""
+                            yLabelsOffset={-10} // Adjust this value to position the label correctly
+                            chartConfig={{
+                                backgroundColor: '#d3d3d3', // light grey
+                                backgroundGradientFrom: '#d3d3d3', // light grey
+                                backgroundGradientTo: '#d3d3d3', // light grey
+                                decimalPlaces: 2, // optional, defaults to 2dp
+                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // black line color
+                                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // black text color
+                                style: {
+                                    borderRadius: 16
+                                },
+                                propsForDots: {
+                                    r: '3',
+                                    // strokeWidth: '2',
+                                    // stroke: '#ffa726'
+                                }
+                            }}
+                            bezier
+                            style={{
+                                marginVertical: 8,
+                                borderRadius: 16
+                            }}
+                        />
                         {groupedEntries[metric].map((entry, index) => (
                             <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
                                 <Text style={{ flex: 1 }}>{formatDateTime(entry.dateTime)}</Text>
