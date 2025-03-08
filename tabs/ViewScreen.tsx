@@ -78,24 +78,25 @@ const ViewScreen = () => {
     }, {} as { [key: string]: { dateTime: string, metric: string, value: number }[] });
 
     const renderChart = (data: { dateTime: string, value: number }[]) => {
-        const width = Dimensions.get('window').width - 32;
+        const width = Dimensions.get('window').width - 75;
         const height = 220;
         const padding = 20;
         const leftPadding = 30; // Increased left padding
+        const rightPadding = 15; // Added right padding
         const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
         const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
         const yMin = Math.min(...data.map(d => d.value));
         const yMax = Math.max(...data.map(d => d.value));
 
-        const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - leftPadding - padding) + leftPadding;
+        const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - leftPadding - rightPadding) + leftPadding;
         const scaleY = (value: number) => height - ((value - yMin) / (yMax - yMin)) * (height - 2 * padding) - padding;
 
         const xTicks = Array.from({ length: 6 }, (_, i) => xMin + (i * (xMax - xMin)) / 5);
         const yTicks = Array.from({ length: 5 }, (_, i) => yMin + (i * (yMax - yMin)) / 4);
 
         return (
-            <Svg width={width} height={height}>
-                <Rect x="0" y="0" width={width} height={height} fill="#d3d3d3" rx="10" ry="10" />
+            <Svg width={width + rightPadding} height={height}>
+                <Rect x="0" y="0" width={width + rightPadding} height={height} fill="#d3d3d3" rx="10" ry="10" />
                 <G>
                     {/* Grid Lines */}
                     {xTicks.map((t, i) => (
@@ -124,7 +125,7 @@ const ViewScreen = () => {
                     <Line
                         x1={leftPadding}
                         y1={height - padding}
-                        x2={width - padding}
+                        x2={width - rightPadding}
                         y2={height - padding}
                         stroke="black"
                         strokeWidth="2"
