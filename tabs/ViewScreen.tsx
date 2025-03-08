@@ -4,7 +4,12 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import { readMetricValuesFromFile, updateMetricValueInFile, deleteMetricValueFromFile } from '../fileUtils.ts';
+import {
+    readMetricValuesFromFile,
+    updateMetricValueInFile,
+    deleteMetricValueFromFile,
+    readMetricsFromFile
+} from '../fileUtils.ts';
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
@@ -15,9 +20,16 @@ const ViewScreen = () => {
     const [open, setOpen] = useState(false);
 
     const loadEntries = async () => {
-        const loadedEntries = await readMetricValuesFromFile();
-        setEntries(loadedEntries);
-        const metrics = Array.from(new Set(loadedEntries.map(entry => entry.metric)));
+        // Load the metrics values and the metric names
+        const loadedMericValues = await readMetricValuesFromFile();
+        const loadedMetrics = await readMetricsFromFile()
+        // Store the loaded metric values
+        setEntries(loadedMericValues);
+        // Build and save a set of metric names to use in the dropdown
+        // keeping it in the same order as the metrics file
+        const metrics = Array.from(new Set(loadedMericValues.map(entry => entry.metric)));
+        // Order metrics in the same order that they are in the metrics file
+        metrics.sort((a, b) => loadedMetrics.indexOf(a) - loadedMetrics.indexOf(b));
         setAllMetrics(metrics);
         setSelectedMetrics(metrics); // Select all metrics by default
     };
