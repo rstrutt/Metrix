@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Di
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
-import { Svg, Line, G, Text as SvgText } from 'react-native-svg';
+import { Svg, Line, G, Text as SvgText, Rect, Circle } from 'react-native-svg';
 import {
     readMetricValuesFromFile,
     updateMetricValueInFile,
@@ -81,40 +81,111 @@ const ViewScreen = () => {
         const width = Dimensions.get('window').width - 32;
         const height = 220;
         const padding = 20;
+        const leftPadding = 25; // Increased left padding
         const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
         const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
         const yMin = Math.min(...data.map(d => d.value));
         const yMax = Math.max(...data.map(d => d.value));
 
-        const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - 2 * padding) + padding;
+        const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - leftPadding - padding) + leftPadding;
         const scaleY = (value: number) => height - ((value - yMin) / (yMax - yMin)) * (height - 2 * padding) - padding;
+
+        const xTicks = data.map(d => new Date(d.dateTime).getTime());
+        const yTicks = Array.from({ length: 5 }, (_, i) => yMin + (i * (yMax - yMin)) / 4);
 
         return (
             <Svg width={width} height={height}>
+                <Rect x="0" y="0" width={width} height={height} fill="#f0f0f0" />
                 <G>
+                    {/* Grid Lines */}
+                    {xTicks.map((t, i) => (
+                        <Line
+                            key={`x-grid-${i}`}
+                            x1={scaleX(t)}
+                            y1={padding}
+                            x2={scaleX(t)}
+                            y2={height - padding}
+                            stroke="#e0e0e0"
+                            strokeWidth="1"
+                        />
+                    ))}
+                    {yTicks.map((t, i) => (
+                        <Line
+                            key={`y-grid-${i}`}
+                            x1={leftPadding}
+                            y1={scaleY(t)}
+                            x2={width - padding}
+                            y2={scaleY(t)}
+                            stroke="#e0e0e0"
+                            strokeWidth="1"
+                        />
+                    ))}
+                    {/* X-Axis */}
+                    <Line
+                        x1={leftPadding}
+                        y1={height - padding}
+                        x2={width - padding}
+                        y2={height - padding}
+                        stroke="black"
+                        strokeWidth="2"
+                    />
+                    {/* Y-Axis */}
+                    <Line
+                        x1={leftPadding}
+                        y1={padding}
+                        x2={leftPadding}
+                        y2={height - padding}
+                        stroke="black"
+                        strokeWidth="2"
+                    />
+                    {/* Data Lines */}
                     {data.map((d, i) => (
                         i > 0 && (
                             <Line
-                                key={i}
+                                key={`line-${i}`}
                                 x1={scaleX(new Date(data[i - 1].dateTime).getTime())}
                                 y1={scaleY(data[i - 1].value)}
                                 x2={scaleX(new Date(d.dateTime).getTime())}
                                 y2={scaleY(d.value)}
-                                stroke="black"
+                                stroke="#007AFF"
                                 strokeWidth="2"
                             />
                         )
                     ))}
+                    {/* Data Points */}
                     {data.map((d, i) => (
+                        <Circle
+                            key={`circle-${i}`}
+                            cx={scaleX(new Date(d.dateTime).getTime())}
+                            cy={scaleY(d.value)}
+                            r={3}
+                            fill="black"
+                        />
+                    ))}
+                    {/* X-Axis Labels */}
+                    {xTicks.map((t, i) => (
                         <SvgText
-                            key={i}
-                            x={scaleX(new Date(d.dateTime).getTime())}
+                            key={`x-label-${i}`}
+                            x={scaleX(t)}
                             y={height - padding / 2}
                             fontSize="10"
                             fill="black"
                             textAnchor="middle"
                         >
-                            {new Date(d.dateTime).toLocaleDateString()}
+                            {new Date(t).toLocaleDateString()}
+                        </SvgText>
+                    ))}
+                    {/* Y-Axis Labels */}
+                    {yTicks.map((t, i) => (
+                        <SvgText
+                            key={`y-label-${i}`}
+                            x={leftPadding - 5}
+                            y={scaleY(t) + 5}
+                            fontSize="10"
+                            fill="black"
+                            textAnchor="end"
+                        >
+                            {Math.round(t)}
                         </SvgText>
                     ))}
                 </G>
