@@ -45,10 +45,19 @@ export const readMetricValuesFromFile = async () => {
 
 export const saveMetricValuesToFile = async (metricValues: { [key: string]: number }, dateTime: string) => {
     try {
-        const fileContent = Object.entries(metricValues)
+        // Read the existing contents of the file
+        const existingFileContent = await readFile(METRIC_VALUES_FILE_PATH, 'utf8');
+
+        // Prepare the new content to be appended
+        const newFileContent = Object.entries(metricValues)
             .map(([metric, value]) => `${dateTime},${metric},${value}`)
             .join('\n');
-        await writeFile(METRIC_VALUES_FILE_PATH, fileContent, 'utf8');
+
+        // Append the new content to the existing content
+        const updatedFileContent = existingFileContent ? `${existingFileContent}\n${newFileContent}` : newFileContent;
+
+        // Write the updated content back to the file
+        await writeFile(METRIC_VALUES_FILE_PATH, updatedFileContent, 'utf8');
     } catch (error) {
         console.error('Error writing metric values file:', error);
     }
