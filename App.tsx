@@ -3,9 +3,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import MetricsScreen from "./MetricsScreen.tsx";
 import EntryScreen from "./EntryScreen.tsx";
+import ViewScreen from "./ViewScreen.tsx";
 
 // function EntryScreen() {
 //     return (
@@ -15,13 +16,13 @@ import EntryScreen from "./EntryScreen.tsx";
 //     );
 // }
 
-function ViewScreen() {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>View!</Text>
-        </View>
-    );
-}
+// function ViewScreen() {
+//     return (
+//         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//             <Text>View!</Text>
+//         </View>
+//     );
+// }
 
 // function MetricsScreen() {
 //     return (
@@ -45,13 +46,13 @@ function App(): React.JSX.Element {
 
                         if (route.name === 'Entry') {
                             console.log("in Entry");
-                            iconName = 'add-to-list';
+                            iconName = 'plus';
                         } else if (route.name === 'View') {
                             console.log("in View");
-                            iconName = 'ios-eye';
+                            iconName = 'bar-chart';
                         } else if (route.name === 'Metrics') {
                             console.log("in Metrics");
-                            iconName = 'ios-stats-chart';
+                            iconName = 'list';
                         }
                         else{
                             console.log("in else");
