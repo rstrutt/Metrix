@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MetricsScreen from "./MetricsScreen.tsx";
 
 function EntryScreen() {
     return (
@@ -21,13 +22,13 @@ function ViewScreen() {
     );
 }
 
-function MetricsScreen() {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Metrics!</Text>
-        </View>
-    );
-}
+// function MetricsScreen() {
+//     return (
+//         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//             <Text>Metrics!</Text>
+//         </View>
+//     );
+// }
 
 const Tab = createBottomTabNavigator();
 
