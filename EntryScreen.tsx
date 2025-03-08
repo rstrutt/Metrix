@@ -109,6 +109,8 @@ const EntryScreen = () => {
                 </View>
             ))}
             <Button title="Save" onPress={handleSave} />
+            <View style={{ height: 50 }} />
+
         </ScrollView>
     );
 };
