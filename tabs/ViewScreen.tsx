@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Dimensions } from 'react-native';
-import MultiSelect from 'react-native-multiple-select';
+import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
-import { LineChart, BarChart } from 'react-native-chart-kit';
+import { LineChart } from 'react-native-chart-kit';
 import { readMetricValuesFromFile, updateMetricValueInFile, deleteMetricValueFromFile } from '../fileUtils.ts';
 
 const ViewScreen = () => {
@@ -12,6 +12,7 @@ const ViewScreen = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
     const [allMetrics, setAllMetrics] = useState<string[]>([]);
+    const [open, setOpen] = useState(false);
 
     const loadEntries = async () => {
         const loadedEntries = await readMetricValuesFromFile();
@@ -31,11 +32,14 @@ const ViewScreen = () => {
         setRefreshing(false);
     };
 
-    // const handleValueChange = (index: number, value: string) => {
-    //     const updatedEntries = [...entries];
-    //     updatedEntries[index].value = parseFloat(value);
-    //     setEntries(updatedEntries);
-    // };
+    const handleValueChange = (dateTime: string, metric: string, value: string) => {
+        const updatedEntries = entries.map(entry =>
+            entry.dateTime === dateTime && entry.metric === metric
+                ? { ...entry, value: parseFloat(value) }
+                : entry
+        );
+        setEntries(updatedEntries);
+    };
 
     const handleSave = async (dateTime: string, metric: string, value: number) => {
         const updatedEntry = { dateTime, metric, value };
@@ -64,36 +68,25 @@ const ViewScreen = () => {
         return acc;
     }, {} as { [key: string]: { dateTime: string, metric: string, value: number }[] });
 
-    const handleValueChange = (dateTime: string, metric: string, value: string) => {
-        const updatedEntries = entries.map(entry =>
-            entry.dateTime === dateTime && entry.metric === metric
-                ? { ...entry, value: parseFloat(value) }
-                : entry
-        );
-        setEntries(updatedEntries);
-    };
-
     return (
         <View style={{ flex: 1, padding: 16 }}>
-            <MultiSelect
-                items={allMetrics.map(metric => ({ id: metric, name: metric }))}
-                uniqueKey="id"
-                onSelectedItemsChange={setSelectedMetrics}
-                selectedItems={selectedMetrics}
-                selectText="Select Metrics"
-                searchInputPlaceholderText="Search Metrics..."
-                tagRemoveIconColor="#CCC"
-                tagBorderColor="#CCC"
-                tagTextColor="#CCC"
-                selectedItemTextColor="#CCC"
-                selectedItemIconColor="#CCC"
-                itemTextColor="#000"
-                displayKey="name"
-                searchInputStyle={{ color: '#CCC' }}
-                submitButtonColor="#CCC"
-                submitButtonText="Submit"
+            <DropDownPicker
+                open={open}
+                value={selectedMetrics}
+                items={allMetrics.map(metric => ({ label: metric, value: metric }))}
+                setOpen={setOpen}
+                setValue={setSelectedMetrics}
+                setItems={setAllMetrics}
+                multiple={true}
+                min={0}
+                max={allMetrics.length}
+                placeholder="Select Metrics"
+                containerStyle={{ height: 40 }}
+                style={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
+                // dropDownStyle={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
             />
             <ScrollView
+                contentContainerStyle={{ paddingTop: 16 }}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
@@ -112,8 +105,6 @@ const ViewScreen = () => {
                             }}
                             width={Dimensions.get('window').width - 32} // from react-native
                             height={220}
-                            // yAxisLabel={`${metric} `}
-                            // yAxisSuffix=""
                             yLabelsOffset={-10} // Adjust this value to position the label correctly
                             chartConfig={{
                                 backgroundColor: '#d3d3d3', // light grey
@@ -127,8 +118,6 @@ const ViewScreen = () => {
                                 },
                                 propsForDots: {
                                     r: '3',
-                                    // strokeWidth: '2',
-                                    // stroke: '#ffa726'
                                 }
                             }}
                             bezier
