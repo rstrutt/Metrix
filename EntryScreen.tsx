@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -13,15 +13,23 @@ const EntryScreen = () => {
     const [timeString, setTimeString] = useState(date.toTimeString().split(' ')[0].slice(0, 5)); // Only hours and minutes
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
     const isDarkMode = useColorScheme() === 'dark';
 
+    const loadMetrics = async () => {
+        const metricsArray = await readMetricsFromFile();
+        setMetrics(metricsArray);
+    };
+
     useEffect(() => {
-        const loadMetrics = async () => {
-            const metricsArray = await readMetricsFromFile();
-            setMetrics(metricsArray);
-        };
         loadMetrics();
     }, []);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await loadMetrics();
+        setRefreshing(false);
+    };
 
     const handleValueChange = (metric: string, value: string) => {
         const floatValue = parseFloat(value);
@@ -55,7 +63,12 @@ const EntryScreen = () => {
     };
 
     return (
-        <ScrollView style={{ flex: 1, padding: 16, backgroundColor: isDarkMode ? Colors.darker : Colors.lighter }}>
+        <ScrollView
+            style={{ flex: 1, padding: 16, backgroundColor: isDarkMode ? Colors.darker : Colors.lighter }}
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+        >
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
                 <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ flex: 1, marginRight: 8 }}>
                     <Text style={{ padding: 8, borderColor: 'gray', borderWidth: 1 }}>
