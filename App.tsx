@@ -5,14 +5,15 @@ import { Text, View, useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MetricsScreen from "./MetricsScreen.tsx";
+import EntryScreen from "./EntryScreen.tsx";
 
-function EntryScreen() {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Entry!</Text>
-        </View>
-    );
-}
+// function EntryScreen() {
+//     return (
+//         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//             <Text>Entry!</Text>
+//         </View>
+//     );
+// }
 
 function ViewScreen() {
     return (
