@@ -78,10 +78,11 @@ export const updateMetricValueInFile = async (updatedEntry: { dateTime: string, 
     }
 };
 
-export const deleteMetricValueFromFile = async (dateTime: string, metric: string) => {
+export const deleteMetricValueFromFile = async (dateTime: string, metric: string, value: number) => {
     try {
+        console.log("Deleting metric value from file with metric, dateTime, value:", dateTime, metric, value);
         const entries = await readMetricValuesFromFile();
-        const updatedEntries = entries.filter(entry => !(entry.dateTime === dateTime && entry.metric === metric));
+        const updatedEntries = entries.filter(entry => !(entry.dateTime === dateTime && entry.metric === metric && entry.value===parseFloat(metric)));
         const fileContent = updatedEntries.map(entry => `${entry.dateTime},${entry.metric},${entry.value}`).join('\n');
         await writeFile(METRIC_VALUES_FILE_PATH, fileContent, 'utf8');
     } catch (error) {

@@ -31,21 +31,20 @@ const ViewScreen = () => {
         setRefreshing(false);
     };
 
-    const handleValueChange = (index: number, value: string) => {
-        const updatedEntries = [...entries];
-        updatedEntries[index].value = parseFloat(value);
-        setEntries(updatedEntries);
-    };
+    // const handleValueChange = (index: number, value: string) => {
+    //     const updatedEntries = [...entries];
+    //     updatedEntries[index].value = parseFloat(value);
+    //     setEntries(updatedEntries);
+    // };
 
-    const handleSave = async (index: number) => {
-        const updatedEntry = entries[index];
+    const handleSave = async (dateTime: string, metric: string, value: number) => {
+        const updatedEntry = { dateTime, metric, value };
         await updateMetricValueInFile(updatedEntry);
     };
 
-    const handleDelete = async (index: number) => {
-        const { dateTime, metric } = entries[index];
-        await deleteMetricValueFromFile(dateTime, metric);
-        setEntries(entries.filter((_, i) => i !== index));
+    const handleDelete = async (dateTime: string, metric: string, value: number) => {
+        await deleteMetricValueFromFile(dateTime, metric, value);
+        setEntries(entries.filter(entry => !(entry.dateTime === dateTime && entry.metric === metric)));
     };
 
     const formatDateTime = (dateTime: string) => {
@@ -129,19 +128,19 @@ const ViewScreen = () => {
                                 borderRadius: 16
                             }}
                         />
-                        {groupedEntries[metric].map((entry, index) => (
+                        {groupedEntries[metric].map((entry) => (
                             <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
                                 <Text style={{ flex: 1 }}>{formatDateTime(entry.dateTime)}</Text>
                                 <TextInput
                                     style={{ borderColor: 'gray', borderWidth: 1, paddingLeft: 4, paddingRight: 4, width: 50 }}
                                     keyboardType="numeric"
                                     value={entry.value.toString()}
-                                    onChangeText={(value) => handleValueChange(index, value)}
+                                    // onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
                                 />
-                                <TouchableOpacity onPress={() => handleSave(index)} style={{ marginHorizontal: 8 }}>
+                                <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
                                     <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleDelete(index)} style={{ marginHorizontal: 8 }}>
+                                <TouchableOpacity onPress={() => handleDelete(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
                                     <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
                                 </TouchableOpacity>
                             </View>
