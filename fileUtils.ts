@@ -26,10 +26,10 @@ export const saveMetricsToFile = async (metricsArray: string[]) => {
     }
 };
 
-export const saveMetricValuesToFile = async (metricValues: { [key: string]: number }, date: string, time: string) => {
+export const saveMetricValuesToFile = async (metricValues: { [key: string]: number }, dateTime: string) => {
     try {
         const fileContent = Object.entries(metricValues)
-            .map(([metric, value]) => `${date},${time},${metric},${value}`)
+            .map(([metric, value]) => `${dateTime},${metric},${value}`)
             .join('\n');
         await writeFile(METRIC_VALUES_FILE_PATH, fileContent, 'utf8');
     } catch (error) {

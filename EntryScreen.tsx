@@ -33,6 +33,11 @@ const EntryScreen = () => {
     const handleSave = async () => {
         const combinedDateTime = new Date(`${dateString}T${timeString}`);
         await saveMetricValuesToFile(metricValues, combinedDateTime.toISOString());
+        // Clear all input fields
+        setMetricValues({});
+        setDate(new Date());
+        setDateString(new Date().toISOString().split('T')[0]);
+        setTimeString(new Date().toTimeString().split(' ')[0].slice(0, 5));
     };
 
     const handleDateChange = (event: any, selectedDate?: Date) => {
@@ -85,6 +90,7 @@ const EntryScreen = () => {
                     <TextInput
                         style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100 }}
                         keyboardType="numeric"
+                        value={metricValues[metric] ? metricValues[metric].toString() : ''}
                         onChangeText={(value) => handleValueChange(metric, value)}
                     />
                 </View>

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
-import RNFS, { readFile, writeFile, exists } from 'react-native-fs';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-
-const METRICS_FILE_PATH = `${RNFS.DocumentDirectoryPath}/metrics.csv`;
+import { readMetricsFromFile, saveMetricsToFile } from './fileUtils';
 
 const MetricsScreen = () => {
     const [metrics, setMetrics] = useState<string[]>([]);
@@ -12,34 +10,12 @@ const MetricsScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
 
     useEffect(() => {
-        readMetricsFromFile();
-    }, []);
-
-    const readMetricsFromFile = async () => {
-        try {
-            const fileExists = await exists(METRICS_FILE_PATH);
-            console.log("fileExists...: ", fileExists);
-            if (!fileExists) {
-                console.log("Writing file...");
-                await writeFile(METRICS_FILE_PATH, '', 'utf8');
-                console.log("written");
-            }
-            const fileContent = await readFile(METRICS_FILE_PATH, 'utf8');
-            const metricsArray = fileContent.split('\n').filter(Boolean);
+        const loadMetrics = async () => {
+            const metricsArray = await readMetricsFromFile();
             setMetrics(metricsArray);
-        } catch (error) {
-            console.error('Error reading metrics file:', error);
-        }
-    };
-
-    const saveMetricsToFile = async (metricsArray: string[]) => {
-        try {
-            const fileContent = metricsArray.join('\n');
-            await writeFile(METRICS_FILE_PATH, fileContent, 'utf8');
-        } catch (error) {
-            console.error('Error writing metrics file:', error);
-        }
-    };
+        };
+        loadMetrics();
+    }, []);
 
     const addMetric = () => {
         if (newMetric.trim()) {
