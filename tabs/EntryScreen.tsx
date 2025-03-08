@@ -104,7 +104,8 @@ const EntryScreen = () => {
                 />
             )}
             {metrics.map((metric, index) => (
-                <View key={metric} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+                // style={{ marginBottom: 16, backgroundColor: '#e3e2e2', padding: 16, borderRadius: 10 }}
+                <View key={metric} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: '#e3e2e2', padding: 4, borderRadius: 10}}>
                     <Text style={{ flex: 1, fontSize: 16 }}>{metric}</Text>
                     <TextInput
                         ref={(ref) => {

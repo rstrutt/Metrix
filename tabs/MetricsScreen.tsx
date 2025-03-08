@@ -44,19 +44,24 @@ const MetricsScreen = () => {
     };
 
     return (
-        <View style={{ flex: 1, padding: 16, backgroundColor: isDarkMode ? Colors.darker : Colors.lighter }}>
+        <View style={{ flex: 1, padding: 16, backgroundColor: isDarkMode ? Colors.darker : Colors.lighter}}>
             <TextInput
                 value={newMetric}
                 onChangeText={setNewMetric}
                 placeholder="Add new metric"
                 style={{ borderColor: 'gray', borderWidth: 1, marginBottom: 8, padding: 8, borderRadius: 8 }}
             />
-            <Button title="Add" onPress={addMetric} />
+            {/*<View style={{ marginBottom: 4 }}>*/}
+            {/*    <Button title="Add" onPress={addMetric} />*/}
+            {/*</View>*/}
+            <TouchableOpacity onPress={addMetric} style={{ backgroundColor: isDarkMode ? '#444' : '#ddd', padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 6 }}>
+                <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 16 }}>Add</Text>
+            </TouchableOpacity>
             <FlatList
                 data={metrics}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: '#e3e2e2', padding: 4, borderRadius: 10}}>
                         <Text style={{ flex: 1, fontSize: 16 }}>{item}</Text>
                         <TouchableOpacity onPress={() => moveMetric(index, 'up')} style={{ marginHorizontal: 8 }}>
                             <Icon name="arrow-up" size={20} color={isDarkMode ? '#888' : '#555'} />
