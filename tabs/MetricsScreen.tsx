@@ -5,7 +5,6 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readMetricsFromFile, saveMetricsToFile } from '../fileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-
 const MetricsScreen = () => {
     const [metrics, setMetrics] = useState<string[]>([]);
     const [newMetric, setNewMetric] = useState('');
@@ -50,7 +49,7 @@ const MetricsScreen = () => {
                 value={newMetric}
                 onChangeText={setNewMetric}
                 placeholder="Add new metric"
-                style={{ borderColor: 'gray', borderWidth: 1, marginBottom: 8, padding: 8 }}
+                style={{ borderColor: 'gray', borderWidth: 1, marginBottom: 8, padding: 8, borderRadius: 8 }}
             />
             <Button title="Add" onPress={addMetric} />
             <FlatList
@@ -58,7 +57,7 @@ const MetricsScreen = () => {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
-                        <Text style={{ flex: 1 }}>{item}</Text>
+                        <Text style={{ flex: 1, fontSize: 16 }}>{item}</Text>
                         <TouchableOpacity onPress={() => moveMetric(index, 'up')} style={{ marginHorizontal: 8 }}>
                             <Icon name="arrow-up" size={20} color={isDarkMode ? '#888' : '#555'} />
                         </TouchableOpacity>

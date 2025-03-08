@@ -64,6 +64,15 @@ const ViewScreen = () => {
         return acc;
     }, {} as { [key: string]: { dateTime: string, metric: string, value: number }[] });
 
+    const handleValueChange = (dateTime: string, metric: string, value: string) => {
+        const updatedEntries = entries.map(entry =>
+            entry.dateTime === dateTime && entry.metric === metric
+                ? { ...entry, value: parseFloat(value) }
+                : entry
+        );
+        setEntries(updatedEntries);
+    };
+
     return (
         <View style={{ flex: 1, padding: 16 }}>
             <MultiSelect
@@ -130,12 +139,12 @@ const ViewScreen = () => {
                         />
                         {groupedEntries[metric].map((entry) => (
                             <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-                                <Text style={{ flex: 1 }}>{formatDateTime(entry.dateTime)}</Text>
+                                <Text style={{ flex: 1 , fontSize: 16}}>{formatDateTime(entry.dateTime)}</Text>
                                 <TextInput
-                                    style={{ borderColor: 'gray', borderWidth: 1, paddingLeft: 4, paddingRight: 4, width: 50 }}
+                                    style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
                                     keyboardType="numeric"
                                     value={entry.value.toString()}
-                                    // onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
+                                    onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
                                 />
                                 <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
                                     <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />

@@ -75,14 +75,14 @@ const EntryScreen = () => {
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
         >
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }}>
                 <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ flex: 1, marginRight: 8 }}>
-                    <Text style={{ padding: 8, borderColor: 'gray', borderWidth: 1 }}>
+                    <Text style={{ padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center' }}>
                         {dateString}
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setShowTimePicker(true)} style={{ flex: 1 }}>
-                    <Text style={{ padding: 8, borderColor: 'gray', borderWidth: 1 }}>
+                    <Text style={{ padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center' }}>
                         {timeString}
                     </Text>
                 </TouchableOpacity>
@@ -105,12 +105,12 @@ const EntryScreen = () => {
             )}
             {metrics.map((metric, index) => (
                 <View key={metric} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-                    <Text style={{ flex: 1 }}>{metric}</Text>
+                    <Text style={{ flex: 1, fontSize: 16 }}>{metric}</Text>
                     <TextInput
                         ref={(ref) => {
                             inputRefs.current[index] = ref!;
                         }}
-                        style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100 }}
+                        style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
                         keyboardType="numeric"
                         value={metricValues[metric] ? metricValues[metric].toString() : ''}
                         onChangeText={(value) => handleValueChange(metric, value)}
@@ -123,7 +123,9 @@ const EntryScreen = () => {
                     />
                 </View>
             ))}
-            <Button title="Save" onPress={handleSave} />
+            <TouchableOpacity onPress={handleSave} style={{ backgroundColor: isDarkMode ? '#444' : '#ddd', padding: 12, borderRadius: 8, alignItems: 'center', marginTop: 16 }}>
+                <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 16 }}>Save</Text>
+            </TouchableOpacity>
             <View style={{ height: 50 }} />
         </ScrollView>
     );
