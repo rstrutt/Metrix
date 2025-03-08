@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
-import { readFile, writeFile } from 'react-native-fs';
+import RNFS, { readFile, writeFile, exists } from 'react-native-fs';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
-const METRICS_FILE_PATH = 'metrics.csv';
+const METRICS_FILE_PATH = `${RNFS.DocumentDirectoryPath}/metrics.csv`;
 
 const MetricsScreen = () => {
     const [metrics, setMetrics] = useState<string[]>([]);
@@ -17,6 +17,13 @@ const MetricsScreen = () => {
 
     const readMetricsFromFile = async () => {
         try {
+            const fileExists = await exists(METRICS_FILE_PATH);
+            console.log("fileExists...: ", fileExists);
+            if (!fileExists) {
+                console.log("Writing file...");
+                await writeFile(METRICS_FILE_PATH, '', 'utf8');
+                console.log("written");
+            }
             const fileContent = await readFile(METRICS_FILE_PATH, 'utf8');
             const metricsArray = fileContent.split('\n').filter(Boolean);
             setMetrics(metricsArray);
