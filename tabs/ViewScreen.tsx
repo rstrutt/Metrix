@@ -81,7 +81,7 @@ const ViewScreen = () => {
         const width = Dimensions.get('window').width - 32;
         const height = 220;
         const padding = 20;
-        const leftPadding = 20; // Increased left padding
+        const leftPadding = 30; // Increased left padding
         const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
         const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
         const yMin = Math.min(...data.map(d => d.value));
@@ -95,7 +95,7 @@ const ViewScreen = () => {
 
         return (
             <Svg width={width} height={height}>
-                <Rect x="0" y="0" width={width} height={height} fill="#f0f0f0" />
+                <Rect x="0" y="0" width={width} height={height} fill="#d3d3d3" rx="10" ry="10" />
                 <G>
                     {/* Grid Lines */}
                     {xTicks.map((t, i) => (
