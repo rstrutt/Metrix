@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
@@ -15,6 +15,7 @@ const EntryScreen = () => {
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const isDarkMode = useColorScheme() === 'dark';
+    const inputRefs = useRef<TextInput[]>([]);
 
     const loadMetrics = async () => {
         const metricsArray = await readMetricsFromFile();
@@ -35,13 +36,11 @@ const EntryScreen = () => {
         const floatValue = parseFloat(value);
         if (!isNaN(floatValue)) {
             setMetricValues({ ...metricValues, [metric]: floatValue });
-        }
-        else{
+        } else {
             // Remove the metric from setMetricValues
             const updatedMetricValues = { ...metricValues };
             delete updatedMetricValues[metric];
             setMetricValues(updatedMetricValues);
-
         }
     };
 
@@ -104,20 +103,28 @@ const EntryScreen = () => {
                     onChange={handleTimeChange}
                 />
             )}
-            {metrics.map((metric) => (
+            {metrics.map((metric, index) => (
                 <View key={metric} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
                     <Text style={{ flex: 1 }}>{metric}</Text>
                     <TextInput
+                        ref={(ref) => {
+                            inputRefs.current[index] = ref!;
+                        }}
                         style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100 }}
                         keyboardType="numeric"
                         value={metricValues[metric] ? metricValues[metric].toString() : ''}
                         onChangeText={(value) => handleValueChange(metric, value)}
+                        returnKeyType={index === metrics.length - 1 ? 'done' : 'next'}
+                        onSubmitEditing={() => {
+                            if (index < metrics.length - 1) {
+                                inputRefs.current[index + 1].focus();
+                            }
+                        }}
                     />
                 </View>
             ))}
             <Button title="Save" onPress={handleSave} />
             <View style={{ height: 50 }} />
-
         </ScrollView>
     );
 };
