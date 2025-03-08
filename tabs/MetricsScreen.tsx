@@ -3,6 +3,8 @@ import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readMetricsFromFile, saveMetricsToFile } from '../fileUtils.ts';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 const MetricsScreen = () => {
     const [metrics, setMetrics] = useState<string[]>([]);
@@ -57,14 +59,14 @@ const MetricsScreen = () => {
                 renderItem={({ item, index }) => (
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
                         <Text style={{ flex: 1 }}>{item}</Text>
-                        <TouchableOpacity onPress={() => moveMetric(index, 'up')}>
-                            <Text style={{ marginHorizontal: 8 }}>⬆️</Text>
+                        <TouchableOpacity onPress={() => moveMetric(index, 'up')} style={{ marginHorizontal: 8 }}>
+                            <Icon name="arrow-up" size={20} color={isDarkMode ? '#888' : '#555'} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => moveMetric(index, 'down')}>
-                            <Text style={{ marginHorizontal: 8 }}>⬇️</Text>
+                        <TouchableOpacity onPress={() => moveMetric(index, 'down')} style={{ marginHorizontal: 8 }}>
+                            <Icon name="arrow-down" size={20} color={isDarkMode ? '#888' : '#555'} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => deleteMetric(index)}>
-                            <Text style={{ marginHorizontal: 8 }}>❌</Text>
+                        <TouchableOpacity onPress={() => deleteMetric(index)} style={{ marginHorizontal: 8 }}>
+                            <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
                         </TouchableOpacity>
                     </View>
                 )}

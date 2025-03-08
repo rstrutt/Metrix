@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Dimensions } from 'react-native';
 import MultiSelect from 'react-native-multiple-select';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useColorScheme } from 'react-native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 import { readMetricValuesFromFile, updateMetricValueInFile, deleteMetricValueFromFile } from '../fileUtils.ts';
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
+    const isDarkMode = useColorScheme() === 'dark';
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
     const [allMetrics, setAllMetrics] = useState<string[]>([]);
@@ -91,31 +93,6 @@ const ViewScreen = () => {
                 {Object.keys(groupedEntries).map(metric => (
                     <View key={metric} style={{ marginBottom: 16 }}>
                         <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric}</Text>
-                        {/*<BarChart*/}
-                        {/*    // style={graphStyle}*/}
-                        {/*    data={{*/}
-                        {/*        labels: ['January', 'February', 'March', 'April', 'May', 'June'],*/}
-                        {/*        datasets: [*/}
-                        {/*            {*/}
-                        {/*                data: [20, 45, 28, 80, 99, 43],*/}
-                        {/*            },*/}
-                        {/*        ],*/}
-                        {/*    }}*/}
-                        {/*    width={100}*/}
-                        {/*    height={220}*/}
-                        {/*    yAxisLabel={'$'}*/}
-                        {/*    chartConfig={{*/}
-                        {/*        backgroundColor: '#e26a00',*/}
-                        {/*        backgroundGradientFrom: '#fb8c00',*/}
-                        {/*        backgroundGradientTo: '#ffa726',*/}
-                        {/*        decimalPlaces: 2, // optional, defaults to 2dp*/}
-                        {/*        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,*/}
-                        {/*        style: {*/}
-                        {/*            borderRadius: 16*/}
-                        {/*        }*/}
-                        {/*    }}*/}
-                        {/*    yAxisSuffix="xx"*/}
-                        {/*/>*/}
                         <LineChart
                             data={{
                                 labels: groupedEntries[metric].map(entry => formatDateTime(entry.dateTime)),
@@ -162,10 +139,10 @@ const ViewScreen = () => {
                                     onChangeText={(value) => handleValueChange(index, value)}
                                 />
                                 <TouchableOpacity onPress={() => handleSave(index)} style={{ marginHorizontal: 8 }}>
-                                    <Icon name="save" size={20} color="blue" />
+                                    <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => handleDelete(index)} style={{ marginHorizontal: 8 }}>
-                                    <Icon name="trash" size={20} color="red" />
+                                    <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
                                 </TouchableOpacity>
                             </View>
                         ))}
