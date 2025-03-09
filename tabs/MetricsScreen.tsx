@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readMetricsFromFile, saveMetricsToFile } from '../fileUtils.ts';
@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const MetricsScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
     const [newMetric, setNewMetric] = useState({ name: '', min_threshold: '', max_threshold: '' });
+    const [refreshing, setRefreshing] = useState(false);
     const isDarkMode = useColorScheme() === 'dark';
 
     useEffect(() => {
@@ -17,6 +18,13 @@ const MetricsScreen = () => {
         };
         loadMetrics();
     }, []);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        const metricsArray = await readMetricsFromFile();
+        setMetrics(metricsArray);
+        setRefreshing(false);
+    };
 
     const addMetric = () => {
         if (newMetric.name.trim()) {
@@ -29,14 +37,14 @@ const MetricsScreen = () => {
 
     const updateMetric = (index: number, field: string, value: string) => {
         const parsedValue = parseFloat(value);
-      const updatedMetrics = metrics.map((metric, i) =>
-        i === index ? {...metric, [field]: isNaN(parsedValue) ? 0 : parsedValue} : metric,
-      );
-      setMetrics(updatedMetrics);
+        const updatedMetrics = metrics.map((metric, i) =>
+            i === index ? { ...metric, [field]: isNaN(parsedValue) ? 0 : parsedValue } : metric,
+        );
+        setMetrics(updatedMetrics);
     };
 
     const saveMetric = () => {
-      saveMetricsToFile(metrics);
+        saveMetricsToFile(metrics);
     };
 
     const deleteMetric = (index: number) => {
@@ -114,6 +122,9 @@ const MetricsScreen = () => {
                         </TouchableOpacity>
                     </View>
                 )}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
             />
         </View>
     );

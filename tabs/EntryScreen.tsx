@@ -68,6 +68,13 @@ const EntryScreen = () => {
         }
     };
 
+    const setCurrentTime = () => {
+        const now = new Date();
+        const formattedDateTime = now.toISOString().split('T')[0] + ' ' + now.toTimeString().split(' ')[0].slice(0, 5);
+        setDateString(formattedDateTime.split(' ')[0]);
+        setTimeString(formattedDateTime.split(' ')[1]);
+    };
+
     return (
         <ScrollView
             style={{ flex: 1, padding: 16, backgroundColor: isDarkMode ? Colors.darker : Colors.lighter }}
@@ -81,10 +88,13 @@ const EntryScreen = () => {
                         {dateString}
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setShowTimePicker(true)} style={{ flex: 1 }}>
+                <TouchableOpacity onPress={() => setShowTimePicker(true)} style={{ flex: 1, marginRight: 8 }}>
                     <Text style={{ padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center' }}>
                         {timeString}
                     </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={setCurrentTime} style={{ backgroundColor: isDarkMode ? '#444' : '#ddd', padding: 12, borderRadius: 8, alignItems: 'center' }}>
+                    <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 16 }}>Now</Text>
                 </TouchableOpacity>
             </View>
             {showDatePicker && (
