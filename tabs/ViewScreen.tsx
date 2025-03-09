@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Di
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
-import { Svg, Line, G, Text as SvgText, Rect, Circle } from 'react-native-svg';
+import { Svg, Line, G, Text as SvgText, Rect, Circle, Polygon } from 'react-native-svg';
 import {
     readMetricValuesFromFile,
     updateMetricValueInFile,
@@ -17,20 +17,19 @@ const ViewScreen = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
     const [allMetrics, setAllMetrics] = useState<string[]>([]);
-    const [loadedMetrics, setLoadedMetrics] = useState<string[]>([]);
+    const [loadedMetrics, setLoadedMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
     const [open, setOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
     const loadEntries = async () => {
         const loadedMericValues = await readMetricValuesFromFile();
         const loadedMetrics = await readMetricsFromFile();
-        const loadedMetricsNames = loadedMetrics.map(metric => metric.name);
         setEntries(loadedMericValues);
         const metrics = Array.from(new Set(loadedMericValues.map(entry => entry.metric)));
-        metrics.sort((a, b) => loadedMetricsNames.indexOf(a) - loadedMetricsNames.indexOf(b));
+        metrics.sort((a, b) => loadedMetrics.map(metric => metric.name).indexOf(a) - loadedMetrics.map(metric => metric.name).indexOf(b));
         setAllMetrics(metrics);
         setSelectedMetrics(metrics);
-        setLoadedMetrics(loadedMetricsNames);
+        setLoadedMetrics(loadedMetrics);
     };
 
     useEffect(() => {
@@ -80,7 +79,7 @@ const ViewScreen = () => {
         return acc;
     }, {} as { [key: string]: { dateTime: string, metric: string, value: number }[] });
 
-    const renderChart = (data: { dateTime: string, value: number }[]) => {
+    const renderChart = (data: { dateTime: string, value: number }[], minThreshold: number, maxThreshold: number) => {
         const width = Dimensions.get('window').width - 75;
         const height = 220;
         const padding = 20;
@@ -141,6 +140,31 @@ const ViewScreen = () => {
                         y2={height - padding}
                         stroke="black"
                         strokeWidth="2"
+                    />
+                    {/* Min and Max Threshold Lines */}
+                    <Line
+                        x1={leftPadding}
+                        y1={scaleY(minThreshold)}
+                        x2={width - rightPadding}
+                        y2={scaleY(minThreshold)}
+                        stroke="red"
+                        strokeWidth="2"
+                        strokeDasharray="4"
+                    />
+                    <Line
+                        x1={leftPadding}
+                        y1={scaleY(maxThreshold)}
+                        x2={width - rightPadding}
+                        y2={scaleY(maxThreshold)}
+                        stroke="red"
+                        strokeWidth="2"
+                        strokeDasharray="4"
+                    />
+                    {/* Fill between Min and Max Threshold */}
+                    <Polygon
+                        points={`${leftPadding},${scaleY(minThreshold)} ${width - rightPadding},${scaleY(minThreshold)} ${width - rightPadding},${scaleY(maxThreshold)} ${leftPadding},${scaleY(maxThreshold)}`}
+                        fill="lightgreen"
+                        opacity="0.3"
                     />
                     {/* Data Lines */}
                     {data.map((d, i) => (
@@ -230,14 +254,16 @@ const ViewScreen = () => {
                 }
             >
                 {loadedMetrics.map(metric => (
-                    groupedEntries[metric] && (
-                        <View key={metric} style={{ marginBottom: 16, backgroundColor: '#e3e2e2', padding: 16, borderRadius: 10 }}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric}</Text>
-                            {renderChart(groupedEntries[metric]
-                                .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
-                                .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
+                    groupedEntries[metric.name] && (
+                        <View key={metric.name} style={{ marginBottom: 16, backgroundColor: '#e3e2e2', padding: 16, borderRadius: 10 }}>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric.name}</Text>
+                            {renderChart(groupedEntries[metric.name]
+                                    .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
+                                    .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime()),
+                                metric.min_threshold,
+                                metric.max_threshold
                             )}
-                            {isEditing && groupedEntries[metric]
+                            {isEditing && groupedEntries[metric.name]
                                 .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
                                 .map((entry) => (
                                     <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
