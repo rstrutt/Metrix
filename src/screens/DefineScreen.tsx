@@ -36,15 +36,19 @@ const DefineScreen = () => {
     };
 
     const updateMetric = (index: number, field: string, value: string) => {
-        const parsedValue = parseFloat(value);
         const updatedMetrics = metrics.map((metric, i) =>
-            i === index ? { ...metric, [field]: isNaN(parsedValue) ? 0 : parsedValue } : metric,
+            i === index ? { ...metric, [field]: value } : metric,
         );
         setMetrics(updatedMetrics);
     };
 
     const saveMetric = () => {
-        saveMetricsToFile(metrics);
+        const parsedMetrics = metrics.map(metric => ({
+            ...metric,
+            min_threshold: parseFloat(metric.min_threshold),
+            max_threshold: parseFloat(metric.max_threshold),
+        }));
+        saveMetricsToFile(parsedMetrics);
     };
 
     const deleteMetric = (index: number) => {

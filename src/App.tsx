@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { View, useColorScheme, Dimensions, TouchableOpacity } from 'react-native';
+import { View, useColorScheme, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -50,6 +50,9 @@ const App = (): React.JSX.Element => {
                                 style={{ flex: 1, alignItems: 'center', padding: 16 }}
                             >
                                 {renderIcon({ route, color: i === index ? (isDarkMode ? Colors.light : Colors.dark) : (isDarkMode ? Colors.dark : Colors.light) })}
+                                <Text style={{ color: i === index ? (isDarkMode ? Colors.light : Colors.dark) : (isDarkMode ? Colors.dark : Colors.light) }}>
+                                    {route.title}
+                                </Text>
                             </TouchableOpacity>
                         ))}
                     </View>

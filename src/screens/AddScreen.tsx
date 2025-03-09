@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -7,7 +7,7 @@ import { readMetricsFromFile, saveMetricValuesToFile } from '../utils/fileUtils.
 
 const EntryScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
-    const [metricValues, setMetricValues] = useState<{ [key: string]: number }>({});
+    const [metricValues, setMetricValues] = useState<{ [key: string]: string }>({});
     const [date, setDate] = useState(new Date());
     const [dateString, setDateString] = useState(date.toISOString().split('T')[0]);
     const [timeString, setTimeString] = useState(date.toTimeString().split(' ')[0].slice(0, 5)); // Only hours and minutes
@@ -37,20 +37,21 @@ const EntryScreen = () => {
     };
 
     const handleValueChange = (metric: string, value: string) => {
-        const floatValue = parseFloat(value);
-        if (!isNaN(floatValue)) {
-            setMetricValues({ ...metricValues, [metric]: floatValue });
-        } else {
-            // Remove the metric from setMetricValues
-            const updatedMetricValues = { ...metricValues };
-            delete updatedMetricValues[metric];
-            setMetricValues(updatedMetricValues);
-        }
+        setMetricValues({ ...metricValues, [metric]: value });
     };
 
     const handleSave = async () => {
+        const invalidMetrics = Object.entries(metricValues).filter(([metric, value]) => isNaN(parseFloat(value)));
+        if (invalidMetrics.length > 0) {
+            Alert.alert('Invalid Input', 'Please enter valid numbers for all metrics.');
+            return;
+        }
+
         const combinedDateTime = new Date(`${dateString}T${timeString}`);
-        await saveMetricValuesToFile(metricValues, combinedDateTime.toISOString());
+        const parsedMetricValues = Object.fromEntries(
+            Object.entries(metricValues).map(([metric, value]) => [metric, parseFloat(value)])
+        );
+        await saveMetricValuesToFile(parsedMetricValues, combinedDateTime.toISOString());
         // Clear all input fields
         setMetricValues({});
         setDate(new Date());
@@ -126,7 +127,7 @@ const EntryScreen = () => {
                         }}
                         style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
                         keyboardType="numeric"
-                        value={metricValues[metric.name] ? metricValues[metric.name].toString() : ''}
+                        value={metricValues[metric.name] || ''}
                         onChangeText={(value) => handleValueChange(metric.name, value)}
                         returnKeyType={index === metrics.length - 1 ? 'done' : 'next'}
                         onSubmitEditing={() => {

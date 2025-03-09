@@ -43,17 +43,21 @@ const ViewScreen = () => {
     };
 
     const handleValueChange = (dateTime: string, metric: string, value: string) => {
-        const parsedValue = parseFloat(value);
         const updatedEntries = entries.map(entry =>
             entry.dateTime === dateTime && entry.metric === metric
-                ? { ...entry, value: isNaN(parsedValue) ? 0 : parsedValue }
+                ? { ...entry, value: value }
                 : entry
         );
         setEntries(updatedEntries);
     };
 
-    const handleSave = async (dateTime: string, metric: string, value: number) => {
-        const updatedEntry = { dateTime, metric, value };
+    const handleSave = async (dateTime: string, metric: string, value: string) => {
+        const parsedValue = parseFloat(value);
+        if (isNaN(parsedValue)) {
+            Alert.alert('Invalid Input', 'Please enter a valid number.');
+            return;
+        }
+        const updatedEntry = { dateTime, metric, value: parsedValue };
         await updateMetricValueInFile(updatedEntry);
     };
 
