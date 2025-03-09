@@ -54,10 +54,6 @@ const EntryScreen = () => {
         await saveMetricValuesToFile(parsedMetricValues, combinedDateTimeString);
         // Clear all input fields
         setMetricValues({});
-        // Don't re-set the datetime
-        // setDate(new Date());
-        // setDateString(new Date().toISOString().split('T')[0]);
-        // setTimeString(new Date().toTimeString().split(' ')[0].slice(0, 5));
     };
 
     const handleDateChange = (event: any, selectedDate?: Date) => {
@@ -82,68 +78,71 @@ const EntryScreen = () => {
     };
 
     return (
-        <ScrollView
-            style={{ flex: 1, padding: 16, backgroundColor: isDarkMode ? Colors.darker : Colors.lighter }}
-            refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-        >
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }}>
+        <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 16, backgroundColor: '#f0f0f0' }}>
                 <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ flex: 1, marginRight: 8 }}>
-                    <Text style={{ padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center' }}>
+                    <Text style={{ padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
                         {dateString}
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setShowTimePicker(true)} style={{ flex: 1, marginRight: 8 }}>
-                    <Text style={{ padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center' }}>
+                    <Text style={{ padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
                         {timeString}
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={setCurrentTime} style={{ backgroundColor: isDarkMode ? '#444' : '#ddd', padding: 12, borderRadius: 8, alignItems: 'center' }}>
-                    <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 16 }}>Now</Text>
+                <TouchableOpacity onPress={setCurrentTime} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
+                    <Text style={{ color: '#fff', fontSize: 16 }}>Now</Text>
                 </TouchableOpacity>
             </View>
-            {showDatePicker && (
-                <DateTimePicker
-                    value={date}
-                    mode="date"
-                    display="default"
-                    onChange={handleDateChange}
-                />
-            )}
-            {showTimePicker && (
-                <DateTimePicker
-                    value={date}
-                    mode="time"
-                    display="default"
-                    onChange={handleTimeChange}
-                />
-            )}
-            {metrics.map((metric, index) => (
-                <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: '#e3e2e2', padding: 4, borderRadius: 10}}>
-                    <Text style={{ flex: 1, fontSize: 16 }}>{metric.name}</Text>
-                    <TextInput
-                        ref={(ref) => {
-                            inputRefs.current[index] = ref!;
-                        }}
-                        style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
-                        keyboardType="numeric"
-                        value={metricValues[metric.name] || ''}
-                        onChangeText={(value) => handleValueChange(metric.name, value)}
-                        returnKeyType={index === metrics.length - 1 ? 'done' : 'next'}
-                        onSubmitEditing={() => {
-                            if (index < metrics.length - 1) {
-                                inputRefs.current[index + 1].focus();
-                            }
-                        }}
+            <ScrollView
+                style={{ flex: 1, padding: 16, backgroundColor: '#f0f0f0' }} // Light grey background
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+            >
+                {showDatePicker && (
+                    <DateTimePicker
+                        value={date}
+                        mode="date"
+                        display="default"
+                        onChange={handleDateChange}
                     />
-                </View>
-            ))}
-            <TouchableOpacity onPress={handleSave} style={{ backgroundColor: isDarkMode ? '#444' : '#ddd', padding: 12, borderRadius: 8, alignItems: 'center', marginTop: 16 }}>
-                <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 16 }}>Save</Text>
-            </TouchableOpacity>
-            <View style={{ height: 50 }} />
-        </ScrollView>
+                )}
+                {showTimePicker && (
+                    <DateTimePicker
+                        value={date}
+                        mode="time"
+                        display="default"
+                        onChange={handleTimeChange}
+                    />
+                )}
+                {metrics.map((metric, index) => (
+                    <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, backgroundColor: '#fff', padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
+                        <Text style={{ flex: 1, fontSize: 16 }}>{metric.name}</Text>
+                        <TextInput
+                            ref={(ref) => {
+                                inputRefs.current[index] = ref!;
+                            }}
+                            style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
+                            keyboardType="numeric"
+                            value={metricValues[metric.name] || ''}
+                            onChangeText={(value) => handleValueChange(metric.name, value)}
+                            returnKeyType={index === metrics.length - 1 ? 'done' : 'next'}
+                            onSubmitEditing={() => {
+                                if (index < metrics.length - 1) {
+                                    inputRefs.current[index + 1].focus();
+                                }
+                            }}
+                        />
+                    </View>
+                ))}
+            </ScrollView>
+            <View style={{ padding: 16, backgroundColor: '#f0f0f0' }}>
+                <TouchableOpacity onPress={handleSave} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
+                    <Text style={{ color: '#fff', fontSize: 16 }}>Save</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
     );
 };
 

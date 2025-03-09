@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert } from 'react-native';
-import { View, Text, TextInput, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
+import { Alert, View, Text, TextInput, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readMetricsFromFile, saveMetricsToFile } from '../utils/fileUtils.ts';
@@ -50,7 +49,6 @@ const DefineScreen = () => {
             max_threshold: metric.max_threshold,
         }));
         saveMetricsToFile(parsedMetrics);
-        // Alert to say we saved
         Alert.alert("Success", "Metrics have been saved successfully.");
     };
 
@@ -73,7 +71,6 @@ const DefineScreen = () => {
     const handleDeleteMetric = (index: number) => {
         Alert.alert(
             "Confirm Deletion",
-            // `Are you sure you want to delete ${metricName}?`,
             `Are you sure you want to delete the metric?`,
             [
                 {
@@ -92,8 +89,8 @@ const DefineScreen = () => {
     };
 
     return (
-        <View style={{ flex: 1, padding: 16, backgroundColor: isDarkMode ? Colors.darker : Colors.lighter }}>
-            <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+        <View style={{ flex: 1, padding: 0, backgroundColor: '#f0f0f0' }}>
+            <View style={{ flexDirection: 'row', marginBottom: 8, padding:16}}>
                 <TextInput
                     value={newMetric.name}
                     onChangeText={(text) => setNewMetric({ ...newMetric, name: text })}
@@ -114,15 +111,16 @@ const DefineScreen = () => {
                     keyboardType="numeric"
                     style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 8, padding: 8, borderRadius: 8 }}
                 />
-                <TouchableOpacity onPress={addMetric} style={{ backgroundColor: isDarkMode ? '#444' : '#ddd', padding: 12, borderRadius: 8, alignItems: 'center' }}>
+                <TouchableOpacity onPress={addMetric} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
                     <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 16 }}>Add</Text>
                 </TouchableOpacity>
             </View>
             <FlatList
+
                 data={metrics}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: '#e3e2e2', padding: 4, borderRadius: 10, height: 50 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, marginHorizontal: 16, backgroundColor: '#fff', padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
                         <Text style={{ flex: 1, fontSize: 16 }}>{item.name}</Text>
                         <TextInput
                             value={item.min_threshold.toString()}

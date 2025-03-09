@@ -301,7 +301,7 @@ const ViewScreen = () => {
     };
 
     return (
-        <View style={{ flex: 1, padding: 16 }}>
+        <View style={{ flex: 1, padding: 16,  backgroundColor: '#f0f0f0'}}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <DropDownPicker
                     open={open}
@@ -318,7 +318,7 @@ const ViewScreen = () => {
                     style={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
                     dropDownContainerStyle={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
                 />
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16, marginTop: 20, marginBottom: 20}}>
                     <Text style={{ fontSize: 16, marginRight: 8 }}>Edit</Text>
                     <Switch
                         value={isEditing}
@@ -334,7 +334,7 @@ const ViewScreen = () => {
             >
                 {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
-                        <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, backgroundColor: '#e3e2e2', padding: 16, borderRadius: 10 }}>
+                        <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, backgroundColor: '#ffffff', padding: 16, borderRadius: 10 }}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric.name}</Text>
                             {renderChart(groupedEntries[metric.name]
                                     .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
