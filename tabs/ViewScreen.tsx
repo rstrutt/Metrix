@@ -231,24 +231,29 @@ const ViewScreen = () => {
                     groupedEntries[metric] && (
                         <View key={metric} style={{ marginBottom: 16, backgroundColor: '#e3e2e2', padding: 16, borderRadius: 10 }}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric}</Text>
-                            {renderChart(groupedEntries[metric].map(entry => ({ dateTime: entry.dateTime, value: entry.value })))}
-                            {groupedEntries[metric].map((entry) => (
-                                <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-                                    <Text style={{ flex: 1 , fontSize: 16}}>{formatDateTime(entry.dateTime)}</Text>
-                                    <TextInput
-                                        style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
-                                        keyboardType="numeric"
-                                        value={entry.value.toString()}
-                                        onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
-                                    />
-                                    <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
-                                        <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => handleDelete(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
-                                        <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
-                                    </TouchableOpacity>
-                                </View>
-                            ))}
+                            {renderChart(groupedEntries[metric]
+                                .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
+                                .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
+                            )}
+                            {groupedEntries[metric]
+                                .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
+                                .map((entry) => (
+                                    <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+                                        <Text style={{ flex: 1, fontSize: 16 }}>{formatDateTime(entry.dateTime)}</Text>
+                                        <TextInput
+                                            style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
+                                            keyboardType="numeric"
+                                            value={entry.value.toString()}
+                                            onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
+                                        />
+                                        <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
+                                            <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => handleDelete(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
+                                            <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
                         </View>
                     )
                 ))}
