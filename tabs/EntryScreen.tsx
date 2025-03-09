@@ -29,6 +29,10 @@ const EntryScreen = () => {
     const onRefresh = async () => {
         setRefreshing(true);
         await loadMetrics();
+        const now = new Date();
+        setDate(now);
+        setDateString(now.toISOString().split('T')[0]);
+        setTimeString(now.toTimeString().split(' ')[0].slice(0, 5));
         setRefreshing(false);
     };
 
