@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readMetricsFromFile, saveMetricsToFile } from '../fileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const MetricsScreen = () => {
-    const [metrics, setMetrics] = useState<string[]>([]);
-    const [newMetric, setNewMetric] = useState('');
+    const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
+    const [newMetric, setNewMetric] = useState({ name: '', min_threshold: '', max_threshold: '' });
     const isDarkMode = useColorScheme() === 'dark';
 
     useEffect(() => {
@@ -19,12 +19,24 @@ const MetricsScreen = () => {
     }, []);
 
     const addMetric = () => {
-        if (newMetric.trim()) {
-            const updatedMetrics = [...metrics, newMetric.trim()];
+        if (newMetric.name.trim()) {
+            const updatedMetrics = [...metrics, { ...newMetric, min_threshold: parseFloat(newMetric.min_threshold), max_threshold: parseFloat(newMetric.max_threshold) }];
             setMetrics(updatedMetrics);
             saveMetricsToFile(updatedMetrics);
-            setNewMetric('');
+            setNewMetric({ name: '', min_threshold: '', max_threshold: '' });
         }
+    };
+
+    const updateMetric = (index: number, field: string, value: string) => {
+        const parsedValue = parseFloat(value);
+      const updatedMetrics = metrics.map((metric, i) =>
+        i === index ? {...metric, [field]: isNaN(parsedValue) ? 0 : parsedValue} : metric,
+      );
+      setMetrics(updatedMetrics);
+    };
+
+    const saveMetric = () => {
+      saveMetricsToFile(metrics);
     };
 
     const deleteMetric = (index: number) => {
@@ -44,32 +56,60 @@ const MetricsScreen = () => {
     };
 
     return (
-        <View style={{ flex: 1, padding: 16, backgroundColor: isDarkMode ? Colors.darker : Colors.lighter}}>
-            <TextInput
-                value={newMetric}
-                onChangeText={setNewMetric}
-                placeholder="Add new metric"
-                style={{ borderColor: 'gray', borderWidth: 1, marginBottom: 8, padding: 8, borderRadius: 8 }}
-            />
-            {/*<View style={{ marginBottom: 4 }}>*/}
-            {/*    <Button title="Add" onPress={addMetric} />*/}
-            {/*</View>*/}
-            <TouchableOpacity onPress={addMetric} style={{ backgroundColor: isDarkMode ? '#444' : '#ddd', padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 6 }}>
-                <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 16 }}>Add</Text>
-            </TouchableOpacity>
+        <View style={{ flex: 1, padding: 16, backgroundColor: isDarkMode ? Colors.darker : Colors.lighter }}>
+            <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                <TextInput
+                    value={newMetric.name}
+                    onChangeText={(text) => setNewMetric({ ...newMetric, name: text })}
+                    placeholder="Metric Name"
+                    style={{ borderColor: 'gray', borderWidth: 1, flex: 1, marginRight: 8, padding: 8, borderRadius: 8 }}
+                />
+                <TextInput
+                    value={newMetric.min_threshold}
+                    onChangeText={(text) => setNewMetric({ ...newMetric, min_threshold: text })}
+                    placeholder="Min"
+                    keyboardType="numeric"
+                    style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 8, padding: 8, borderRadius: 8 }}
+                />
+                <TextInput
+                    value={newMetric.max_threshold}
+                    onChangeText={(text) => setNewMetric({ ...newMetric, max_threshold: text })}
+                    placeholder="Max"
+                    keyboardType="numeric"
+                    style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 8, padding: 8, borderRadius: 8 }}
+                />
+                <TouchableOpacity onPress={addMetric} style={{ backgroundColor: isDarkMode ? '#444' : '#ddd', padding: 12, borderRadius: 8, alignItems: 'center' }}>
+                    <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 16 }}>Add</Text>
+                </TouchableOpacity>
+            </View>
             <FlatList
                 data={metrics}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: '#e3e2e2', padding: 4, borderRadius: 10, height: 50}}>
-                        <Text style={{ flex: 1, fontSize: 16 }}>{item}</Text>
-                        <TouchableOpacity onPress={() => moveMetric(index, 'up')} style={{ marginHorizontal: 8 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: '#e3e2e2', padding: 4, borderRadius: 10, height: 50 }}>
+                        <Text style={{ flex: 1, fontSize: 16 }}>{item.name}</Text>
+                        <TextInput
+                            value={item.min_threshold.toString()}
+                            onChangeText={(text) => updateMetric(index, 'min_threshold', text)}
+                            keyboardType="numeric"
+                            style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 4, padding: 8, borderRadius: 8 }}
+                        />
+                        <TextInput
+                            value={item.max_threshold.toString()}
+                            onChangeText={(text) => updateMetric(index, 'max_threshold', text)}
+                            keyboardType="numeric"
+                            style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 4, padding: 8, borderRadius: 8 }}
+                        />
+                        <TouchableOpacity onPress={() => moveMetric(index, 'up')} style={{ marginHorizontal: 4 }}>
                             <Icon name="arrow-up" size={20} color={isDarkMode ? '#888' : '#555'} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => moveMetric(index, 'down')} style={{ marginHorizontal: 8 }}>
+                        <TouchableOpacity onPress={() => moveMetric(index, 'down')} style={{ marginHorizontal: 4 }}>
                             <Icon name="arrow-down" size={20} color={isDarkMode ? '#888' : '#555'} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => deleteMetric(index)} style={{ marginHorizontal: 8 }}>
+                        <TouchableOpacity onPress={() => saveMetric()} style={{ marginHorizontal: 4 }}>
+                            <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => deleteMetric(index)} style={{ marginHorizontal: 4 }}>
                             <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
                         </TouchableOpacity>
                     </View>

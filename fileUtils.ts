@@ -1,5 +1,6 @@
 import RNFS, { readFile, writeFile, exists } from 'react-native-fs';
 
+
 export const METRICS_FILE_PATH = `${RNFS.DocumentDirectoryPath}/metrics.csv`;
 export const METRIC_VALUES_FILE_PATH = `${RNFS.DocumentDirectoryPath}/metric_values.csv`;
 
@@ -32,16 +33,19 @@ export const readMetricsFromFile = async () => {
             await writeFile(METRICS_FILE_PATH, '', 'utf8');
         }
         const fileContent = await readFile(METRICS_FILE_PATH, 'utf8');
-        return fileContent.split('\n').filter(Boolean);
+        return fileContent.split('\n').filter(Boolean).map(line => {
+            const [name, min_threshold, max_threshold] = line.split(',');
+            return { name, min_threshold: parseFloat(min_threshold), max_threshold: parseFloat(max_threshold) };
+        });
     } catch (error) {
         console.error('Error reading metrics file:', error);
         return [];
     }
 };
 
-export const saveMetricsToFile = async (metricsArray: string[]) => {
+export const saveMetricsToFile = async (metricsArray: { name: string, min_threshold: number, max_threshold: number }[]) => {
     try {
-        const fileContent = metricsArray.join('\n');
+        const fileContent = metricsArray.map(metric => `${metric.name},${metric.min_threshold},${metric.max_threshold}`).join('\n');
         await writeFile(METRICS_FILE_PATH, fileContent, 'utf8');
     } catch (error) {
         console.error('Error writing metrics file:', error);

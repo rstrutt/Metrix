@@ -6,7 +6,7 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readMetricsFromFile, saveMetricValuesToFile } from '../fileUtils.ts';
 
 const EntryScreen = () => {
-    const [metrics, setMetrics] = useState<string[]>([]);
+    const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
     const [metricValues, setMetricValues] = useState<{ [key: string]: number }>({});
     const [date, setDate] = useState(new Date());
     const [dateString, setDateString] = useState(date.toISOString().split('T')[0]);
@@ -104,17 +104,16 @@ const EntryScreen = () => {
                 />
             )}
             {metrics.map((metric, index) => (
-                // style={{ marginBottom: 16, backgroundColor: '#e3e2e2', padding: 16, borderRadius: 10 }}
-                <View key={metric} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: '#e3e2e2', padding: 4, borderRadius: 10}}>
-                    <Text style={{ flex: 1, fontSize: 16 }}>{metric}</Text>
+                <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: '#e3e2e2', padding: 4, borderRadius: 10}}>
+                    <Text style={{ flex: 1, fontSize: 16 }}>{metric.name}</Text>
                     <TextInput
                         ref={(ref) => {
                             inputRefs.current[index] = ref!;
                         }}
                         style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
                         keyboardType="numeric"
-                        value={metricValues[metric] ? metricValues[metric].toString() : ''}
-                        onChangeText={(value) => handleValueChange(metric, value)}
+                        value={metricValues[metric.name] ? metricValues[metric.name].toString() : ''}
+                        onChangeText={(value) => handleValueChange(metric.name, value)}
                         returnKeyType={index === metrics.length - 1 ? 'done' : 'next'}
                         onSubmitEditing={() => {
                             if (index < metrics.length - 1) {
