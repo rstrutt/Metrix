@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Dimensions } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Dimensions, Switch } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
@@ -19,25 +19,17 @@ const ViewScreen = () => {
     const [allMetrics, setAllMetrics] = useState<string[]>([]);
     const [loadedMetrics, setLoadedMetrics] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
 
     const loadEntries = async () => {
-        console.log("in Load Entries");
         const loadedMericValues = await readMetricValuesFromFile();
-        console.log(loadedMericValues);
         const loadedMetrics = await readMetricsFromFile();
-        console.log(loadedMetrics);
         setEntries(loadedMericValues);
-        console.log("loadedMericValues");
         const metrics = Array.from(new Set(loadedMericValues.map(entry => entry.metric)));
-        console.log("metrics");
         metrics.sort((a, b) => loadedMetrics.indexOf(a) - loadedMetrics.indexOf(b));
         setAllMetrics(metrics);
-        console.log("setAllMetrics");
         setSelectedMetrics(metrics);
-        console.log("setSelectedMetrics");
         setLoadedMetrics(loadedMetrics);
-        console.log("loadedMericValues");
-
     };
 
     useEffect(() => {
@@ -206,21 +198,30 @@ const ViewScreen = () => {
 
     return (
         <View style={{ flex: 1, padding: 16 }}>
-            <DropDownPicker
-                open={open}
-                value={selectedMetrics}
-                items={allMetrics.map(metric => ({ label: metric, value: metric }))}
-                setOpen={setOpen}
-                setValue={setSelectedMetrics}
-                setItems={setAllMetrics}
-                multiple={true}
-                min={0}
-                max={allMetrics.length}
-                placeholder="Select Metrics"
-                containerStyle={{ height: 40 }}
-                style={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
-                dropDownContainerStyle={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
-            />
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <DropDownPicker
+                    open={open}
+                    value={selectedMetrics}
+                    items={allMetrics.map(metric => ({ label: metric, value: metric }))}
+                    setOpen={setOpen}
+                    setValue={setSelectedMetrics}
+                    setItems={setAllMetrics}
+                    multiple={true}
+                    min={0}
+                    max={allMetrics.length}
+                    placeholder="Select Metrics"
+                    containerStyle={{ height: 40, flex: 1 }}
+                    style={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
+                    dropDownContainerStyle={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
+                />
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16 }}>
+                    <Text style={{ fontSize: 16, marginRight: 8 }}>Editing</Text>
+                    <Switch
+                        value={isEditing}
+                        onValueChange={setIsEditing}
+                    />
+                </View>
+            </View>
             <ScrollView
                 contentContainerStyle={{ paddingTop: 16 }}
                 refreshControl={
@@ -235,7 +236,7 @@ const ViewScreen = () => {
                                 .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
                                 .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
                             )}
-                            {groupedEntries[metric]
+                            {isEditing && groupedEntries[metric]
                                 .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
                                 .map((entry) => (
                                     <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
