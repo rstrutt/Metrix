@@ -157,7 +157,7 @@ const ViewScreen = () => {
                         y1={scaleY(minThreshold)}
                         x2={width - rightPadding}
                         y2={scaleY(minThreshold)}
-                        stroke="red"
+                        stroke="yellow"
                         strokeWidth="2"
                         strokeDasharray="4"
                     />
@@ -231,7 +231,7 @@ const ViewScreen = () => {
                         x={width - rightPadding + 5}
                         y={scaleY(minThreshold) + 5}
                         fontSize="10"
-                        fill="red"
+                        fill="yellow"
                         textAnchor="start"
                     >
                         {minThreshold}
