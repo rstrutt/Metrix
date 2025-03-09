@@ -47,11 +47,11 @@ const EntryScreen = () => {
             return;
         }
 
-        const combinedDateTime = new Date(`${dateString}T${timeString}`);
+        const combinedDateTimeString = `${dateString} ${timeString}`;
         const parsedMetricValues = Object.fromEntries(
             Object.entries(metricValues).map(([metric, value]) => [metric, parseFloat(value)])
         );
-        await saveMetricValuesToFile(parsedMetricValues, combinedDateTime.toISOString());
+        await saveMetricValuesToFile(parsedMetricValues, combinedDateTimeString);
         // Clear all input fields
         setMetricValues({});
         // Don't re-set the datetime

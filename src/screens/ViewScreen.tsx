@@ -68,10 +68,15 @@ const ViewScreen = () => {
     };
 
     const formatDateTime = (dateTime: string) => {
-        const date = new Date(dateTime);
-        const formattedDate = date.toISOString().split('T')[0];
-        const formattedTime = date.toTimeString().split(' ')[0].slice(0, 5);
-        return `${formattedDate} ${formattedTime}`;
+        // Support files that had long-form date-time strings of the form "2021-09-01T12:34:56.789Z"
+        if (dateTime.includes('T')) {
+            const [dateString, timeString] = dateTime.split('T');
+            return `${dateString} ${timeString.slice(0, 5)}`;
+        }
+        // We moved to just storing simple strings of the form "2021-09-01 12:34"
+        else {
+            return dateTime
+        }
     };
 
     const filteredEntries = entries.filter(entry => selectedMetrics.includes(entry.metric));
