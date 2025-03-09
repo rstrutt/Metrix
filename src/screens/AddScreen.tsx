@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -41,7 +41,7 @@ const EntryScreen = () => {
     };
 
     const handleSave = async () => {
-        const invalidMetrics = Object.entries(metricValues).filter(([metric, value]) => isNaN(parseFloat(value)));
+        const invalidMetrics = Object.entries(metricValues).filter(([_metric, value]) => isNaN(parseFloat(value)));
         if (invalidMetrics.length > 0) {
             Alert.alert('Invalid Input', 'Please enter valid numbers for all metrics.');
             return;
