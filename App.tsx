@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import MetricsScreen from "./tabs/MetricsScreen.tsx";
 import EntryScreen from "./tabs/EntryScreen.tsx";
 import ViewScreen from "./tabs/ViewScreen.tsx";
+import ImportScreen from "./tabs/ImportScreen.tsx";
 
 // function EntryScreen() {
 //     return (
@@ -54,6 +55,10 @@ function App(): React.JSX.Element {
                             console.log("in Metrics");
                             iconName = 'list';
                         }
+                        else if (route.name === 'Import') {
+                            console.log("in Import");
+                            iconName = 'cloud-download';
+                        }
                         else{
                             console.log("in else");
                             iconName = 'xx';
@@ -68,6 +73,7 @@ function App(): React.JSX.Element {
                 <Tab.Screen name="Entry" component={EntryScreen} />
                 <Tab.Screen name="View" component={ViewScreen} />
                 <Tab.Screen name="Metrics" component={MetricsScreen} />
+                <Tab.Screen name="Import" component={ImportScreen} />
             </Tab.Navigator>
         </NavigationContainer>
     );

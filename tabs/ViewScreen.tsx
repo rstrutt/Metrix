@@ -21,14 +21,23 @@ const ViewScreen = () => {
     const [open, setOpen] = useState(false);
 
     const loadEntries = async () => {
+        console.log("in Load Entries");
         const loadedMericValues = await readMetricValuesFromFile();
+        console.log(loadedMericValues);
         const loadedMetrics = await readMetricsFromFile();
+        console.log(loadedMetrics);
         setEntries(loadedMericValues);
+        console.log("loadedMericValues");
         const metrics = Array.from(new Set(loadedMericValues.map(entry => entry.metric)));
+        console.log("metrics");
         metrics.sort((a, b) => loadedMetrics.indexOf(a) - loadedMetrics.indexOf(b));
         setAllMetrics(metrics);
+        console.log("setAllMetrics");
         setSelectedMetrics(metrics);
+        console.log("setSelectedMetrics");
         setLoadedMetrics(loadedMetrics);
+        console.log("loadedMericValues");
+
     };
 
     useEffect(() => {

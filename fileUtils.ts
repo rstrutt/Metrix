@@ -1,7 +1,29 @@
 import RNFS, { readFile, writeFile, exists } from 'react-native-fs';
 
-const METRICS_FILE_PATH = `${RNFS.DocumentDirectoryPath}/metrics.csv`;
-const METRIC_VALUES_FILE_PATH = `${RNFS.DocumentDirectoryPath}/metric_values.csv`;
+export const METRICS_FILE_PATH = `${RNFS.DocumentDirectoryPath}/metrics.csv`;
+export const METRIC_VALUES_FILE_PATH = `${RNFS.DocumentDirectoryPath}/metric_values.csv`;
+
+export const readAppFile = async (filePath: string): Promise<string> => {
+    try {
+        const fileExists = await exists(filePath);
+        if (!fileExists) {
+            await writeFile(filePath, '', 'utf8');
+        }
+        const fileContent = await RNFS.readFile(filePath, 'utf8');
+        return fileContent;
+    } catch (error) {
+        console.error('Error reading file:', error);
+        return '';
+    }
+};
+
+export const writeAppFile = async (filePath: string, content: string): Promise<void> => {
+    try {
+        await RNFS.writeFile(filePath, content, 'utf8');
+    } catch (error) {
+        console.error('Error writing file:', error);
+    }
+};
 
 export const readMetricsFromFile = async () => {
     try {
