@@ -89,6 +89,36 @@ const ViewScreen = () => {
         return acc;
     }, {} as { [key: string]: { dateTime: string, metric: string, value: number }[] });
 
+    const getPointColor = (value: number, minThreshold: number, maxThreshold: number): string => {
+        if (maxThreshold > minThreshold) {
+            if (value < minThreshold) {
+                return "yellow";
+            }
+            else if (value > maxThreshold) {
+                return "red";
+            }
+            else {
+                return "green";
+            }
+        }
+        else if (maxThreshold < minThreshold) {
+            if (value < maxThreshold) {
+                return "red";
+            }
+            else if (value > minThreshold) {
+                return "yellow";
+            }
+            else {
+                return "green";
+            }
+        }
+        else{
+            return "black";
+        }
+
+
+    };
+
     const renderChart = (data: { dateTime: string, value: number }[], minThreshold: number, maxThreshold: number) => {
         const width = Dimensions.get('window').width - 75;
         const height = 220;
@@ -197,7 +227,7 @@ const ViewScreen = () => {
                             cx={scaleX(new Date(d.dateTime).getTime())}
                             cy={scaleY(d.value)}
                             r={3}
-                            fill="black"
+                            fill={getPointColor(d.value, minThreshold, maxThreshold)}
                         />
                     ))}
                     {/* X-Axis Labels */}
