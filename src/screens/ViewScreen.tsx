@@ -63,7 +63,7 @@ const ViewScreen = () => {
 
     const handleDelete = async (dateTime: string, metric: string, value: number) => {
         await deleteMetricValueFromFile(dateTime, metric, value);
-        setEntries(entries.filter(entry => !(entry.dateTime === dateTime && entry.metric === metric)));
+        setEntries(entries.filter(entry => !(entry.dateTime === dateTime && entry.metric === metric && entry.value === value)));
     };
 
     const formatDateTime = (dateTime: string) => {
