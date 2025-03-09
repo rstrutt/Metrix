@@ -4,6 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readMetricsFromFile, saveMetricValuesToFile } from '../utils/fileUtils.ts';
+import {generatePastelColor} from "../utils/uiUtils.ts";
 
 const EntryScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
@@ -117,7 +118,7 @@ const EntryScreen = () => {
                     />
                 )}
                 {metrics.map((metric, index) => (
-                    <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, backgroundColor: '#fff', padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
+                    <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, backgroundColor: generatePastelColor(metric.name), padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
                         <Text style={{ flex: 1, fontSize: 16 }}>{metric.name}</Text>
                         <TextInput
                             ref={(ref) => {

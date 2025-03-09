@@ -11,6 +11,7 @@ import {
     readMetricsFromFile
 } from '../utils/fileUtils.ts';
 import { Alert } from 'react-native';
+import {generatePastelColor} from "../utils/uiUtils.ts";
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
@@ -334,7 +335,7 @@ const ViewScreen = () => {
             >
                 {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
-                        <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, backgroundColor: '#ffffff', padding: 16, borderRadius: 10 }}>
+                        <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, backgroundColor: generatePastelColor(metric.name), padding: 16, borderRadius: 10 }}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric.name}</Text>
                             {renderChart(groupedEntries[metric.name]
                                     .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))

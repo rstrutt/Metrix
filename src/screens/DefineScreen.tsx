@@ -4,6 +4,7 @@ import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readMetricsFromFile, saveMetricsToFile } from '../utils/fileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {generatePastelColor} from "../utils/uiUtils.ts";
 
 const DefineScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
@@ -120,7 +121,7 @@ const DefineScreen = () => {
                 data={metrics}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, marginHorizontal: 16, backgroundColor: '#fff', padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, marginHorizontal: 16, backgroundColor: generatePastelColor(item.name), padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
                         <Text style={{ flex: 1, fontSize: 16 }}>{item.name}</Text>
                         <TextInput
                             value={item.min_threshold.toString()}
