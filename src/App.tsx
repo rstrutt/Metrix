@@ -1,58 +1,62 @@
 import * as React from 'react';
+import { useState } from 'react';
+import { View, useColorScheme, Dimensions, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, View, useColorScheme } from 'react-native';
+import { TabView, SceneMap } from 'react-native-tab-view';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import AddScreen from "./screens/AddScreen.tsx";
-import ViewScreen from "./screens/ViewScreen.tsx";
-import DefineScreen from "./screens/DefineScreen.tsx";
-import ShareScreen from "./screens/ShareScreen.tsx";
+import AddScreen from "./screens/AddScreen";
+import ViewScreen from "./screens/ViewScreen";
+import DefineScreen from "./screens/DefineScreen";
+import ShareScreen from "./screens/ShareScreen";
 
-const Tab = createBottomTabNavigator();
+const initialLayout = { width: Dimensions.get('window').width };
 
-function App(): React.JSX.Element {
+const App = (): React.JSX.Element => {
     const isDarkMode = useColorScheme() === 'dark';
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
+        { key: 'add', title: 'Add', icon: 'plus' },
+        { key: 'view', title: 'View', icon: 'bar-chart' },
+        { key: 'define', title: 'Define', icon: 'list' },
+        { key: 'share', title: 'Share', icon: 'cloud-download' },
+    ]);
+
+    const renderScene = SceneMap({
+        add: AddScreen,
+        view: ViewScreen,
+        define: DefineScreen,
+        share: ShareScreen,
+    });
+
+    const renderIcon = ({ route, color }: { route: { icon: string }, color: string }) => {
+        return <Icon name={route.icon} size={20} color={color} />;
+    };
 
     return (
         <NavigationContainer>
-            <Tab.Navigator
-                screenOptions={({ route }) => ({
-                    tabBarIcon: ({ color, size }) => {
-                        let iconName;
-
-                        if (route.name === 'Add') {
-                            console.log("in Add");
-                            iconName = 'plus';
-                        } else if (route.name === 'View') {
-                            console.log("in View");
-                            iconName = 'bar-chart';
-                        } else if (route.name === 'Define') {
-                            console.log("in Define");
-                            iconName = 'list';
-                        }
-                        else if (route.name === 'Share') {
-                            console.log("in Share");
-                            iconName = 'cloud-download';
-                        }
-                        else{
-                            console.log("in else");
-                            iconName = 'Not Defined';
-                        }
-
-                        return <Icon name={iconName} size={size} color={color} />;
-                    },
-                    tabBarActiveTintColor: isDarkMode ? Colors.light : Colors.dark,
-                    tabBarInactiveTintColor: isDarkMode ? Colors.dark : Colors.light,
-                    tabBarStyle: { backgroundColor: isDarkMode ? Colors.darker : Colors.lighter },
-                })}>
-                <Tab.Screen name="Add" component={AddScreen} />
-                <Tab.Screen name="View" component={ViewScreen} />
-                <Tab.Screen name="Define" component={DefineScreen} />
-                <Tab.Screen name="Share" component={ShareScreen} />
-            </Tab.Navigator>
+            <TabView
+                navigationState={{ index, routes }}
+                renderScene={renderScene}
+                onIndexChange={setIndex}
+                initialLayout={initialLayout}
+                tabBarPosition={'bottom'}
+                renderTabBar={props => (
+                    <View style={{ flexDirection: 'row', backgroundColor: isDarkMode ? Colors.darker : Colors.lighter }}>
+                        {props.navigationState.routes.map((route, i) => (
+                            <TouchableOpacity
+                                key={i}
+                                onPress={() => setIndex(i)}
+                                style={{ flex: 1, alignItems: 'center', padding: 16 }}
+                            >
+                                {renderIcon({ route, color: i === index ? (isDarkMode ? Colors.light : Colors.dark) : (isDarkMode ? Colors.dark : Colors.light) })}
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                )}
+            />
         </NavigationContainer>
     );
-}
+};
 
 export default App;
