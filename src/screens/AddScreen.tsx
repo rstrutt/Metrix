@@ -54,9 +54,10 @@ const EntryScreen = () => {
         await saveMetricValuesToFile(parsedMetricValues, combinedDateTime.toISOString());
         // Clear all input fields
         setMetricValues({});
-        setDate(new Date());
-        setDateString(new Date().toISOString().split('T')[0]);
-        setTimeString(new Date().toTimeString().split(' ')[0].slice(0, 5));
+        // Don't re-set the datetime
+        // setDate(new Date());
+        // setDateString(new Date().toISOString().split('T')[0]);
+        // setTimeString(new Date().toTimeString().split(' ')[0].slice(0, 5));
     };
 
     const handleDateChange = (event: any, selectedDate?: Date) => {
