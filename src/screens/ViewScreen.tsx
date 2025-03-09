@@ -332,9 +332,9 @@ const ViewScreen = () => {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                {loadedMetrics.map(metric => (
+                {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
-                        <View key={metric.name} style={{ marginBottom: 16, backgroundColor: '#e3e2e2', padding: 16, borderRadius: 10 }}>
+                        <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, backgroundColor: '#e3e2e2', padding: 16, borderRadius: 10 }}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric.name}</Text>
                             {renderChart(groupedEntries[metric.name]
                                     .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
@@ -344,8 +344,8 @@ const ViewScreen = () => {
                             )}
                             {isEditing && groupedEntries[metric.name]
                                 .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
-                                .map((entry) => (
-                                    <View key={`${entry.dateTime}-${entry.metric}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+                                .map((entry, index) => (
+                                    <View key={`${entry.dateTime}-${entry.metric}-${index}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
                                         <Text style={{ flex: 1, fontSize: 16 }}>{formatDateTime(entry.dateTime)}</Text>
                                         <TextInput
                                             style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
