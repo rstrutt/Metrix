@@ -87,8 +87,8 @@ const ViewScreen = () => {
         const rightPadding = 15; // Added right padding
         const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
         const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
-        const yMin = Math.min(...data.map(d => d.value));
-        const yMax = Math.max(...data.map(d => d.value));
+        const yMin = minThreshold === 0 ? 0 : Math.min(...data.map(d => d.value), minThreshold) * 0.9;
+        const yMax = Math.max(...data.map(d => d.value), maxThreshold) * 1.1;
 
         const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - leftPadding - rightPadding) + leftPadding;
         const scaleY = (value: number) => height - ((value - yMin) / (yMax - yMin)) * (height - 2 * padding) - padding;
