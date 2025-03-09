@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Alert } from 'react-native';
 import { View, Text, TextInput, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -49,6 +50,8 @@ const DefineScreen = () => {
             max_threshold: metric.max_threshold,
         }));
         saveMetricsToFile(parsedMetrics);
+        // Alert to say we saved
+        Alert.alert("Success", "Metrics have been saved successfully.");
     };
 
     const deleteMetric = (index: number) => {
@@ -65,6 +68,27 @@ const DefineScreen = () => {
         updatedMetrics.splice(newIndex, 0, movedMetric);
         setMetrics(updatedMetrics);
         saveMetricsToFile(updatedMetrics);
+    };
+
+    const handleDeleteMetric = (index: number) => {
+        Alert.alert(
+            "Confirm Deletion",
+            // `Are you sure you want to delete ${metricName}?`,
+            `Are you sure you want to delete the metric?`,
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Delete",
+                    onPress: async () => {
+                        deleteMetric(index);
+                    },
+                    style: "destructive"
+                }
+            ]
+        );
     };
 
     return (
@@ -121,7 +145,7 @@ const DefineScreen = () => {
                         <TouchableOpacity onPress={() => saveMetric()} style={{ marginHorizontal: 4 }}>
                             <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => deleteMetric(index)} style={{ marginHorizontal: 4 }}>
+                        <TouchableOpacity onPress={() => handleDeleteMetric(index)} style={{ marginHorizontal: 4 }}>
                             <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
                         </TouchableOpacity>
                     </View>
