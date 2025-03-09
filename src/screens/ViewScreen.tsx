@@ -10,6 +10,7 @@ import {
     deleteMetricValueFromFile,
     readMetricsFromFile
 } from '../utils/fileUtils.ts';
+import { Alert } from 'react-native';
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
@@ -45,7 +46,7 @@ const ViewScreen = () => {
     const handleValueChange = (dateTime: string, metric: string, value: string) => {
         const updatedEntries = entries.map(entry =>
             entry.dateTime === dateTime && entry.metric === metric
-                ? { ...entry, value: value }
+                ? { ...entry, value: parseFloat(value) }
                 : entry
         );
         setEntries(updatedEntries);
@@ -298,7 +299,7 @@ const ViewScreen = () => {
                                             value={entry.value.toString()}
                                             onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
                                         />
-                                        <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
+                                        <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric, entry.value.toString())} style={{ marginHorizontal: 8 }}>
                                             <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
                                         </TouchableOpacity>
                                         <TouchableOpacity onPress={() => handleDelete(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>

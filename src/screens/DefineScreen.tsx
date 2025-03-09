@@ -45,8 +45,8 @@ const DefineScreen = () => {
     const saveMetric = () => {
         const parsedMetrics = metrics.map(metric => ({
             ...metric,
-            min_threshold: parseFloat(metric.min_threshold),
-            max_threshold: parseFloat(metric.max_threshold),
+            min_threshold: metric.min_threshold,
+            max_threshold: metric.max_threshold,
         }));
         saveMetricsToFile(parsedMetrics);
     };
