@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, ScrollView } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { readAppFile, writeAppFile, METRIC_VALUES_FILE_PATH} from '../fileUtils.ts';
+import { readAppFile, writeAppFile, METRIC_VALUES_FILE_PATH} from '../utils/fileUtils.ts';
 
 const ImportScreen = () => {
     const [fileContent, setFileContent] = useState('');

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { readMetricsFromFile, saveMetricsToFile } from '../fileUtils.ts';
+import { readMetricsFromFile, saveMetricsToFile } from '../utils/fileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const MetricsScreen = () => {

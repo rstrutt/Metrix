@@ -9,7 +9,7 @@ import {
     updateMetricValueInFile,
     deleteMetricValueFromFile,
     readMetricsFromFile
-} from '../fileUtils.ts';
+} from '../utils/fileUtils.ts';
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);

@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, RefreshCon
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { readMetricsFromFile, saveMetricValuesToFile } from '../fileUtils.ts';
+import { readMetricsFromFile, saveMetricValuesToFile } from '../utils/fileUtils.ts';
 
 const EntryScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);

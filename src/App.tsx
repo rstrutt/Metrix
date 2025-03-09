@@ -4,10 +4,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import MetricsScreen from "./tabs/MetricsScreen.tsx";
-import EntryScreen from "./tabs/EntryScreen.tsx";
-import ViewScreen from "./tabs/ViewScreen.tsx";
-import ImportScreen from "./tabs/ImportScreen.tsx";
+import MetricsScreen from "./screens/MetricsScreen.tsx";
+import EntryScreen from "./screens/EntryScreen.tsx";
+import ViewScreen from "./screens/ViewScreen.tsx";
+import ImportScreen from "./screens/ImportScreen.tsx";
 
 // function EntryScreen() {
 //     return (
