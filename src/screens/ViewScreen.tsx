@@ -60,11 +60,30 @@ const ViewScreen = () => {
         }
         const updatedEntry = { dateTime, metric, value: parsedValue };
         await updateMetricValueInFile(updatedEntry);
+        // Alert to say we saved
+        Alert.alert("Success", "Metric entry has been saved successfully.");
     };
 
     const handleDelete = async (dateTime: string, metric: string, value: number) => {
-        await deleteMetricValueFromFile(dateTime, metric, value);
-        setEntries(entries.filter(entry => !(entry.dateTime === dateTime && entry.metric === metric && entry.value === value)));
+
+        Alert.alert(
+            "Confirm Deletion",
+            `Are you sure you want to delete the metric entry?`,
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Delete",
+                    onPress: async () => {
+                        await deleteMetricValueFromFile(dateTime, metric, value);
+                        setEntries(entries.filter(entry => !(entry.dateTime === dateTime && entry.metric === metric && entry.value === value)));
+                    },
+                    style: "destructive"
+                }
+            ]
+        );
     };
 
     const formatDateTime = (dateTime: string) => {
