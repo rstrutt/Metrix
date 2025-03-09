@@ -4,7 +4,7 @@ import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readAppFile, writeAppFile, METRIC_VALUES_FILE_PATH} from '../utils/fileUtils.ts';
 
-const ImportScreen = () => {
+const ShareScreen = () => {
     const [fileContent, setFileContent] = useState('');
     const isDarkMode = useColorScheme() === 'dark';
 
@@ -37,4 +37,4 @@ const ImportScreen = () => {
     );
 };
 
-export default ImportScreen;
+export default ShareScreen;

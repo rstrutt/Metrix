@@ -260,7 +260,7 @@ const ViewScreen = () => {
                     dropDownContainerStyle={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
                 />
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16 }}>
-                    <Text style={{ fontSize: 16, marginRight: 8 }}>Editing</Text>
+                    <Text style={{ fontSize: 16, marginRight: 8 }}>Edit</Text>
                     <Switch
                         value={isEditing}
                         onValueChange={setIsEditing}

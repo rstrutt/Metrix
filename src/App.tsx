@@ -4,34 +4,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import MetricsScreen from "./screens/MetricsScreen.tsx";
-import EntryScreen from "./screens/EntryScreen.tsx";
+import AddScreen from "./screens/AddScreen.tsx";
 import ViewScreen from "./screens/ViewScreen.tsx";
-import ImportScreen from "./screens/ImportScreen.tsx";
-
-// function EntryScreen() {
-//     return (
-//         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//             <Text>Entry!</Text>
-//         </View>
-//     );
-// }
-
-// function ViewScreen() {
-//     return (
-//         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//             <Text>View!</Text>
-//         </View>
-//     );
-// }
-
-// function MetricsScreen() {
-//     return (
-//         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//             <Text>Metrics!</Text>
-//         </View>
-//     );
-// }
+import DefineScreen from "./screens/DefineScreen.tsx";
+import ShareScreen from "./screens/ShareScreen.tsx";
 
 const Tab = createBottomTabNavigator();
 
@@ -45,23 +21,23 @@ function App(): React.JSX.Element {
                     tabBarIcon: ({ color, size }) => {
                         let iconName;
 
-                        if (route.name === 'Entry') {
-                            console.log("in Entry");
+                        if (route.name === 'Add') {
+                            console.log("in Add");
                             iconName = 'plus';
                         } else if (route.name === 'View') {
                             console.log("in View");
                             iconName = 'bar-chart';
-                        } else if (route.name === 'Metrics') {
-                            console.log("in Metrics");
+                        } else if (route.name === 'Define') {
+                            console.log("in Define");
                             iconName = 'list';
                         }
-                        else if (route.name === 'Import') {
-                            console.log("in Import");
+                        else if (route.name === 'Share') {
+                            console.log("in Share");
                             iconName = 'cloud-download';
                         }
                         else{
                             console.log("in else");
-                            iconName = 'xx';
+                            iconName = 'Not Defined';
                         }
 
                         return <Icon name={iconName} size={size} color={color} />;
@@ -70,10 +46,10 @@ function App(): React.JSX.Element {
                     tabBarInactiveTintColor: isDarkMode ? Colors.dark : Colors.light,
                     tabBarStyle: { backgroundColor: isDarkMode ? Colors.darker : Colors.lighter },
                 })}>
-                <Tab.Screen name="Entry" component={EntryScreen} />
+                <Tab.Screen name="Add" component={AddScreen} />
                 <Tab.Screen name="View" component={ViewScreen} />
-                <Tab.Screen name="Metrics" component={MetricsScreen} />
-                <Tab.Screen name="Import" component={ImportScreen} />
+                <Tab.Screen name="Define" component={DefineScreen} />
+                <Tab.Screen name="Share" component={ShareScreen} />
             </Tab.Navigator>
         </NavigationContainer>
     );

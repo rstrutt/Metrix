@@ -5,7 +5,7 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readMetricsFromFile, saveMetricsToFile } from '../utils/fileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const MetricsScreen = () => {
+const DefineScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
     const [newMetric, setNewMetric] = useState({ name: '', min_threshold: '', max_threshold: '' });
     const [refreshing, setRefreshing] = useState(false);
@@ -130,4 +130,4 @@ const MetricsScreen = () => {
     );
 };
 
-export default MetricsScreen;
+export default DefineScreen;
