@@ -216,6 +216,26 @@ const ViewScreen = () => {
                             {Math.round(t)}
                         </SvgText>
                     ))}
+                    {/* Min Threshold Label */}
+                    <SvgText
+                        x={width - rightPadding + 5}
+                        y={scaleY(minThreshold) + 5}
+                        fontSize="10"
+                        fill="red"
+                        textAnchor="start"
+                    >
+                        {minThreshold}
+                    </SvgText>
+                    {/* Max Threshold Label */}
+                    <SvgText
+                        x={width - rightPadding + 5}
+                        y={scaleY(maxThreshold) - 5}
+                        fontSize="10"
+                        fill="red"
+                        textAnchor="start"
+                    >
+                        {maxThreshold}
+                    </SvgText>
                 </G>
             </Svg>
         );
