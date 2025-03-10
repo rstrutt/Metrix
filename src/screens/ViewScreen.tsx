@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Dimensions, Switch } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
 import { Svg, Line, G, Text as SvgText, Rect, Circle, Polygon } from 'react-native-svg';
@@ -17,7 +17,7 @@ const ViewScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
     const [refreshing, setRefreshing] = useState(false);
     const [loadedMetrics, setLoadedMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
-    const [isEditing, setIsEditing] = useState(false);
+    const [expandedMetrics, setExpandedMetrics] = useState<{ [key: string]: boolean }>({});
 
     const loadEntries = async () => {
         const loadedMericValues = await readMetricValuesFromFile();
@@ -267,17 +267,15 @@ const ViewScreen = () => {
         );
     };
 
+    const toggleExpand = (metric: string) => {
+        setExpandedMetrics(prevState => ({
+            ...prevState,
+            [metric]: !prevState[metric]
+        }));
+    };
+
     return (
         <View style={{ flex: 1, padding: 16, backgroundColor: '#f0f0f0' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16, marginTop: 20, marginBottom: 20 }}>
-                    <Text style={{ fontSize: 16, marginRight: 8 }}>Edit</Text>
-                    <Switch
-                        value={isEditing}
-                        onValueChange={setIsEditing}
-                    />
-                </View>
-            </View>
             <ScrollView
                 contentContainerStyle={{ paddingTop: 16 }}
                 refreshControl={
@@ -294,25 +292,35 @@ const ViewScreen = () => {
                                 metric.min_threshold,
                                 metric.max_threshold
                             )}
-                            {isEditing && groupedEntries[metric.name]
-                                .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
-                                .map((entry, index) => (
-                                    <View key={`${entry.dateTime}-${entry.metric}-${index}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-                                        <Text style={{ flex: 1, fontSize: 16 }}>{formatDateTime(entry.dateTime)}</Text>
-                                        <TextInput
-                                            style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
-                                            keyboardType="numeric"
-                                            value={entry.value.toString()}
-                                            onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
-                                        />
-                                        <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric, entry.value.toString())} style={{ marginHorizontal: 8 }}>
-                                            <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => handleDelete(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
-                                            <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
-                                        </TouchableOpacity>
-                                    </View>
-                                ))}
+                            {expandedMetrics[metric.name] && (
+                                <>
+                                    <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center' }}>
+                                        <Icon name="chevron-up" size={16} color="#007AFF" />
+                                    </TouchableOpacity>
+                                    {groupedEntries[metric.name]
+                                        .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
+                                        .map((entry, index) => (
+                                            <View key={`${entry.dateTime}-${entry.metric}-${index}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+                                                <Text style={{ flex: 1, fontSize: 16 }}>{formatDateTime(entry.dateTime)}</Text>
+                                                <TextInput
+                                                    style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
+                                                    keyboardType="numeric"
+                                                    value={entry.value.toString()}
+                                                    onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
+                                                />
+                                                <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric, entry.value.toString())} style={{ marginHorizontal: 8 }}>
+                                                    <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity onPress={() => handleDelete(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
+                                                    <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
+                                                </TouchableOpacity>
+                                            </View>
+                                        ))}
+                                </>
+                            )}
+                            <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center' }}>
+                                <Icon name={expandedMetrics[metric.name] ? 'chevron-up' : 'chevron-down'} size={16} color="#007AFF" />
+                            </TouchableOpacity>
                         </View>
                     )
                 ))}
