@@ -275,7 +275,7 @@ const ViewScreen = () => {
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#f0f0f0' }}>
+        <View style={{ flex: 1, paddingHorizontal: 16, backgroundColor: '#f0f0f0' }}>
             <ScrollView
                 contentContainerStyle={{ paddingTop: 16 }}
                 refreshControl={
