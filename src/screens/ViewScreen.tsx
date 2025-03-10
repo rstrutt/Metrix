@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Dimensions, Switch } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
 import { Svg, Line, G, Text as SvgText, Rect, Circle, Polygon } from 'react-native-svg';
@@ -11,26 +10,19 @@ import {
     readMetricsFromFile
 } from '../utils/fileUtils.ts';
 import { Alert } from 'react-native';
-import {generatePastelColor} from "../utils/uiUtils.ts";
+import { generatePastelColor } from "../utils/uiUtils.ts";
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
     const isDarkMode = useColorScheme() === 'dark';
     const [refreshing, setRefreshing] = useState(false);
-    const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
-    const [allMetrics, setAllMetrics] = useState<string[]>([]);
     const [loadedMetrics, setLoadedMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
-    const [open, setOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
     const loadEntries = async () => {
         const loadedMericValues = await readMetricValuesFromFile();
         const loadedMetrics = await readMetricsFromFile();
         setEntries(loadedMericValues);
-        const metrics = Array.from(new Set(loadedMericValues.map(entry => entry.metric)));
-        metrics.sort((a, b) => loadedMetrics.map(metric => metric.name).indexOf(a) - loadedMetrics.map(metric => metric.name).indexOf(b));
-        setAllMetrics(metrics);
-        setSelectedMetrics(metrics);
         setLoadedMetrics(loadedMetrics);
     };
 
@@ -61,12 +53,10 @@ const ViewScreen = () => {
         }
         const updatedEntry = { dateTime, metric, value: parsedValue };
         await updateMetricValueInFile(updatedEntry);
-        // Alert to say we saved
         Alert.alert("Success", "Metric entry has been saved successfully.");
     };
 
     const handleDelete = async (dateTime: string, metric: string, value: number) => {
-
         Alert.alert(
             "Confirm Deletion",
             `Are you sure you want to delete the metric entry?`,
@@ -88,20 +78,15 @@ const ViewScreen = () => {
     };
 
     const formatDateTime = (dateTime: string) => {
-        // Support files that had long-form date-time strings of the form "2021-09-01T12:34:56.789Z"
         if (dateTime.includes('T')) {
             const [dateString, timeString] = dateTime.split('T');
             return `${dateString} ${timeString.slice(0, 5)}`;
-        }
-        // We moved to just storing simple strings of the form "2021-09-01 12:34"
-        else {
-            return dateTime
+        } else {
+            return dateTime;
         }
     };
 
-    const filteredEntries = entries.filter(entry => selectedMetrics.includes(entry.metric));
-
-    const groupedEntries = filteredEntries.reduce((acc, entry) => {
+    const groupedEntries = entries.reduce((acc, entry) => {
         if (!acc[entry.metric]) {
             acc[entry.metric] = [];
         }
@@ -113,38 +98,30 @@ const ViewScreen = () => {
         if (maxThreshold > minThreshold) {
             if (value < minThreshold) {
                 return "yellow";
-            }
-            else if (value > maxThreshold) {
+            } else if (value > maxThreshold) {
                 return "red";
-            }
-            else {
+            } else {
                 return "green";
             }
-        }
-        else if (maxThreshold < minThreshold) {
+        } else if (maxThreshold < minThreshold) {
             if (value < maxThreshold) {
                 return "red";
-            }
-            else if (value > minThreshold) {
+            } else if (value > minThreshold) {
                 return "yellow";
-            }
-            else {
+            } else {
                 return "green";
             }
-        }
-        else{
+        } else {
             return "black";
         }
-
-
     };
 
     const renderChart = (data: { dateTime: string, value: number }[], minThreshold: number, maxThreshold: number) => {
         const width = Dimensions.get('window').width - 75;
         const height = 220;
         const padding = 20;
-        const leftPadding = 30; // Increased left padding
-        const rightPadding = 15; // Added right padding
+        const leftPadding = 30;
+        const rightPadding = 15;
         const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
         const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
         const yMin = minThreshold === 0 ? 0 : Math.min(...data.map(d => d.value), minThreshold) * 0.9;
@@ -160,7 +137,6 @@ const ViewScreen = () => {
             <Svg width={width + rightPadding} height={height}>
                 <Rect x="0" y="0" width={width + rightPadding} height={height} fill="#d3d3d3" rx="10" ry="10" />
                 <G>
-                    {/* Grid Lines */}
                     {xTicks.map((t, i) => (
                         <Line
                             key={`x-grid-${i}`}
@@ -183,7 +159,6 @@ const ViewScreen = () => {
                             strokeWidth="1"
                         />
                     ))}
-                    {/* X-Axis */}
                     <Line
                         x1={leftPadding}
                         y1={height - padding}
@@ -192,7 +167,6 @@ const ViewScreen = () => {
                         stroke="black"
                         strokeWidth="2"
                     />
-                    {/* Y-Axis */}
                     <Line
                         x1={leftPadding}
                         y1={padding}
@@ -201,7 +175,6 @@ const ViewScreen = () => {
                         stroke="black"
                         strokeWidth="2"
                     />
-                    {/* Min and Max Threshold Lines */}
                     <Line
                         x1={leftPadding}
                         y1={scaleY(minThreshold)}
@@ -220,13 +193,11 @@ const ViewScreen = () => {
                         strokeWidth="2"
                         strokeDasharray="4"
                     />
-                    {/* Fill between Min and Max Threshold */}
                     <Polygon
                         points={`${leftPadding},${scaleY(minThreshold)} ${width - rightPadding},${scaleY(minThreshold)} ${width - rightPadding},${scaleY(maxThreshold)} ${leftPadding},${scaleY(maxThreshold)}`}
                         fill="lightgreen"
                         opacity="0.3"
                     />
-                    {/* Data Lines */}
                     {data.map((d, i) => (
                         i > 0 && (
                             <Line
@@ -240,7 +211,6 @@ const ViewScreen = () => {
                             />
                         )
                     ))}
-                    {/* Data Points */}
                     {data.map((d, i) => (
                         <Circle
                             key={`circle-${i}`}
@@ -250,7 +220,6 @@ const ViewScreen = () => {
                             fill={getPointColor(d.value, minThreshold, maxThreshold)}
                         />
                     ))}
-                    {/* X-Axis Labels */}
                     {xTicks.map((t, i) => (
                         <SvgText
                             key={`x-label-${i}`}
@@ -263,7 +232,6 @@ const ViewScreen = () => {
                             {new Date(t).toLocaleDateString()}
                         </SvgText>
                     ))}
-                    {/* Y-Axis Labels */}
                     {yTicks.map((t, i) => (
                         <SvgText
                             key={`y-label-${i}`}
@@ -276,7 +244,6 @@ const ViewScreen = () => {
                             {Math.round(t)}
                         </SvgText>
                     ))}
-                    {/* Min Threshold Label */}
                     <SvgText
                         x={width - rightPadding + 5}
                         y={scaleY(minThreshold) + 5}
@@ -286,7 +253,6 @@ const ViewScreen = () => {
                     >
                         {minThreshold}
                     </SvgText>
-                    {/* Max Threshold Label */}
                     <SvgText
                         x={width - rightPadding + 5}
                         y={scaleY(maxThreshold) - 5}
@@ -302,24 +268,9 @@ const ViewScreen = () => {
     };
 
     return (
-        <View style={{ flex: 1, padding: 16,  backgroundColor: '#f0f0f0'}}>
+        <View style={{ flex: 1, padding: 16, backgroundColor: '#f0f0f0' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <DropDownPicker
-                    open={open}
-                    value={selectedMetrics}
-                    items={allMetrics.map(metric => ({ label: metric, value: metric }))}
-                    setOpen={setOpen}
-                    setValue={setSelectedMetrics}
-                    setItems={setAllMetrics}
-                    multiple={true}
-                    min={0}
-                    max={allMetrics.length}
-                    placeholder="Select Metrics"
-                    containerStyle={{ height: 40, flex: 1 }}
-                    style={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
-                    dropDownContainerStyle={{ backgroundColor: isDarkMode ? '#333' : '#fff' }}
-                />
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16, marginTop: 20, marginBottom: 20}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16, marginTop: 20, marginBottom: 20 }}>
                     <Text style={{ fontSize: 16, marginRight: 8 }}>Edit</Text>
                     <Switch
                         value={isEditing}
