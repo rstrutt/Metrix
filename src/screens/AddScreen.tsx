@@ -82,21 +82,25 @@ const EntryScreen = () => {
         <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 16, backgroundColor: '#f0f0f0' }}>
                 <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ flex: 1, marginRight: 8 }}>
-                    <Text style={{ padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
+                    <Text style={{ width: 110, padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
                         {dateString}
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setShowTimePicker(true)} style={{ flex: 1, marginRight: 8 }}>
-                    <Text style={{ padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
+                    <Text style={{ width: 75, padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
                         {timeString}
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={setCurrentTime} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontSize: 16 }}>Now</Text>
                 </TouchableOpacity>
+                <TouchableOpacity onPress={handleSave} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', marginLeft:10, padding: 12, borderRadius: 8, alignItems: 'center' }}>
+                    <Text style={{ color: '#fff', fontSize: 16 }} numberOfLines={1}>   +   </Text>
+                </TouchableOpacity>
+
             </View>
             <ScrollView
-                style={{ flex: 1, padding: 16, backgroundColor: '#f0f0f0' }} // Light grey background
+                style={{ flex: 1, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#f0f0f0' }} // Light grey background
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
@@ -138,11 +142,6 @@ const EntryScreen = () => {
                     </View>
                 ))}
             </ScrollView>
-            <View style={{ padding: 16, backgroundColor: '#f0f0f0' }}>
-                <TouchableOpacity onPress={handleSave} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
-                    <Text style={{ color: '#fff', fontSize: 16 }}>Save</Text>
-                </TouchableOpacity>
-            </View>
         </View>
     );
 };
