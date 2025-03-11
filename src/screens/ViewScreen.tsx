@@ -18,6 +18,7 @@ const ViewScreen = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [loadedMetrics, setLoadedMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
     const [expandedMetrics, setExpandedMetrics] = useState<{ [key: string]: boolean }>({});
+    const [editedValues, setEditedValues] = useState<{ [key: string]: string }>({});
 
     const loadEntries = async () => {
         const loadedMericValues = await readMetricValuesFromFile();
@@ -37,15 +38,11 @@ const ViewScreen = () => {
     };
 
     const handleValueChange = (dateTime: string, metric: string, value: string) => {
-        const updatedEntries = entries.map(entry =>
-            entry.dateTime === dateTime && entry.metric === metric
-                ? { ...entry, value: parseFloat(value) }
-                : entry
-        );
-        setEntries(updatedEntries);
+        setEditedValues({ ...editedValues, [`${dateTime}-${metric}`]: value });
     };
 
-    const handleSave = async (dateTime: string, metric: string, value: string) => {
+    const handleSave = async (dateTime: string, metric: string) => {
+        const value = editedValues[`${dateTime}-${metric}`];
         const parsedValue = parseFloat(value);
         if (isNaN(parsedValue)) {
             Alert.alert('Invalid Input', 'Please enter a valid number.');
@@ -53,6 +50,11 @@ const ViewScreen = () => {
         }
         const updatedEntry = { dateTime, metric, value: parsedValue };
         await updateMetricValueInFile(updatedEntry);
+        setEntries(entries.map(entry =>
+            entry.dateTime === dateTime && entry.metric === metric
+                ? { ...entry, value: parsedValue }
+                : entry
+        ));
         Alert.alert("Success", "Metric entry has been saved successfully.");
     };
 
@@ -305,10 +307,10 @@ const ViewScreen = () => {
                                                 <TextInput
                                                     style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
                                                     keyboardType="numeric"
-                                                    value={entry.value.toString()}
+                                                    value={editedValues[`${entry.dateTime}-${entry.metric}`] || entry.value.toString()}
                                                     onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
                                                 />
-                                                <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric, entry.value.toString())} style={{ marginHorizontal: 8 }}>
+                                                <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric)} style={{ marginHorizontal: 8 }}>
                                                     <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
                                                 </TouchableOpacity>
                                                 <TouchableOpacity onPress={() => handleDelete(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
