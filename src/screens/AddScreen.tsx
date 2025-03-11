@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { readMetricsFromFile, saveMetricValuesToFile } from '../utils/fileUtils.ts';
 import { generatePastelColor } from "../utils/uiUtils.ts";
 
-const EntryScreen = () => {
+const AddScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
     const [metricValues, setMetricValues] = useState<{ [key: string]: string }>({});
     const [date, setDate] = useState(new Date());
@@ -148,4 +148,4 @@ const EntryScreen = () => {
     );
 };
 
-export default EntryScreen;
+export default AddScreen;

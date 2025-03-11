@@ -311,7 +311,7 @@ const ViewScreen = () => {
                             )}
                             {expandedMetrics[metric.name] && (
                                 <>
-                                    <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center', padding: 8 }}>
                                         <Icon name="chevron-up" size={16} color="#007AFF" />
                                     </TouchableOpacity>
                                     {groupedEntries[metric.name]
@@ -335,7 +335,7 @@ const ViewScreen = () => {
                                         ))}
                                 </>
                             )}
-                            <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center' }}>
+                            <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center', padding: 8 }}>
                                 <Icon name={expandedMetrics[metric.name] ? 'chevron-up' : 'chevron-down'} size={16} color="#007AFF" />
                             </TouchableOpacity>
                         </View>
