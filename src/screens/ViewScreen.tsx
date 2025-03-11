@@ -25,6 +25,11 @@ const ViewScreen = () => {
         const loadedMetrics = await readMetricsFromFile();
         setEntries(loadedMericValues);
         setLoadedMetrics(loadedMetrics);
+        const initialEditedValues = loadedMericValues.reduce((acc, entry) => {
+            acc[`${entry.dateTime}-${entry.metric}`] = entry.value.toString();
+            return acc;
+        }, {} as { [key: string]: string });
+        setEditedValues(initialEditedValues);
     };
 
     useEffect(() => {
@@ -43,6 +48,10 @@ const ViewScreen = () => {
 
     const handleSave = async (dateTime: string, metric: string) => {
         const value = editedValues[`${dateTime}-${metric}`];
+        if (value === '') {
+            Alert.alert('Invalid Input', 'Please enter a value.');
+            return;
+        }
         const parsedValue = parseFloat(value);
         if (isNaN(parsedValue)) {
             Alert.alert('Invalid Input', 'Please enter a valid number.');
@@ -307,7 +316,7 @@ const ViewScreen = () => {
                                                 <TextInput
                                                     style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
                                                     keyboardType="numeric"
-                                                    value={editedValues[`${entry.dateTime}-${entry.metric}`] || entry.value.toString()}
+                                                    value={editedValues[`${entry.dateTime}-${entry.metric}`] || ''}
                                                     onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
                                                 />
                                                 <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric)} style={{ marginHorizontal: 8 }}>
