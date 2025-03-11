@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Al
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
 import { readMetricsFromFile, saveMetricValuesToFile } from '../utils/fileUtils.ts';
-import {generatePastelColor} from "../utils/uiUtils.ts";
+import { generatePastelColor } from "../utils/uiUtils.ts";
 
 const EntryScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
@@ -77,6 +77,10 @@ const EntryScreen = () => {
         setTimeString(formattedDateTime.split(' ')[1]);
     };
 
+    const isSaveButtonEnabled = () => {
+        return Object.values(metricValues).some(value => value.trim() !== '');
+    };
+
     return (
         <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 16, backgroundColor: '#f0f0f0' }}>
@@ -93,10 +97,9 @@ const EntryScreen = () => {
                 <TouchableOpacity onPress={setCurrentTime} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontSize: 16 }}>Now</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSave} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', marginLeft:10, padding: 12, borderRadius: 8, alignItems: 'center' }}>
+                <TouchableOpacity onPress={isSaveButtonEnabled() ? handleSave : undefined} style={{ backgroundColor: isSaveButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', marginLeft: 10, padding: 12, borderRadius: 8, alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontSize: 16 }} numberOfLines={1}>   +   </Text>
                 </TouchableOpacity>
-
             </View>
             <ScrollView
                 style={{ flex: 1, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#f0f0f0' }} // Light grey background

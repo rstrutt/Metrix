@@ -19,6 +19,7 @@ const ViewScreen = () => {
     const [loadedMetrics, setLoadedMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
     const [expandedMetrics, setExpandedMetrics] = useState<{ [key: string]: boolean }>({});
     const [editedValues, setEditedValues] = useState<{ [key: string]: string }>({});
+    const [originalValues, setOriginalValues] = useState<{ [key: string]: string }>({});
 
     const loadEntries = async () => {
         const loadedMericValues = await readMetricValuesFromFile();
@@ -30,6 +31,7 @@ const ViewScreen = () => {
             return acc;
         }, {} as { [key: string]: string });
         setEditedValues(initialEditedValues);
+        setOriginalValues(initialEditedValues);
     };
 
     useEffect(() => {
@@ -58,13 +60,17 @@ const ViewScreen = () => {
             return;
         }
         const updatedEntry = { dateTime, metric, value: parsedValue };
-        await updateMetricValueInFile(updatedEntry);
-        setEntries(entries.map(entry =>
-            entry.dateTime === dateTime && entry.metric === metric
-                ? { ...entry, value: parsedValue }
-                : entry
-        ));
-        Alert.alert("Success", "Metric entry has been saved successfully.");
+        try {
+            await updateMetricValueInFile(updatedEntry);
+            setEntries(entries.map(entry =>
+                entry.dateTime === dateTime && entry.metric === metric
+                    ? { ...entry, value: parsedValue }
+                    : entry
+            ));
+            setOriginalValues({ ...originalValues, [`${dateTime}-${metric}`]: value });
+        } catch (error) {
+            Alert.alert("Error", "There was an error saving the metric entry.");
+        }
     };
 
     const handleDelete = async (dateTime: string, metric: string, value: number) => {
@@ -320,7 +326,7 @@ const ViewScreen = () => {
                                                     onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
                                                 />
                                                 <TouchableOpacity onPress={() => handleSave(entry.dateTime, entry.metric)} style={{ marginHorizontal: 8 }}>
-                                                    <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
+                                                    <Icon name="save" size={20} color={editedValues[`${entry.dateTime}-${entry.metric}`] !== originalValues[`${entry.dateTime}-${entry.metric}`] ? '#007AFF' : (isDarkMode ? '#888' : '#555')} />
                                                 </TouchableOpacity>
                                                 <TouchableOpacity onPress={() => handleDelete(entry.dateTime, entry.metric, entry.value)} style={{ marginHorizontal: 8 }}>
                                                     <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
