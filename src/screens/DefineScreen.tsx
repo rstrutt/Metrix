@@ -103,6 +103,9 @@ const DefineScreen = () => {
     };
 
     const isMetricChanged = (index: number) => {
+        if (index >= originalMetrics.length) {
+            return false;
+        }
         if (index >= 0 && index < originalMetrics.length && index < metrics.length) {
             const originalMetric = originalMetrics[index];
             const currentMetric = metrics[index];
@@ -184,4 +187,3 @@ const DefineScreen = () => {
 };
 
 export default DefineScreen;
-
