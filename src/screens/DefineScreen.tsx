@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, View, Text, TextInput, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
 import { useColorScheme } from 'react-native';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { readMetricsFromFile, saveMetricsToFile } from '../utils/fileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {generatePastelColor} from "../utils/uiUtils.ts";
+import { generatePastelColor } from "../utils/uiUtils.ts";
 
 const DefineScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
     const [newMetric, setNewMetric] = useState({ name: '', min_threshold: '', max_threshold: '' });
     const [refreshing, setRefreshing] = useState(false);
+    const [originalMetrics, setOriginalMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
     const isDarkMode = useColorScheme() === 'dark';
 
     useEffect(() => {
         const loadMetrics = async () => {
             const metricsArray = await readMetricsFromFile();
             setMetrics(metricsArray);
+            setOriginalMetrics(metricsArray);
         };
         loadMetrics();
     }, []);
@@ -24,49 +25,61 @@ const DefineScreen = () => {
         setRefreshing(true);
         const metricsArray = await readMetricsFromFile();
         setMetrics(metricsArray);
+        setOriginalMetrics(metricsArray);
         setRefreshing(false);
     };
 
     const addMetric = () => {
-        if (newMetric.name.trim()) {
+        if (newMetric.name.trim() && newMetric.min_threshold.trim() && newMetric.max_threshold.trim()) {
             const updatedMetrics = [...metrics, { ...newMetric, min_threshold: parseFloat(newMetric.min_threshold), max_threshold: parseFloat(newMetric.max_threshold) }];
             setMetrics(updatedMetrics);
             saveMetricsToFile(updatedMetrics);
             setNewMetric({ name: '', min_threshold: '', max_threshold: '' });
+        } else {
+            Alert.alert('Invalid Input', 'Please enter valid values for all fields.');
         }
     };
 
     const updateMetric = (index: number, field: string, value: string) => {
-        const updatedMetrics = metrics.map((metric, i) =>
-            i === index ? { ...metric, [field]: value } : metric,
-        );
-        setMetrics(updatedMetrics);
+        if (index >= 0 && index < metrics.length) {
+            const updatedMetrics = metrics.map((metric, i) =>
+                i === index ? { ...metric, [field]: value } : metric,
+            );
+            setMetrics(updatedMetrics);
+        }
     };
 
     const saveMetric = () => {
         const parsedMetrics = metrics.map(metric => ({
             ...metric,
-            min_threshold: metric.min_threshold,
-            max_threshold: metric.max_threshold,
+            min_threshold: parseFloat(metric.min_threshold.toString()),
+            max_threshold: parseFloat(metric.max_threshold.toString()),
         }));
-        saveMetricsToFile(parsedMetrics);
-        Alert.alert("Success", "Metrics have been saved successfully.");
+        try {
+            saveMetricsToFile(parsedMetrics);
+            setOriginalMetrics(parsedMetrics);
+        } catch (error) {
+            Alert.alert("Error", "There was an error saving the metrics.");
+        }
     };
 
     const deleteMetric = (index: number) => {
-        const updatedMetrics = metrics.filter((_, i) => i !== index);
-        setMetrics(updatedMetrics);
-        saveMetricsToFile(updatedMetrics);
+        if (index >= 0 && index < metrics.length) {
+            const updatedMetrics = metrics.filter((_, i) => i !== index);
+            setMetrics(updatedMetrics);
+            saveMetricsToFile(updatedMetrics);
+        }
     };
 
     const moveMetric = (index: number, direction: 'up' | 'down') => {
         const newIndex = direction === 'up' ? index - 1 : index + 1;
-        if (newIndex < 0 || newIndex >= metrics.length) return;
-        const updatedMetrics = [...metrics];
-        const [movedMetric] = updatedMetrics.splice(index, 1);
-        updatedMetrics.splice(newIndex, 0, movedMetric);
-        setMetrics(updatedMetrics);
-        saveMetricsToFile(updatedMetrics);
+        if (newIndex >= 0 && newIndex < metrics.length) {
+            const updatedMetrics = [...metrics];
+            const [movedMetric] = updatedMetrics.splice(index, 1);
+            updatedMetrics.splice(newIndex, 0, movedMetric);
+            setMetrics(updatedMetrics);
+            saveMetricsToFile(updatedMetrics);
+        }
     };
 
     const handleDeleteMetric = (index: number) => {
@@ -87,6 +100,20 @@ const DefineScreen = () => {
                 }
             ]
         );
+    };
+
+    const isMetricChanged = (index: number) => {
+        if (index >= 0 && index < originalMetrics.length && index < metrics.length) {
+            const originalMetric = originalMetrics[index];
+            const currentMetric = metrics[index];
+            return originalMetric.min_threshold.toString() !== currentMetric.min_threshold.toString() ||
+                originalMetric.max_threshold.toString() !== currentMetric.max_threshold.toString();
+        }
+        return false;
+    };
+
+    const isAddButtonEnabled = () => {
+        return newMetric.name.trim() !== '' && newMetric.min_threshold.trim() !== '' && newMetric.max_threshold.trim() !== '';
     };
 
     return (
@@ -112,12 +139,11 @@ const DefineScreen = () => {
                     keyboardType="numeric"
                     style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 8, padding: 8, borderRadius: 8 }}
                 />
-                <TouchableOpacity onPress={addMetric} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
-                    <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 16 }}>Add</Text>
+                <TouchableOpacity onPress={isAddButtonEnabled() ? addMetric : undefined} style={{ backgroundColor: isAddButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', padding: 12, borderRadius: 8, alignItems: 'center' }}>
+                    <Icon name="plus" size={20} color="#fff" />
                 </TouchableOpacity>
             </View>
             <FlatList
-
                 data={metrics}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
@@ -142,7 +168,7 @@ const DefineScreen = () => {
                             <Icon name="arrow-down" size={20} color={isDarkMode ? '#888' : '#555'} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => saveMetric()} style={{ marginHorizontal: 4 }}>
-                            <Icon name="save" size={20} color={isDarkMode ? '#888' : '#555'} />
+                            <Icon name="save" size={20} color={isMetricChanged(index) ? '#007AFF' : (isDarkMode ? '#888' : '#555')} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => handleDeleteMetric(index)} style={{ marginHorizontal: 4 }}>
                             <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
@@ -158,3 +184,4 @@ const DefineScreen = () => {
 };
 
 export default DefineScreen;
+
