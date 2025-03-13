@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, View, Text, TextInput, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
+import { Alert, View, Text, TextInput, TouchableOpacity, FlatList, RefreshControl, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { readMetricsFromFile, saveMetricsToFile } from '../utils/fileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -50,6 +50,7 @@ const DefineScreen = () => {
     };
 
     const saveMetric = () => {
+        Keyboard.dismiss();
         const parsedMetrics = metrics.map(metric => ({
             ...metric,
             min_threshold: parseFloat(metric.min_threshold.toString()),
@@ -121,69 +122,72 @@ const DefineScreen = () => {
     };
 
     return (
-        <View style={{ flex: 1, padding: 0, backgroundColor: '#f0f0f0' }}>
-            <View style={{ flexDirection: 'row', marginBottom: 8, padding:16}}>
-                <TextInput
-                    value={newMetric.name}
-                    onChangeText={(text) => setNewMetric({ ...newMetric, name: text })}
-                    placeholder="Metric Name"
-                    style={{ borderColor: 'gray', borderWidth: 1, flex: 1, marginRight: 8, padding: 8, borderRadius: 8 }}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 1, padding: 0, backgroundColor: '#f0f0f0' }}>
+                <View style={{ flexDirection: 'row', marginBottom: 8, padding:16}}>
+                    <TextInput
+                        value={newMetric.name}
+                        onChangeText={(text) => setNewMetric({ ...newMetric, name: text })}
+                        placeholder="Metric Name"
+                        style={{ borderColor: 'gray', borderWidth: 1, flex: 1, marginRight: 8, padding: 8, borderRadius: 8 }}
+                    />
+                    <TextInput
+                        value={newMetric.min_threshold}
+                        onChangeText={(text) => setNewMetric({ ...newMetric, min_threshold: text })}
+                        placeholder="Min"
+                        keyboardType="numeric"
+                        style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 8, padding: 8, borderRadius: 8 }}
+                    />
+                    <TextInput
+                        value={newMetric.max_threshold}
+                        onChangeText={(text) => setNewMetric({ ...newMetric, max_threshold: text })}
+                        placeholder="Max"
+                        keyboardType="numeric"
+                        style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 8, padding: 8, borderRadius: 8 }}
+                    />
+                    <TouchableOpacity onPress={isAddButtonEnabled() ? addMetric : undefined} style={{ backgroundColor: isAddButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', padding: 12, borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
+                        <Icon name="plus" size={15} color="#fff" />
+                    </TouchableOpacity>
+                </View>
+                <FlatList
+                    keyboardShouldPersistTaps='handled'
+                    data={metrics}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item, index }) => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, marginHorizontal: 16, backgroundColor: generatePastelColor(item.name), padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
+                            <Text style={{ flex: 1, fontSize: 16 }}>{item.name}</Text>
+                            <TextInput
+                                value={item.min_threshold.toString()}
+                                onChangeText={(text) => updateMetric(index, 'min_threshold', text)}
+                                keyboardType="numeric"
+                                style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 4, padding: 8, borderRadius: 8 }}
+                            />
+                            <TextInput
+                                value={item.max_threshold.toString()}
+                                onChangeText={(text) => updateMetric(index, 'max_threshold', text)}
+                                keyboardType="numeric"
+                                style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 4, padding: 8, borderRadius: 8 }}
+                            />
+                            <TouchableOpacity onPress={() => moveMetric(index, 'up')} style={{ marginHorizontal: 4 }}>
+                                <Icon name="arrow-up" size={20} color={isDarkMode ? '#888' : '#555'} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => moveMetric(index, 'down')} style={{ marginHorizontal: 4 }}>
+                                <Icon name="arrow-down" size={20} color={isDarkMode ? '#888' : '#555'} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => saveMetric()} style={{ marginHorizontal: 4 }}>
+                                <Icon name="save" size={20} color={isMetricChanged(index) ? '#007AFF' : (isDarkMode ? '#888' : '#555')} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => handleDeleteMetric(index)} style={{ marginHorizontal: 4 }}>
+                                <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
                 />
-                <TextInput
-                    value={newMetric.min_threshold}
-                    onChangeText={(text) => setNewMetric({ ...newMetric, min_threshold: text })}
-                    placeholder="Min"
-                    keyboardType="numeric"
-                    style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 8, padding: 8, borderRadius: 8 }}
-                />
-                <TextInput
-                    value={newMetric.max_threshold}
-                    onChangeText={(text) => setNewMetric({ ...newMetric, max_threshold: text })}
-                    placeholder="Max"
-                    keyboardType="numeric"
-                    style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 8, padding: 8, borderRadius: 8 }}
-                />
-                <TouchableOpacity onPress={isAddButtonEnabled() ? addMetric : undefined} style={{ backgroundColor: isAddButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', padding: 12, borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
-                    <Icon name="plus" size={15} color="#fff" />
-                </TouchableOpacity>
             </View>
-            <FlatList
-                data={metrics}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item, index }) => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, marginHorizontal: 16, backgroundColor: generatePastelColor(item.name), padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
-                        <Text style={{ flex: 1, fontSize: 16 }}>{item.name}</Text>
-                        <TextInput
-                            value={item.min_threshold.toString()}
-                            onChangeText={(text) => updateMetric(index, 'min_threshold', text)}
-                            keyboardType="numeric"
-                            style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 4, padding: 8, borderRadius: 8 }}
-                        />
-                        <TextInput
-                            value={item.max_threshold.toString()}
-                            onChangeText={(text) => updateMetric(index, 'max_threshold', text)}
-                            keyboardType="numeric"
-                            style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 4, padding: 8, borderRadius: 8 }}
-                        />
-                        <TouchableOpacity onPress={() => moveMetric(index, 'up')} style={{ marginHorizontal: 4 }}>
-                            <Icon name="arrow-up" size={20} color={isDarkMode ? '#888' : '#555'} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => moveMetric(index, 'down')} style={{ marginHorizontal: 4 }}>
-                            <Icon name="arrow-down" size={20} color={isDarkMode ? '#888' : '#555'} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => saveMetric()} style={{ marginHorizontal: 4 }}>
-                            <Icon name="save" size={20} color={isMetricChanged(index) ? '#007AFF' : (isDarkMode ? '#888' : '#555')} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => handleDeleteMetric(index)} style={{ marginHorizontal: 4 }}>
-                            <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
-                        </TouchableOpacity>
-                    </View>
-                )}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }
-            />
-        </View>
+        </TouchableWithoutFeedback>
     );
 };
 
