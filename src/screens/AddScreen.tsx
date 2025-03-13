@@ -31,9 +31,11 @@ const AddScreen = () => {
         setRefreshing(true);
         await loadMetrics();
         const now = new Date();
+        const formattedDate = now.toLocaleDateString('en-CA'); // 'en-CA' locale ensures 'yyyy-mm-dd' format
+        const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); // 'hh:mm' format
+        setDateString(formattedDate);
+        setTimeString(formattedTime);
         setDate(now);
-        setDateString(now.toISOString().split('T')[0]);
-        setTimeString(now.toTimeString().split(' ')[0].slice(0, 5));
         setRefreshing(false);
     };
 
@@ -57,25 +59,26 @@ const AddScreen = () => {
         setMetricValues({});
     };
 
-    const handleDateChange = (event: any, selectedDate?: Date) => {
-        setShowDatePicker(false);
-        if (selectedDate) {
-            setDateString(selectedDate.toISOString().split('T')[0]);
-        }
-    };
-
-    const handleTimeChange = (event: any, selectedTime?: Date) => {
-        setShowTimePicker(false);
-        if (selectedTime) {
-            setTimeString(selectedTime.toTimeString().split(' ')[0].slice(0, 5)); // Only hours and minutes
-        }
-    };
+    // const handleDateChange = (event: any, selectedDate?: Date) => {
+    //     setShowDatePicker(false);
+    //     if (selectedDate) {
+    //         setDateString(selectedDate.toISOString().split('T')[0]);
+    //     }
+    // };
+    //
+    // const handleTimeChange = (event: any, selectedTime?: Date) => {
+    //     setShowTimePicker(false);
+    //     if (selectedTime) {
+    //         setTimeString(selectedTime.toTimeString().split(' ')[0].slice(0, 5)); // Only hours and minutes
+    //     }
+    // };
 
     const setCurrentTime = () => {
         const now = new Date();
-        const formattedDateTime = now.toISOString().split('T')[0] + ' ' + now.toTimeString().split(' ')[0].slice(0, 5);
-        setDateString(formattedDateTime.split(' ')[0]);
-        setTimeString(formattedDateTime.split(' ')[1]);
+        const formattedDate = now.toLocaleDateString('en-CA'); // 'en-CA' locale ensures 'yyyy-mm-dd' format
+        const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); // 'hh:mm' format
+        setDateString(formattedDate);
+        setTimeString(formattedTime);
     };
 
     const isSaveButtonEnabled = () => {
@@ -110,22 +113,22 @@ const AddScreen = () => {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                {showDatePicker && (
-                    <DateTimePicker
-                        value={date}
-                        mode="date"
-                        display="default"
-                        onChange={handleDateChange}
-                    />
-                )}
-                {showTimePicker && (
-                    <DateTimePicker
-                        value={date}
-                        mode="time"
-                        display="default"
-                        onChange={handleTimeChange}
-                    />
-                )}
+                {/*{showDatePicker && (*/}
+                {/*    <DateTimePicker*/}
+                {/*        value={date}*/}
+                {/*        mode="date"*/}
+                {/*        display="default"*/}
+                {/*        onChange={handleDateChange}*/}
+                {/*    />*/}
+                {/*)}*/}
+                {/*{showTimePicker && (*/}
+                {/*    <DateTimePicker*/}
+                {/*        value={date}*/}
+                {/*        mode="time"*/}
+                {/*        display="default"*/}
+                {/*        onChange={handleTimeChange}*/}
+                {/*    />*/}
+                {/*)}*/}
                 {metrics.map((metric, index) => (
                     <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, backgroundColor: generatePastelColor(metric.name), padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
                         <Text style={{ flex: 1, fontSize: 16 }}>{metric.name}</Text>
