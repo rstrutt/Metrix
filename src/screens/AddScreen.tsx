@@ -85,21 +85,22 @@ const AddScreen = () => {
     return (
         <View style={{ flex: 1, padding: 0, backgroundColor: '#f0f0f0'}}>
             <View style={{ flexDirection: 'row', marginBottom: 8, padding: 16, backgroundColor: '#f0f0f0' }}>
-                <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ flex: 1, marginRight: 8 }}>
-                    <Text style={{ width: 110, padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
-                        {dateString}
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setShowTimePicker(true)} style={{ flex: 1, marginRight: 8 }}>
-                    <Text style={{ width: 75, padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
-                        {timeString}
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={setCurrentTime} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
-                    <Text style={{ color: '#fff', fontSize: 16 }}>Now</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={isSaveButtonEnabled() ? handleSave : undefined} style={{ backgroundColor: isSaveButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', marginLeft: 10, padding: 12, borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
-                    {/*<Text style={{ color: '#fff', fontSize: 16 }} numberOfLines={1}>   +   </Text>*/}
+                <View style={{ flexDirection: 'row', flex: 1 }}>
+                    <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ marginRight: 8 }}>
+                        <Text style={{ width: 110, padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
+                            {dateString}
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setShowTimePicker(true)} style={{ marginRight: 8 }}>
+                        <Text style={{ width: 75, padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
+                            {timeString}
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={setCurrentTime} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
+                        <Text style={{ color: '#fff', fontSize: 16 }}>Now</Text>
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity onPress={isSaveButtonEnabled() ? handleSave : undefined} style={{ backgroundColor: isSaveButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', padding: 12, borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
                     <Icon name="plus" size={15} color="#fff"/>
                 </TouchableOpacity>
             </View>
