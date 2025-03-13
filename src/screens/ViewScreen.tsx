@@ -315,7 +315,7 @@ const ViewScreen = () => {
                                         <Icon name="chevron-up" size={16} color="#007AFF" />
                                     </TouchableOpacity>
                                     {groupedEntries[metric.name]
-                                        .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
+                                        .sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()) // Sort in reverse order
                                         .map((entry, index) => (
                                             <View key={`${entry.dateTime}-${entry.metric}-${index}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
                                                 <Text style={{ flex: 1, fontSize: 16 }}>{formatDateTime(entry.dateTime)}</Text>
