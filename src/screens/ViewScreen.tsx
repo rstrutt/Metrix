@@ -292,7 +292,7 @@ const ViewScreen = () => {
     };
 
     return (
-        <View style={{ flex: 1, paddingHorizontal: 16, backgroundColor: '#f0f0f0' }}>
+        <View style={{ flex: 1, paddingHorizontal: 0, backgroundColor: '#f0f0f0' }}>
             <ScrollView
                 contentContainerStyle={{ paddingTop: 16 }}
                 refreshControl={
@@ -301,7 +301,7 @@ const ViewScreen = () => {
             >
                 {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
-                        <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, backgroundColor: generatePastelColor(metric.name), padding: 16, borderRadius: 10 }}>
+                        <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 16, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric.name}</Text>
                             {renderChart(groupedEntries[metric.name]
                                     .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
