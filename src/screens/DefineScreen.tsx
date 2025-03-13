@@ -79,6 +79,7 @@ const DefineScreen = () => {
             updatedMetrics.splice(newIndex, 0, movedMetric);
             setMetrics(updatedMetrics);
             saveMetricsToFile(updatedMetrics);
+            setOriginalMetrics(updatedMetrics); // Update originalMetrics to prevent save icon color change
         }
     };
 
