@@ -10,10 +10,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@react-native-community/checkbox": "^0.5.17",
     "@react-native-community/datetimepicker": "^8.3.0",
     "@react-navigation/native": "^7.0.15",
-    "react": "19.0.0",
+    "react": "^19.0.0",
     "react-native": "0.78.0",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-fs": "^2.20.0",

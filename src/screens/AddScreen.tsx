@@ -4,6 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
 import { readMetricsFromFile, saveMetricValuesToFile } from '../utils/fileUtils.ts';
 import { generatePastelColor } from "../utils/uiUtils.ts";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const AddScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
@@ -82,8 +83,8 @@ const AddScreen = () => {
     };
 
     return (
-        <View style={{ flex: 1}}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 16, backgroundColor: '#f0f0f0' }}>
+        <View style={{ flex: 1, padding: 0, backgroundColor: '#f0f0f0'}}>
+            <View style={{ flexDirection: 'row', marginBottom: 8, padding: 16, backgroundColor: '#f0f0f0' }}>
                 <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ flex: 1, marginRight: 8 }}>
                     <Text style={{ width: 110, padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
                         {dateString}
@@ -97,8 +98,9 @@ const AddScreen = () => {
                 <TouchableOpacity onPress={setCurrentTime} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontSize: 16 }}>Now</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={isSaveButtonEnabled() ? handleSave : undefined} style={{ backgroundColor: isSaveButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', marginLeft: 10, padding: 12, borderRadius: 8, alignItems: 'center' }}>
-                    <Text style={{ color: '#fff', fontSize: 16 }} numberOfLines={1}>   +   </Text>
+                <TouchableOpacity onPress={isSaveButtonEnabled() ? handleSave : undefined} style={{ backgroundColor: isSaveButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', marginLeft: 10, padding: 12, borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
+                    {/*<Text style={{ color: '#fff', fontSize: 16 }} numberOfLines={1}>   +   </Text>*/}
+                    <Icon name="plus" size={15} color="#fff"/>
                 </TouchableOpacity>
             </View>
             <ScrollView
