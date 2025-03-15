@@ -154,11 +154,6 @@ const ViewScreen = () => {
         const xTicks = Array.from({ length: 6 }, (_, i) => xMin + (i * (xMax - xMin)) / 5);
         const yTicks = Array.from({ length: 5 }, (_, i) => yMin + (i * (yMax - yMin)) / 4);
 
-        const DATA = Array.from({ length: 31 }, (_, i) => ({
-            day: i,
-            highTmp: 40 + 30 * Math.random(),
-        }));
-
         const formattedData = data.map(d => ({
             dateTime: new Date(d.dateTime).getTime(),
             value: d.value
