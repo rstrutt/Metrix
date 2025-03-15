@@ -15,6 +15,7 @@ import { CartesianChart, Line, Scatter } from "victory-native";
 // import inter from "../assets/inter-medium.ttf";
 import roboto from "../assets/fonts/Roboto-VariableFont_wdth,wght.ttf";
 import { Circle, useFont } from "@shopify/react-native-skia";
+import { styles } from "../utils/fontUtils.ts";
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
@@ -330,7 +331,7 @@ const ViewScreen = () => {
                 {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
                         <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 16, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>{metric.name}</Text>
+                            <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name}</Text>
                             {renderChart(groupedEntries[metric.name]
                                     .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
                                     .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime()),
@@ -346,7 +347,7 @@ const ViewScreen = () => {
                                         .sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()) // Sort in reverse order
                                         .map((entry, index) => (
                                             <View key={`${entry.dateTime}-${entry.metric}-${index}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-                                                <Text style={{ flex: 1, fontSize: 16 }}>{formatDateTime(entry.dateTime)}</Text>
+                                                <Text style={[styles.common_regular, { flex: 1}]}>{formatDateTime(entry.dateTime)}</Text>
                                                 <TextInput
                                                     style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
                                                     keyboardType="numeric"

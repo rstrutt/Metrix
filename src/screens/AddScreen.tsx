@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
+import { StyleSheet, View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
 import { readMetricsFromFile, saveMetricValuesToFile } from '../utils/fileUtils.ts';
 import { generatePastelColor } from "../utils/uiUtils.ts";
+import { styles } from "../utils/fontUtils.ts";
+
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const AddScreen = () => {
@@ -90,21 +92,21 @@ const AddScreen = () => {
             <View style={{ flexDirection: 'row', marginBottom: 8, padding: 16, backgroundColor: '#f0f0f0' }}>
                 <View style={{ flexDirection: 'row', flex: 1 }}>
                     <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ marginRight: 8 }}>
-                        <Text style={{ width: 110, padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
+                        <Text style={{ width: 110, padding: 8, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
                             {dateString}
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => setShowTimePicker(true)} style={{ marginRight: 8 }}>
-                        <Text style={{ width: 75, padding: 12, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
+                        <Text style={{ width: 75, padding: 8, borderColor: 'gray', borderWidth: 1, borderRadius: 8, textAlign: 'center', backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 2 }}>
                             {timeString}
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={setCurrentTime} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 12, borderRadius: 8, alignItems: 'center' }}>
-                        <Text style={{ color: '#fff', fontSize: 16 }}>Now</Text>
+                    <TouchableOpacity onPress={setCurrentTime} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 8, borderRadius: 8, alignItems: 'center' }}>
+                        <Text style={[styles.common_bold, {color: '#000'}]}>Now</Text>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={isSaveButtonEnabled() ? handleSave : undefined} style={{ backgroundColor: isSaveButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', padding: 12, borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
-                    <Icon name="plus" size={15} color="#fff"/>
+                <TouchableOpacity onPress={isSaveButtonEnabled() ? handleSave : undefined} style={{ backgroundColor: isSaveButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', padding: 8, borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
+                    <Icon name="plus" size={15} color="#000"/>
                 </TouchableOpacity>
             </View>
             <ScrollView
@@ -131,7 +133,9 @@ const AddScreen = () => {
                 {/*)}*/}
                 {metrics.map((metric, index) => (
                     <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, backgroundColor: generatePastelColor(metric.name), padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
-                        <Text style={{ flex: 1, fontSize: 16 }}>{metric.name}</Text>
+                        {/*<Text style={{ flex: 1, fontSize: 16, fontFamily: 'sans-serif-thin'}}>{metric.name}</Text>*/}
+                        {/*<Text style={{ flex: 1, fontSize: 16}}>{metric.name}</Text>*/}
+                        <Text style={[styles.common_bold, { flex: 1}]}>{metric.name}</Text>
                         <TextInput
                             ref={(ref) => {
                                 inputRefs.current[index] = ref!;
