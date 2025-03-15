@@ -2,20 +2,53 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
-// import { Svg, Line, G, Text as SvgText, Rect, Circle, Polygon } from 'react-native-svg';
+
 import {
     readMetricValuesFromFile,
     updateMetricValueInFile,
     deleteMetricValueFromFile,
     readMetricsFromFile
 } from '../utils/fileUtils.ts';
+
 import { Alert } from 'react-native';
 import { generatePastelColor } from "../utils/uiUtils.ts";
-import { CartesianChart, Line, Scatter } from "victory-native";
-// import inter from "../assets/inter-medium.ttf";
-import roboto from "../assets/fonts/Roboto-VariableFont_wdth,wght.ttf";
-import { Circle, useFont } from "@shopify/react-native-skia";
+import { useChartPressState, CartesianChart, Line, Scatter } from "victory-native";
 import { styles } from "../utils/fontUtils.ts";
+import { useFont } from "@shopify/react-native-skia";
+import inter from "../../assets/fonts/Roboto-Regular.ttf";
+import MyChart from "../utils/myChart.tsx";
+
+// function MyChart(data: { dateTime: string, value: number }[], minThreshold: number, maxThreshold: number){
+//     const formattedData = data.map(d => ({
+//         dateTime: new Date(d.dateTime).getTime(),
+//         value: d.value
+//     }));
+//
+//     // 👇 create our chart press state
+//     // const { state, isActive } = useChartPressState({ x: 0, y: { highTmp: 0 } });
+//
+//     const font = useFont(inter);
+//
+//     return (
+//         <View style={{ height: 150, paddingHorizontal: 50}}>
+//             <CartesianChart
+//                 data={formattedData}
+//                 xKey="dateTime"
+//                 yKeys={["value"]}
+//                 // scale={{ x: "time" }}
+//                 // axisOptions={{ font }}
+//                 axisOptions={{  }}
+//             >
+//                 {({ points }) => (
+//                     <>
+//                         <Line points={points.value} color="gray" strokeWidth={2} />
+//                         <Scatter points={points.value} radius={3} style="fill" color="blue" />
+//                     </>
+//                 )}
+//             </CartesianChart>
+//         </View>
+//     );
+// }
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
@@ -138,180 +171,36 @@ const ViewScreen = () => {
         }
     };
 
-    const renderChart = (data: { dateTime: string, value: number }[], minThreshold: number, maxThreshold: number) => {
-        const width = Dimensions.get('window').width - 75;
-        const height = 220;
-        const padding = 20;
-        const leftPadding = 30;
-        const rightPadding = 15;
-        const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
-        const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
-        const yMin = minThreshold === 0 ? 0 : Math.min(...data.map(d => d.value), minThreshold) * 0.9;
-        const yMax = Math.max(...data.map(d => d.value), maxThreshold) * 1.1;
-
-        const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - leftPadding - rightPadding) + leftPadding;
-        const scaleY = (value: number) => height - ((value - yMin) / (yMax - yMin)) * (height - 2 * padding) - padding;
-
-        const xTicks = Array.from({ length: 6 }, (_, i) => xMin + (i * (xMax - xMin)) / 5);
-        const yTicks = Array.from({ length: 5 }, (_, i) => yMin + (i * (yMax - yMin)) / 4);
-
-        const formattedData = data.map(d => ({
-            dateTime: new Date(d.dateTime).getTime(),
-            value: d.value
-        }));
-
-        // const font = useFont(roboto, 12);
-
-        return (
-            <View style={{ height: 150 }}>
-                <CartesianChart
-                    data={formattedData}
-                    xKey="dateTime"
-                    yKeys={["value"]}
-                    scale={{ x: "time" }}
-                    // axisOptions={{ font }}
-                    axisOptions={{  }}
-                >
-                        {({ points }) => (
-                            <>
-                            <Line points={points.value} color="gray" strokeWidth={2} />
-                            <Scatter points={points.value} radius={3} style="fill" color="blue" />
-                            </>
-                        )}
-                </CartesianChart>
-            </View>
-            // <Svg width={width + rightPadding} height={height}>
-            //     <Rect x="0" y="0" width={width + rightPadding} height={height} fill="#d3d3d3" rx="10" ry="10" />
-            //     <G>
-            //         {xTicks.map((t, i) => (
-            //             <Line
-            //                 key={`x-grid-${i}`}
-            //                 x1={scaleX(t)}
-            //                 y1={padding}
-            //                 x2={scaleX(t)}
-            //                 y2={height - padding}
-            //                 stroke="#e0e0e0"
-            //                 strokeWidth="1"
-            //             />
-            //         ))}
-            //         {yTicks.map((t, i) => (
-            //             <Line
-            //                 key={`y-grid-${i}`}
-            //                 x1={leftPadding}
-            //                 y1={scaleY(t)}
-            //                 x2={width - padding}
-            //                 y2={scaleY(t)}
-            //                 stroke="#e0e0e0"
-            //                 strokeWidth="1"
-            //             />
-            //         ))}
-            //         <Line
-            //             x1={leftPadding}
-            //             y1={height - padding}
-            //             x2={width - rightPadding}
-            //             y2={height - padding}
-            //             stroke="black"
-            //             strokeWidth="2"
-            //         />
-            //         <Line
-            //             x1={leftPadding}
-            //             y1={padding}
-            //             x2={leftPadding}
-            //             y2={height - padding}
-            //             stroke="black"
-            //             strokeWidth="2"
-            //         />
-            //         <Line
-            //             x1={leftPadding}
-            //             y1={scaleY(minThreshold)}
-            //             x2={width - rightPadding}
-            //             y2={scaleY(minThreshold)}
-            //             stroke="yellow"
-            //             strokeWidth="2"
-            //             strokeDasharray="4"
-            //         />
-            //         <Line
-            //             x1={leftPadding}
-            //             y1={scaleY(maxThreshold)}
-            //             x2={width - rightPadding}
-            //             y2={scaleY(maxThreshold)}
-            //             stroke="red"
-            //             strokeWidth="2"
-            //             strokeDasharray="4"
-            //         />
-            //         <Polygon
-            //             points={`${leftPadding},${scaleY(minThreshold)} ${width - rightPadding},${scaleY(minThreshold)} ${width - rightPadding},${scaleY(maxThreshold)} ${leftPadding},${scaleY(maxThreshold)}`}
-            //             fill="lightgreen"
-            //             opacity="0.3"
-            //         />
-            //         {data.map((d, i) => (
-            //             i > 0 && (
-            //                 <Line
-            //                     key={`line-${i}`}
-            //                     x1={scaleX(new Date(data[i - 1].dateTime).getTime())}
-            //                     y1={scaleY(data[i - 1].value)}
-            //                     x2={scaleX(new Date(d.dateTime).getTime())}
-            //                     y2={scaleY(d.value)}
-            //                     stroke="#007AFF"
-            //                     strokeWidth="2"
-            //                 />
-            //             )
-            //         ))}
-            //         {data.map((d, i) => (
-            //             <Circle
-            //                 key={`circle-${i}`}
-            //                 cx={scaleX(new Date(d.dateTime).getTime())}
-            //                 cy={scaleY(d.value)}
-            //                 r={3}
-            //                 fill={getPointColor(d.value, minThreshold, maxThreshold)}
-            //             />
-            //         ))}
-            //         {xTicks.map((t, i) => (
-            //             <SvgText
-            //                 key={`x-label-${i}`}
-            //                 x={scaleX(t)}
-            //                 y={height - padding / 2}
-            //                 fontSize="10"
-            //                 fill="black"
-            //                 textAnchor="middle"
-            //             >
-            //                 {new Date(t).toLocaleDateString()}
-            //             </SvgText>
-            //         ))}
-            //         {yTicks.map((t, i) => (
-            //             <SvgText
-            //                 key={`y-label-${i}`}
-            //                 x={leftPadding - 5}
-            //                 y={scaleY(t) + 5}
-            //                 fontSize="10"
-            //                 fill="black"
-            //                 textAnchor="end"
-            //             >
-            //                 {Math.round(t)}
-            //             </SvgText>
-            //         ))}
-            //         <SvgText
-            //             x={width - rightPadding + 5}
-            //             y={scaleY(minThreshold) + 5}
-            //             fontSize="10"
-            //             fill="yellow"
-            //             textAnchor="start"
-            //         >
-            //             {minThreshold}
-            //         </SvgText>
-            //         <SvgText
-            //             x={width - rightPadding + 5}
-            //             y={scaleY(maxThreshold) - 5}
-            //             fontSize="10"
-            //             fill="red"
-            //             textAnchor="start"
-            //         >
-            //             {maxThreshold}
-            //         </SvgText>
-            //     </G>
-            // </Svg>
-        );
-    };
+    // const renderChart = (data: { dateTime: string, value: number }[], minThreshold: number, maxThreshold: number) => {
+    //
+    //     const formattedData = data.map(d => ({
+    //         dateTime: new Date(d.dateTime).getTime(),
+    //         value: d.value
+    //     }));
+    //
+    //     // 👇 create our chart press state
+    //     // const { state, isActive } = useChartPressState({ x: 0, y: { highTmp: 0 } });
+    //
+    //     return (
+    //         <View style={{ height: 150 }}>
+    //             <CartesianChart
+    //                 data={formattedData}
+    //                 xKey="dateTime"
+    //                 yKeys={["value"]}
+    //                 // scale={{ x: "time" }}
+    //                 // axisOptions={{ font }}
+    //                 axisOptions={{  }}
+    //             >
+    //                     {({ points }) => (
+    //                         <>
+    //                         <Line points={points.value} color="gray" strokeWidth={2} />
+    //                         <Scatter points={points.value} radius={3} style="fill" color="blue" />
+    //                         </>
+    //                     )}
+    //             </CartesianChart>
+    //         </View>
+    //     );
+    // };
 
     const toggleExpand = (metric: string) => {
         setExpandedMetrics(prevState => ({
@@ -332,12 +221,14 @@ const ViewScreen = () => {
                     groupedEntries[metric.name] && (
                         <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 16, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
                             <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name}</Text>
-                            {renderChart(groupedEntries[metric.name]
+                            <MyChart
+                                data={groupedEntries[metric.name]
                                     .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
-                                    .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime()),
-                                metric.min_threshold,
-                                metric.max_threshold
-                            )}
+                                    .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
+                                }
+                                minThreshold={metric.min_threshold}
+                                maxThreshold={metric.max_threshold}
+                            />
                             {expandedMetrics[metric.name] && (
                                 <>
                                     <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center', padding: 8 }}>
