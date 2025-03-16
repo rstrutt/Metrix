@@ -32,7 +32,7 @@ const MyChart = ({
   }));
 
   const font = useFont(inter, 12);
-  const { state, isActive } = useChartPressState({ x: 0, xValue: 0,  y: { metricValue: 0 } });
+  const { state, isActive } = useChartPressState({ x: 0,  y: { metricValue: 0 } });
 
   // const transformState = useChartTransformState({
   //     scaleX: 2.0, // Initial X-axis scale
