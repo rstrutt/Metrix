@@ -22,3 +22,13 @@ export function timestampToDateString(timestamp: number) {
     return `${year}-${month}-${day}`;
 }
 
+export function timestampToMonthYear(timestamp: number) {
+    const date = new Date(timestamp); // Multiply by 1000 to convert seconds to milliseconds
+
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = String(date.getFullYear()).slice(-2);
+
+    return `${month} '${year}`;
+
+}
+
