@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Dimensions} from 'react-native';
+import {View, Dimensions, useWindowDimensions} from 'react-native';
 import {
   CartesianChart,
   Line,
@@ -156,7 +156,9 @@ export const MySVGChart = ({
     maxThreshold: number;
 }) => {
 
-    const width = Dimensions.get('window').width - 75;
+    // const width = Dimensions.get('window').width - 64;
+    const { width: screenWidth } = useWindowDimensions();
+    const width = screenWidth - 64
     const height = 175;
     const padding = 20;
     const leftPadding = 30;

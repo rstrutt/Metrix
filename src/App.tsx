@@ -43,7 +43,7 @@ const App = (): React.JSX.Element => {
                 tabBarPosition={'bottom'}
                 swipeEnabled={true}
                 renderTabBar={props => (
-                    <View style={{ flexDirection: 'row', backgroundColor: isDarkMode ? Colors.darker : Colors.lighter , borderTopWidth: 1, borderTopColor: 'lightgrey'}}>
+                    <View style={{ flexDirection: 'row', backgroundColor: isDarkMode ? Colors.darker : Colors.lighter , borderTopWidth: 1, borderTopColor: 'lightgrey', borderBottomWidth: 1, borderBottomColor: 'lightgrey'}}>
                         {props.navigationState.routes.map((route, i) => (
                             <TouchableOpacity
                                 key={i}
