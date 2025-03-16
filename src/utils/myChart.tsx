@@ -106,8 +106,8 @@ const MyChart = ({
         domain={{
           x: [min_x - (max_x - min_x) * 0.05, max_x + (max_x - min_x) * 0.05],
           y: [
-            min_y_with_threshold - (max_y - min_y) * 0.05,
-            max_y_with_threshold + (max_y - min_y) * 0.05,
+            min_y_with_threshold - (max_y_with_threshold - min_y_with_threshold) * 0.05,
+            max_y_with_threshold + (max_y_with_threshold - min_y_with_threshold) * 0.1,
           ],
         }}
       >
