@@ -23,7 +23,7 @@ function ToolTip({state, font}: {state: any; font: any}) {
         cx={state.x.position.value}
         cy={state.y.metricValue.position.value}
         r={8}
-        color="red"
+        color="blue"
         style="stroke"
         strokeWidth={2}
       />
