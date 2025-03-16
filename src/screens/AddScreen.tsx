@@ -132,7 +132,7 @@ const AddScreen = () => {
                     />
                 )}
                 {metrics.map((metric, index) => (
-                    <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, backgroundColor: generatePastelColor(metric.name), padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
+                    <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: generatePastelColor(metric.name), padding: 8, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
                         {/*<Text style={{ flex: 1, fontSize: 16, fontFamily: 'sans-serif-thin'}}>{metric.name}</Text>*/}
                         {/*<Text style={{ flex: 1, fontSize: 16}}>{metric.name}</Text>*/}
                         <Text style={[styles.common_bold, { flex: 1}]}>{metric.name}</Text>
@@ -140,7 +140,7 @@ const AddScreen = () => {
                             ref={(ref) => {
                                 inputRefs.current[index] = ref!;
                             }}
-                            style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
+                            style={{ borderColor: 'gray', borderWidth: 1, padding: 2, width: 100, borderRadius: 8 }}
                             keyboardType="numeric"
                             value={metricValues[metric.name] || ''}
                             onChangeText={(value) => handleValueChange(metric.name, value)}

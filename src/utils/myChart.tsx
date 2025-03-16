@@ -293,7 +293,7 @@ export const MySVGChart = ({
                         <SVGText
                             key={`x-label-${i}`}
                             x={scaleX(t)}
-                            y={height - padding / 2}
+                            y={(height - padding / 2) + 5}
                             fontSize="10"
                             fill="black"
                             textAnchor="middle"
@@ -315,7 +315,7 @@ export const MySVGChart = ({
                     ))}
                     <SVGText
                         x={width - rightPadding + 5}
-                        y={scaleY(minThreshold) + 5}
+                        y={scaleY(minThreshold) + 3}
                         fontSize="10"
                         fill="yellow"
                         textAnchor="start"
@@ -324,7 +324,7 @@ export const MySVGChart = ({
                     </SVGText>
                     <SVGText
                         x={width - rightPadding + 5}
-                        y={scaleY(maxThreshold) - 5}
+                        y={scaleY(maxThreshold) + 3}
                         fontSize="10"
                         fill="red"
                         textAnchor="start"

@@ -143,7 +143,7 @@ const ViewScreen = () => {
             >
                 {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
-                        <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 16, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
+                        <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 8, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
                             <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name} (mean={(mean(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)}, sd={(sd(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)})</Text>
 
                             {useVictoryChart ? (
@@ -169,15 +169,15 @@ const ViewScreen = () => {
                             {expandedMetrics[metric.name] && (
                                 <>
                                     <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center', padding: 8 }}>
-                                        <Icon name="chevron-up" size={16} color="#007AFF" />
+                                        <Icon name="chevron-up" size={18} color="#007AFF" />
                                     </TouchableOpacity>
                                     {groupedEntries[metric.name]
                                         .sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()) // Sort in reverse order
                                         .map((entry, index) => (
-                                            <View key={`${entry.dateTime}-${entry.metric}-${index}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+                                            <View key={`${entry.dateTime}-${entry.metric}-${index}`} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
                                                 <Text style={[styles.common_regular, { flex: 1}]}>{formatDateTime(entry.dateTime)}</Text>
                                                 <TextInput
-                                                    style={{ borderColor: 'gray', borderWidth: 1, padding: 8, width: 100, borderRadius: 8 }}
+                                                    style={{ borderColor: 'gray', borderWidth: 1, padding: 2, width: 100, borderRadius: 8 }}
                                                     keyboardType="numeric"
                                                     value={editedValues[`${entry.dateTime}-${entry.metric}`] || ''}
                                                     onChangeText={(value) => handleValueChange(entry.dateTime, entry.metric, value)}
@@ -192,8 +192,8 @@ const ViewScreen = () => {
                                         ))}
                                 </>
                             )}
-                            <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center', padding: 8 }}>
-                                <Icon name={expandedMetrics[metric.name] ? 'chevron-up' : 'chevron-down'} size={16} color="#007AFF" />
+                            <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center', padding: 0 }}>
+                                <Icon name={expandedMetrics[metric.name] ? 'chevron-up' : 'chevron-down'} size={18} color="#007AFF" />
                             </TouchableOpacity>
                         </View>
                     )
