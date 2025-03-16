@@ -123,8 +123,8 @@ const DefineScreen = () => {
     };
 
     return (
-            <View style={{ flex: 1, padding: 0, backgroundColor: '#f0f0f0' }}>
-                <View style={{ flexDirection: 'row', marginBottom: 8, padding:16}}>
+            <View style={{ flex: 1, padding: 0, backgroundColor: '#f0f0f0'}}>
+                <View style={{ flexDirection: 'row', marginBottom: 8, padding:16, borderBottomWidth: 1, borderBottomColor: 'lightgrey'}}>
                     <TextInput
                         value={newMetric.name}
                         onChangeText={(text) => setNewMetric({ ...newMetric, name: text })}

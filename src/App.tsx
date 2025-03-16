@@ -43,12 +43,12 @@ const App = (): React.JSX.Element => {
                 tabBarPosition={'bottom'}
                 swipeEnabled={true}
                 renderTabBar={props => (
-                    <View style={{ flexDirection: 'row', backgroundColor: isDarkMode ? Colors.darker : Colors.lighter }}>
+                    <View style={{ flexDirection: 'row', backgroundColor: isDarkMode ? Colors.darker : Colors.lighter , borderTopWidth: 1, borderTopColor: 'lightgrey'}}>
                         {props.navigationState.routes.map((route, i) => (
                             <TouchableOpacity
                                 key={i}
                                 onPress={() => setIndex(i)}
-                                style={{ flex: 1, alignItems: 'center', padding: 16 }}
+                                style={{ flex: 1, alignItems: 'center', padding: 8 }}
                             >
                                 {renderIcon({ route, color: i === index ? (isDarkMode ? Colors.light : Colors.dark) : (isDarkMode ? Colors.dark : Colors.light) })}
                                 <Text style={{ color: i === index ? (isDarkMode ? Colors.light : Colors.dark) : (isDarkMode ? Colors.dark : Colors.light) }}>
