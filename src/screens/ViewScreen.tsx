@@ -131,16 +131,18 @@ const ViewScreen = () => {
 
     return (
         <View style={{ flex: 1, paddingHorizontal: 0, backgroundColor: '#f0f0f0' }}>
-            <Button
-                title={`Switch to ${useVictoryChart ? 'SVG' : 'Victory'} Chart`}
-                onPress={() => setUseVictoryChart(!useVictoryChart)}
-            />
             <ScrollView
                 contentContainerStyle={{ paddingTop: 16 }}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8, paddingBottom: 18, paddingRight: 16, backgroundColor: '#f0f0f0', borderBottomWidth: 1, borderBottomColor: 'lightgrey'}}>
+                <Button
+                    title={`Switch to ${useVictoryChart ? 'SVG' : 'Victory'} Chart`}
+                    onPress={() => setUseVictoryChart(!useVictoryChart)}
+                />
+                </View>
                 {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
                         <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 8, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
