@@ -31,10 +31,10 @@ const MyChart = ({
   const font = useFont(inter, 12);
   const { state, isActive } = useChartPressState({ x: 0, y: { value: 0 } });
 
-  const transformState = useChartTransformState({
-      scaleX: 2.0, // Initial X-axis scale
-      scaleY: 2.0, // Initial Y-axis scale
-  });
+  // const transformState = useChartTransformState({
+  //     scaleX: 2.0, // Initial X-axis scale
+  //     scaleY: 2.0, // Initial Y-axis scale
+  // });
 
 
     return (
@@ -45,15 +45,15 @@ const MyChart = ({
         yKeys={['value']}
         axisOptions={{font}}
         chartPressState={state}
-        transformState={transformState.state}
-        transformConfig={{
-            pan: {
-                activateAfterLongPress: 100, // Delay in ms before pan gesture activates
-            },
-            pinch: {
-                enabled: true, // Enable pinch gesture
-            },
-        }}
+        // transformState={transformState.state}
+        // transformConfig={{
+        //     pan: {
+        //         activateAfterLongPress: 100, // Delay in ms before pan gesture activates
+        //     },
+        //     pinch: {
+        //         enabled: true, // Enable pinch gesture
+        //     },
+        // }}
       >
 
         {({points}) => (
