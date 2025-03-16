@@ -90,10 +90,10 @@ const MyChart = ({
     },
   });
 
-  const transformState = useChartTransformState({
-    scaleX: 1.0, // Initial X-axis scale
-    scaleY: 1.0, // Initial Y-axis scale
-  });
+  // const transformState = useChartTransformState({
+  //   scaleX: 1.0, // Initial X-axis scale
+  //   scaleY: 1.0, // Initial Y-axis scale
+  // });
 
   // useEffect(() => {
   //   // console.log("in here")

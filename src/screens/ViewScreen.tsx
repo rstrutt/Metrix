@@ -60,7 +60,7 @@ const ViewScreen = () => {
     const [originalValues, setOriginalValues] = useState<{ [key: string]: string }>({});
 
     const loadEntries = async () => {
-        const loadedMericValues = await readMetricValuesFromFile();
+        const loadedMericValues = await readMetricValuesFromFile(true);
         const loadedMetrics = await readMetricsFromFile();
         setEntries(loadedMericValues);
         setLoadedMetrics(loadedMetrics);
