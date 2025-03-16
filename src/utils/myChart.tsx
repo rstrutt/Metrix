@@ -3,7 +3,8 @@ import {View} from 'react-native';
 import {CartesianChart, Line, Scatter} from 'victory-native';
 import {useFont, Circle, Text} from '@shopify/react-native-skia';
 
-import inter from '../../assets/fonts/Roboto-Regular.ttf';
+import regular from '../../assets/fonts/Roboto-Regular.ttf';
+import bold from '../../assets/fonts/Roboto-Bold.ttf';
 import {useChartPressState} from 'victory-native';
 import type {SharedValue} from 'react-native-reanimated';
 import {
@@ -23,8 +24,8 @@ function ToolTip({state, font}: {state: ChartPressState; font: any}) {
         color="black"
       />
       <Text
-        x={state.x.position.value + 10}
-        y={state.y.metricValue.position.value}
+        x={100}
+        y={12}
         text={`${state.y.metricValue.value.value.toFixed(
           2,
         )} (${timestampToDateTimeString(state.x.value.value)})`}
@@ -67,7 +68,7 @@ const MyChart = ({
   const min_y_with_threshold = Math.min(min_y, minThreshold);
   const max_y_with_threshold = Math.max(max_y, maxThreshold);
 
-  const font = useFont(inter, 12);
+  const font = useFont(bold, 12);
   const {state, isActive} = useChartPressState({
     x: 0,
     y: {
