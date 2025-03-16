@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, Dimensions} from 'react-native';
 import {
   CartesianChart,
   Line,
@@ -15,6 +15,8 @@ import {
   timestampToDateTimeString,
   timestampToMonthYear,
 } from './dateUtils.ts';
+
+import { Svg, Line as SVGLine, G, Text as SVGText, Rect, Circle as SVGCircle, Polygon } from 'react-native-svg';
 
 function ToolTip({state, font}: {state: any; font: any}) {
   return (
@@ -40,7 +42,7 @@ function ToolTip({state, font}: {state: any; font: any}) {
   );
 }
 
-const MyChart = ({
+export const MyVictoryChart = ({
   data,
   minThreshold,
   maxThreshold
@@ -142,4 +144,197 @@ const MyChart = ({
   );
 };
 
-export default MyChart;
+export const MySVGChart = ({
+                        data,
+                        minThreshold,
+                        maxThreshold
+                    }: {
+    data: {dateTime: string; value: number}[];
+    minThreshold: number;
+    maxThreshold: number;
+}) => {
+
+    const width = Dimensions.get('window').width - 75;
+    const height = 150;
+    const padding = 20;
+    const leftPadding = 30;
+    const rightPadding = 15;
+    const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
+    const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
+    const yMin = minThreshold === 0 ? 0 : Math.min(...data.map(d => d.value), minThreshold) * 0.9;
+    const yMax = Math.max(...data.map(d => d.value), maxThreshold) * 1.1;
+
+    const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - leftPadding - rightPadding) + leftPadding;
+    const scaleY = (value: number) => height - ((value - yMin) / (yMax - yMin)) * (height - 2 * padding) - padding;
+
+    const xTicks = Array.from({ length: 6 }, (_, i) => xMin + (i * (xMax - xMin)) / 5);
+    const yTicks = Array.from({ length: 5 }, (_, i) => yMin + (i * (yMax - yMin)) / 4);
+
+    const DATA = Array.from({ length: 31 }, (_, i) => ({
+        day: i,
+        highTmp: 40 + 30 * Math.random(),
+    }));
+
+    const formattedData = data.map(d => ({
+        dateTime: new Date(d.dateTime).getTime(),
+        value: d.value
+    }));
+
+    const getPointColor = (value: number, minThreshold: number, maxThreshold: number): string => {
+        if (maxThreshold > minThreshold) {
+            if (value < minThreshold) {
+                return "yellow";
+            } else if (value > maxThreshold) {
+                return "red";
+            } else {
+                return "green";
+            }
+        } else if (maxThreshold < minThreshold) {
+            if (value < maxThreshold) {
+                return "red";
+            } else if (value > minThreshold) {
+                return "yellow";
+            } else {
+                return "green";
+            }
+        } else {
+            return "black";
+        }
+    };
+
+    return (
+        <View style={{height: 150, paddingHorizontal: 0}}>
+            <Svg width={width + rightPadding} height={height}>
+                <Rect x="0" y="0" width={width + rightPadding} height={height} fill="#d3d3d3" rx="10" ry="10" />
+                <G>
+                    {xTicks.map((t, i) => (
+                        <SVGLine
+                            key={`x-grid-${i}`}
+                            x1={scaleX(t)}
+                            y1={padding}
+                            x2={scaleX(t)}
+                            y2={height - padding}
+                            stroke="#e0e0e0"
+                            strokeWidth="1"
+                        />
+                    ))}
+                    {yTicks.map((t, i) => (
+                        <SVGLine
+                            key={`y-grid-${i}`}
+                            x1={leftPadding}
+                            y1={scaleY(t)}
+                            x2={width - padding}
+                            y2={scaleY(t)}
+                            stroke="#e0e0e0"
+                            strokeWidth="1"
+                        />
+                    ))}
+                    <SVGLine
+                        x1={leftPadding}
+                        y1={height - padding}
+                        x2={width - rightPadding}
+                        y2={height - padding}
+                        stroke="black"
+                        strokeWidth="2"
+                    />
+                    <SVGLine
+                        x1={leftPadding}
+                        y1={padding}
+                        x2={leftPadding}
+                        y2={height - padding}
+                        stroke="black"
+                        strokeWidth="2"
+                    />
+                    <SVGLine
+                        x1={leftPadding}
+                        y1={scaleY(minThreshold)}
+                        x2={width - rightPadding}
+                        y2={scaleY(minThreshold)}
+                        stroke="yellow"
+                        strokeWidth="2"
+                        strokeDasharray="4"
+                    />
+                    <SVGLine
+                        x1={leftPadding}
+                        y1={scaleY(maxThreshold)}
+                        x2={width - rightPadding}
+                        y2={scaleY(maxThreshold)}
+                        stroke="red"
+                        strokeWidth="2"
+                        strokeDasharray="4"
+                    />
+                    <Polygon
+                        points={`${leftPadding},${scaleY(minThreshold)} ${width - rightPadding},${scaleY(minThreshold)} ${width - rightPadding},${scaleY(maxThreshold)} ${leftPadding},${scaleY(maxThreshold)}`}
+                        fill="lightgreen"
+                        opacity="0.3"
+                    />
+                    {data.map((d, i) => (
+                        i > 0 && (
+                            <SVGLine
+                                key={`line-${i}`}
+                                x1={scaleX(new Date(data[i - 1].dateTime).getTime())}
+                                y1={scaleY(data[i - 1].value)}
+                                x2={scaleX(new Date(d.dateTime).getTime())}
+                                y2={scaleY(d.value)}
+                                stroke="#007AFF"
+                                strokeWidth="2"
+                            />
+                        )
+                    ))}
+                    {data.map((d, i) => (
+                        <SVGCircle
+                            key={`circle-${i}`}
+                            cx={scaleX(new Date(d.dateTime).getTime())}
+                            cy={scaleY(d.value)}
+                            r={3}
+                            fill={getPointColor(d.value, minThreshold, maxThreshold)}
+                        />
+                    ))}
+                    {xTicks.map((t, i) => (
+                        <SVGText
+                            key={`x-label-${i}`}
+                            x={scaleX(t)}
+                            y={height - padding / 2}
+                            fontSize="10"
+                            fill="black"
+                            textAnchor="middle"
+                        >
+                            {new Date(t).toLocaleDateString()}
+                        </SVGText>
+                    ))}
+                    {yTicks.map((t, i) => (
+                        <SVGText
+                            key={`y-label-${i}`}
+                            x={leftPadding - 5}
+                            y={scaleY(t) + 5}
+                            fontSize="10"
+                            fill="black"
+                            textAnchor="end"
+                        >
+                            {Math.round(t)}
+                        </SVGText>
+                    ))}
+                    <SVGText
+                        x={width - rightPadding + 5}
+                        y={scaleY(minThreshold) + 5}
+                        fontSize="10"
+                        fill="yellow"
+                        textAnchor="start"
+                    >
+                        {minThreshold}
+                    </SVGText>
+                    <SVGText
+                        x={width - rightPadding + 5}
+                        y={scaleY(maxThreshold) - 5}
+                        fontSize="10"
+                        fill="red"
+                        textAnchor="start"
+                    >
+                        {maxThreshold}
+                    </SVGText>
+                </G>
+            </Svg>
+        </View>
+    );
+};
+

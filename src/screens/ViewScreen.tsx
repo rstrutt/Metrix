@@ -15,7 +15,7 @@ import { generatePastelColor } from "../utils/uiUtils.ts";
 
 import { styles } from "../utils/fontUtils.ts";
 
-import MyChart from "../utils/myChart.tsx";
+import {MyVictoryChart, MySVGChart} from "../utils/myChart.tsx";
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
@@ -140,7 +140,7 @@ const ViewScreen = () => {
                     groupedEntries[metric.name] && (
                         <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 16, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
                             <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name} (mean={(mean(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)}, sd={(sd(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)})</Text>
-                            <MyChart
+                            <MySVGChart
                                 data={groupedEntries[metric.name]
                                     .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
                                     .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
