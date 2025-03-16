@@ -124,6 +124,10 @@ const ViewScreen = () => {
         }));
     };
 
+    const mean = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const variance = (arr: number[]) => mean(arr.map(x => x ** 2)) - mean(arr) ** 2;
+    const sd = (arr: number[]) => Math.sqrt(variance(arr));
+
     return (
         <View style={{ flex: 1, paddingHorizontal: 0, backgroundColor: '#f0f0f0' }}>
             <ScrollView
@@ -135,7 +139,7 @@ const ViewScreen = () => {
                 {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
                         <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 16, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
-                            <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name}</Text>
+                            <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name} (mean={(mean(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)}, sd={(sd(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)})</Text>
                             <MyChart
                                 data={groupedEntries[metric.name]
                                     .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
@@ -143,16 +147,6 @@ const ViewScreen = () => {
                                 }
                                 minThreshold={metric.min_threshold}
                                 maxThreshold={metric.max_threshold}
-                                onPanStart={
-                                    () => {
-                                        console.log("Pan start");
-                                    }
-                                }
-                                onPanEnd={
-                                    () => {
-                                        console.log("Pan end");
-                                    }
-                                }
                             />
                             {expandedMetrics[metric.name] && (
                                 <>

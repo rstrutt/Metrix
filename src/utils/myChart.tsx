@@ -23,7 +23,9 @@ function ToolTip({state, font}: {state: any; font: any}) {
         cx={state.x.position.value}
         cy={state.y.metricValue.position.value}
         r={8}
-        color="black"
+        color="red"
+        style="stroke"
+        strokeWidth={2}
       />
       <Text
         x={100}
@@ -46,9 +48,8 @@ const MyChart = ({
   data: {dateTime: string; value: number}[];
   minThreshold: number;
   maxThreshold: number;
-  onPanStart: () => void;
-  onPanEnd: () => void;
 }) => {
+
   const formattedData = data.map(d => ({
     dateTime: new Date(d.dateTime).getTime(),
     metricValue: d.value,
