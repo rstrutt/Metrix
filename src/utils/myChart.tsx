@@ -63,6 +63,8 @@ export const MyVictoryChart = ({
     maxThreshold: maxThreshold,
   }));
 
+  const height = 175;
+
   const min_x = formattedData[0].dateTime;
   const max_x = formattedData[formattedData.length - 1].dateTime;
   const min_y = formattedData
@@ -91,7 +93,7 @@ export const MyVictoryChart = ({
   const formatXLabel = (tick: number) => `${timestampToMonthYear(tick)}`;
 
   return (
-    <View style={{height: 150, paddingHorizontal: 0}}>
+    <View style={{height: height, paddingHorizontal: 0}}>
       <CartesianChart
         data={formattedData}
         xKey="dateTime"
@@ -155,30 +157,27 @@ export const MySVGChart = ({
 }) => {
 
     const width = Dimensions.get('window').width - 75;
-    const height = 150;
+    const height = 175;
     const padding = 20;
     const leftPadding = 30;
     const rightPadding = 15;
     const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
     const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
-    const yMin = minThreshold === 0 ? 0 : Math.min(...data.map(d => d.value), minThreshold) * 0.9;
-    const yMax = Math.max(...data.map(d => d.value), maxThreshold) * 1.1;
+
+    const yMinValue = Math.min(...data.map(d => d.value))
+    const yMaxValue = Math.max(...data.map(d => d.value))
+
+    const yMinValueWithThreashold = Math.min(yMinValue, minThreshold)
+    const yMaxValueWithThreshold = Math.max(yMaxValue, maxThreshold)
+
+    const yMin = minThreshold === 0 ? 0 : yMinValueWithThreashold - (yMaxValueWithThreshold - yMinValueWithThreashold) * 0.1;
+    const yMax = yMaxValueWithThreshold + (yMaxValueWithThreshold - yMinValueWithThreashold) * 0.1;
 
     const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - leftPadding - rightPadding) + leftPadding;
     const scaleY = (value: number) => height - ((value - yMin) / (yMax - yMin)) * (height - 2 * padding) - padding;
 
     const xTicks = Array.from({ length: 6 }, (_, i) => xMin + (i * (xMax - xMin)) / 5);
     const yTicks = Array.from({ length: 5 }, (_, i) => yMin + (i * (yMax - yMin)) / 4);
-
-    const DATA = Array.from({ length: 31 }, (_, i) => ({
-        day: i,
-        highTmp: 40 + 30 * Math.random(),
-    }));
-
-    const formattedData = data.map(d => ({
-        dateTime: new Date(d.dateTime).getTime(),
-        value: d.value
-    }));
 
     const getPointColor = (value: number, minThreshold: number, maxThreshold: number): string => {
         if (maxThreshold > minThreshold) {
@@ -203,7 +202,7 @@ export const MySVGChart = ({
     };
 
     return (
-        <View style={{height: 150, paddingHorizontal: 0}}>
+        <View style={{height: height, paddingHorizontal: 0}}>
             <Svg width={width + rightPadding} height={height}>
                 <Rect x="0" y="0" width={width + rightPadding} height={height} fill="#d3d3d3" rx="10" ry="10" />
                 <G>

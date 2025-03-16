@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Button} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
 
@@ -25,6 +25,7 @@ const ViewScreen = () => {
     const [expandedMetrics, setExpandedMetrics] = useState<{ [key: string]: boolean }>({});
     const [editedValues, setEditedValues] = useState<{ [key: string]: string }>({});
     const [originalValues, setOriginalValues] = useState<{ [key: string]: string }>({});
+    const [useVictoryChart, setUseVictoryChart] = useState(false);
 
     const loadEntries = async () => {
         const loadedMericValues = await readMetricValuesFromFile(true);
@@ -130,6 +131,10 @@ const ViewScreen = () => {
 
     return (
         <View style={{ flex: 1, paddingHorizontal: 0, backgroundColor: '#f0f0f0' }}>
+            <Button
+                title={`Switch to ${useVictoryChart ? 'SVG' : 'Victory'} Chart`}
+                onPress={() => setUseVictoryChart(!useVictoryChart)}
+            />
             <ScrollView
                 contentContainerStyle={{ paddingTop: 16 }}
                 refreshControl={
@@ -140,14 +145,27 @@ const ViewScreen = () => {
                     groupedEntries[metric.name] && (
                         <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 16, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
                             <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name} (mean={(mean(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)}, sd={(sd(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)})</Text>
-                            <MySVGChart
-                                data={groupedEntries[metric.name]
-                                    .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
-                                    .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
-                                }
-                                minThreshold={metric.min_threshold}
-                                maxThreshold={metric.max_threshold}
-                            />
+
+                            {useVictoryChart ? (
+                                <MyVictoryChart
+                                    data={groupedEntries[metric.name]
+                                        .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
+                                        .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
+                                    }
+                                    minThreshold={metric.min_threshold}
+                                    maxThreshold={metric.max_threshold}
+                                />
+                            ) : (
+                                <MySVGChart
+                                    data={groupedEntries[metric.name]
+                                        .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
+                                        .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
+                                    }
+                                    minThreshold={metric.min_threshold}
+                                    maxThreshold={metric.max_threshold}
+                                />
+                            )}
+
                             {expandedMetrics[metric.name] && (
                                 <>
                                     <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center', padding: 8 }}>
