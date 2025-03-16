@@ -6,12 +6,13 @@ import { useFont, Circle, Text } from "@shopify/react-native-skia";
 import inter from "../../assets/fonts/Roboto-Regular.ttf";
 import { useChartPressState  } from "victory-native";
 import type { SharedValue } from "react-native-reanimated";
-import {timestampToDateString} from "./dateUtils.ts";
+import {timestampToDateString, timestampToDateTimeString} from "./dateUtils.ts";
+import {ChartPressState} from "victory-native/src/cartesian/hooks/useChartPressState.ts";
 
-function ToolTip({ x, y, font }: { x: SharedValue<number>; y: SharedValue<number>, font: any }) {
+function ToolTip({ state, font }: { state: ChartPressState, font: any }) {
     return <>
-        <Circle cx={x} cy={y} r={8} color="black" />
-        <Text x={x.value + 10} y={y} text={`${y.value.toFixed(2)}`} color="black" font={font} />
+        <Circle cx={state.x.position.value} cy={state.y.metricValue.position.value} r={8} color="black" />
+        <Text x={state.x.position.value + 10} y={state.y.metricValue.position.value} text={`${state.y.metricValue.value.value.toFixed(2)} (${timestampToDateTimeString(state.x.value.value)})`} color="black" font={font} />
         </>
 }
 
@@ -24,13 +25,14 @@ const MyChart = ({
   minThreshold: number;
   maxThreshold: number;
 }) => {
+
   const formattedData = data.map(d => ({
     dateTime: new Date(d.dateTime).getTime(),
-    value: d.value,
+    metricValue: d.value,
   }));
 
   const font = useFont(inter, 12);
-  const { state, isActive } = useChartPressState({ x: 0, y: { value: 0 } });
+  const { state, isActive } = useChartPressState({ x: 0, xValue: 0,  y: { metricValue: 0 } });
 
   // const transformState = useChartTransformState({
   //     scaleX: 2.0, // Initial X-axis scale
@@ -44,7 +46,7 @@ const MyChart = ({
       <CartesianChart
         data={formattedData}
         xKey="dateTime"
-        yKeys={['value']}
+        yKeys={['metricValue']}
         axisOptions={{font: font, formatXLabel: formatXLabel}}
         chartPressState={state}
         // transformState={transformState.state}
@@ -60,15 +62,15 @@ const MyChart = ({
 
         {({points}) => (
           <>
-            <Line points={points.value} color="gray" strokeWidth={2} />
+            <Line points={points.metricValue} color="gray" strokeWidth={2} />
             <Scatter
-              points={points.value}
+              points={points.metricValue}
               radius={3}
               style="fill"
               color="blue"
             />
               {isActive && (
-                  <ToolTip x={state.x.position} y={state.y.value.position} font={font}/>
+                  <ToolTip state={state}  font={font}/>
               )}
           </>
         )}
