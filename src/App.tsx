@@ -41,7 +41,7 @@ const App = (): React.JSX.Element => {
                 onIndexChange={setIndex}
                 initialLayout={initialLayout}
                 tabBarPosition={'bottom'}
-                swipeEnabled={false}
+                swipeEnabled={true}
                 renderTabBar={props => (
                     <View style={{ flexDirection: 'row', backgroundColor: isDarkMode ? Colors.darker : Colors.lighter }}>
                         {props.navigationState.routes.map((route, i) => (

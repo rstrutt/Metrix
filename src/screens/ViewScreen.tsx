@@ -228,6 +228,16 @@ const ViewScreen = () => {
                                 }
                                 minThreshold={metric.min_threshold}
                                 maxThreshold={metric.max_threshold}
+                                onPanStart={
+                                    () => {
+                                        console.log("Pan start");
+                                    }
+                                }
+                                onPanEnd={
+                                    () => {
+                                        console.log("Pan end");
+                                    }
+                                }
                             />
                             {expandedMetrics[metric.name] && (
                                 <>

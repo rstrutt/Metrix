@@ -1,6 +1,11 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View} from 'react-native';
-import {CartesianChart, Line, Scatter} from 'victory-native';
+import {
+  useChartTransformState,
+  CartesianChart,
+  Line,
+  Scatter,
+} from 'victory-native';
 import {useFont, Circle, Text} from '@shopify/react-native-skia';
 
 import regular from '../../assets/fonts/Roboto-Regular.ttf';
@@ -40,10 +45,14 @@ const MyChart = ({
   data,
   minThreshold,
   maxThreshold,
+  onPanStart,
+  onPanEnd,
 }: {
   data: {dateTime: string; value: number}[];
   minThreshold: number;
   maxThreshold: number;
+  onPanStart: () => void;
+  onPanEnd: () => void;
 }) => {
   const formattedData = data.map(d => ({
     dateTime: new Date(d.dateTime).getTime(),
@@ -81,10 +90,25 @@ const MyChart = ({
     },
   });
 
-  // const transformState = useChartTransformState({
-  //     scaleX: 2.0, // Initial X-axis scale
-  //     scaleY: 2.0, // Initial Y-axis scale
-  // });
+  const transformState = useChartTransformState({
+    scaleX: 1.0, // Initial X-axis scale
+    scaleY: 1.0, // Initial Y-axis scale
+  });
+
+  // useEffect(() => {
+  //   // console.log("in here")
+  //   if (transformState.state.zoomActive) {
+  //     console.log("Zoom Active");
+  //   } else {
+  //     console.log("Zoom Inactive");
+  //   }
+  //
+  //   if (transformState.state.panActive) {
+  //     console.log("Pan Active");
+  //   } else {
+  //     console.log("Pan Inactive");
+  //   }
+  // }, [transformState.state.zoomActive, transformState.state.panActive]);
 
   const formatXLabel = (tick: number) => `${timestampToMonthYear(tick)}`;
 
@@ -112,12 +136,12 @@ const MyChart = ({
         }}
         // transformState={transformState.state}
         // transformConfig={{
-        //     pan: {
-        //         activateAfterLongPress: 100, // Delay in ms before pan gesture activates
-        //     },
-        //     pinch: {
-        //         enabled: true, // Enable pinch gesture
-        //     },
+        //   pan: {
+        //     activateAfterLongPress: 100, // Delay in ms before pan gesture activates
+        //   },
+        //   pinch: {
+        //     enabled: true, // Enable pinch gesture
+        //   },
         // }}
       >
         {({points}) => (
@@ -125,7 +149,6 @@ const MyChart = ({
             <Line points={points.metricValue} color="gray" strokeWidth={2} />
             <Line points={points.minThreshold} color="green" strokeWidth={1} />
             <Line points={points.maxThreshold} color="red" strokeWidth={1} />
-            {/*<Line points={new Array(points.metricValue).fill(minThreshold)} color="green" strokeWidth={2} />*/}
             <Scatter
               points={points.greenMetricValue}
               radius={3}
