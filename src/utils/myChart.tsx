@@ -4,8 +4,9 @@ import { CartesianChart, Line, Scatter } from 'victory-native';
 import { useFont, Circle, Text } from "@shopify/react-native-skia";
 
 import inter from "../../assets/fonts/Roboto-Regular.ttf";
-import { useChartPressState, useChartTransformState  } from "victory-native";
+import { useChartPressState  } from "victory-native";
 import type { SharedValue } from "react-native-reanimated";
+import {timestampToDateString} from "./dateUtils.ts";
 
 function ToolTip({ x, y, font }: { x: SharedValue<number>; y: SharedValue<number>, font: any }) {
     return <>
@@ -36,6 +37,7 @@ const MyChart = ({
   //     scaleY: 2.0, // Initial Y-axis scale
   // });
 
+    const formatXLabel = (tick:number) => `${timestampToDateString(tick)}`;
 
     return (
     <View style={{height: 150, paddingHorizontal: 0}}>
@@ -43,7 +45,7 @@ const MyChart = ({
         data={formattedData}
         xKey="dateTime"
         yKeys={['value']}
-        axisOptions={{font}}
+        axisOptions={{font: font, formatXLabel: formatXLabel}}
         chartPressState={state}
         // transformState={transformState.state}
         // transformConfig={{
