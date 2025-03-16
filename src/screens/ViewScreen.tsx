@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Dimensions } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
 
@@ -12,43 +12,10 @@ import {
 
 import { Alert } from 'react-native';
 import { generatePastelColor } from "../utils/uiUtils.ts";
-import { useChartPressState, CartesianChart, Line, Scatter } from "victory-native";
-import { styles } from "../utils/fontUtils.ts";
-import { useFont } from "@shopify/react-native-skia";
-import inter from "../../assets/fonts/Roboto-Regular.ttf";
-import MyChart from "../utils/myChart.tsx";
 
-// function MyChart(data: { dateTime: string, value: number }[], minThreshold: number, maxThreshold: number){
-//     const formattedData = data.map(d => ({
-//         dateTime: new Date(d.dateTime).getTime(),
-//         value: d.value
-//     }));
-//
-//     // 👇 create our chart press state
-//     // const { state, isActive } = useChartPressState({ x: 0, y: { highTmp: 0 } });
-//
-//     const font = useFont(inter);
-//
-//     return (
-//         <View style={{ height: 150, paddingHorizontal: 50}}>
-//             <CartesianChart
-//                 data={formattedData}
-//                 xKey="dateTime"
-//                 yKeys={["value"]}
-//                 // scale={{ x: "time" }}
-//                 // axisOptions={{ font }}
-//                 axisOptions={{  }}
-//             >
-//                 {({ points }) => (
-//                     <>
-//                         <Line points={points.value} color="gray" strokeWidth={2} />
-//                         <Scatter points={points.value} radius={3} style="fill" color="blue" />
-//                     </>
-//                 )}
-//             </CartesianChart>
-//         </View>
-//     );
-// }
+import { styles } from "../utils/fontUtils.ts";
+
+import MyChart from "../utils/myChart.tsx";
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
@@ -149,58 +116,6 @@ const ViewScreen = () => {
         return acc;
     }, {} as { [key: string]: { dateTime: string, metric: string, value: number }[] });
 
-    const getPointColor = (value: number, minThreshold: number, maxThreshold: number): string => {
-        if (maxThreshold > minThreshold) {
-            if (value < minThreshold) {
-                return "yellow";
-            } else if (value > maxThreshold) {
-                return "red";
-            } else {
-                return "green";
-            }
-        } else if (maxThreshold < minThreshold) {
-            if (value < maxThreshold) {
-                return "red";
-            } else if (value > minThreshold) {
-                return "yellow";
-            } else {
-                return "green";
-            }
-        } else {
-            return "black";
-        }
-    };
-
-    // const renderChart = (data: { dateTime: string, value: number }[], minThreshold: number, maxThreshold: number) => {
-    //
-    //     const formattedData = data.map(d => ({
-    //         dateTime: new Date(d.dateTime).getTime(),
-    //         value: d.value
-    //     }));
-    //
-    //     // 👇 create our chart press state
-    //     // const { state, isActive } = useChartPressState({ x: 0, y: { highTmp: 0 } });
-    //
-    //     return (
-    //         <View style={{ height: 150 }}>
-    //             <CartesianChart
-    //                 data={formattedData}
-    //                 xKey="dateTime"
-    //                 yKeys={["value"]}
-    //                 // scale={{ x: "time" }}
-    //                 // axisOptions={{ font }}
-    //                 axisOptions={{  }}
-    //             >
-    //                     {({ points }) => (
-    //                         <>
-    //                         <Line points={points.value} color="gray" strokeWidth={2} />
-    //                         <Scatter points={points.value} radius={3} style="fill" color="blue" />
-    //                         </>
-    //                     )}
-    //             </CartesianChart>
-    //         </View>
-    //     );
-    // };
 
     const toggleExpand = (metric: string) => {
         setExpandedMetrics(prevState => ({

@@ -1,25 +1,22 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {View} from 'react-native';
 import {
-  useChartTransformState,
   CartesianChart,
   Line,
   Scatter,
 } from 'victory-native';
 import {useFont, Circle, Text} from '@shopify/react-native-skia';
 
-import regular from '../../assets/fonts/Roboto-Regular.ttf';
+// @ts-ignore
 import bold from '../../assets/fonts/Roboto-Bold.ttf';
 import {useChartPressState} from 'victory-native';
-import type {SharedValue} from 'react-native-reanimated';
+
 import {
-  timestampToDateString,
   timestampToDateTimeString,
   timestampToMonthYear,
 } from './dateUtils.ts';
-import {ChartPressState} from 'victory-native/src/cartesian/hooks/useChartPressState.ts';
 
-function ToolTip({state, font}: {state: ChartPressState; font: any}) {
+function ToolTip({state, font}: {state: any; font: any}) {
   return (
     <>
       <Circle
@@ -44,9 +41,7 @@ function ToolTip({state, font}: {state: ChartPressState; font: any}) {
 const MyChart = ({
   data,
   minThreshold,
-  maxThreshold,
-  onPanStart,
-  onPanEnd,
+  maxThreshold
 }: {
   data: {dateTime: string; value: number}[];
   minThreshold: number;
@@ -57,10 +52,10 @@ const MyChart = ({
   const formattedData = data.map(d => ({
     dateTime: new Date(d.dateTime).getTime(),
     metricValue: d.value,
-    redMetricValue: d.value > maxThreshold ? d.value : null,
-    greenMetricValue: d.value < minThreshold ? d.value : null,
+    redMetricValue: (maxThreshold>minThreshold)?(d.value > maxThreshold ? d.value : null):(d.value < maxThreshold ? d.value : null),
+    greenMetricValue: (maxThreshold>minThreshold)?(d.value < minThreshold ? d.value : null):(d.value > minThreshold ? d.value : null),
     blueMetricValue:
-      d.value >= minThreshold && d.value <= maxThreshold ? d.value : null,
+        (maxThreshold>minThreshold)?(d.value >= minThreshold && d.value <= maxThreshold ? d.value : null):(d.value <= minThreshold && d.value >= maxThreshold ? d.value : null),
     minThreshold: minThreshold,
     maxThreshold: maxThreshold,
   }));
@@ -74,8 +69,8 @@ const MyChart = ({
     .map(d => d.metricValue)
     .reduce((a, b) => Math.max(a, b));
 
-  const min_y_with_threshold = Math.min(min_y, minThreshold);
-  const max_y_with_threshold = Math.max(max_y, maxThreshold);
+  const min_y_with_threshold = Math.min(min_y, Math.min(minThreshold, maxThreshold));
+  const max_y_with_threshold = Math.max(max_y, Math.max(minThreshold, maxThreshold));
 
   const font = useFont(bold, 12);
   const {state, isActive} = useChartPressState({
@@ -89,26 +84,6 @@ const MyChart = ({
       maxThreshold: 0,
     },
   });
-
-  // const transformState = useChartTransformState({
-  //   scaleX: 1.0, // Initial X-axis scale
-  //   scaleY: 1.0, // Initial Y-axis scale
-  // });
-
-  // useEffect(() => {
-  //   // console.log("in here")
-  //   if (transformState.state.zoomActive) {
-  //     console.log("Zoom Active");
-  //   } else {
-  //     console.log("Zoom Inactive");
-  //   }
-  //
-  //   if (transformState.state.panActive) {
-  //     console.log("Pan Active");
-  //   } else {
-  //     console.log("Pan Inactive");
-  //   }
-  // }, [transformState.state.zoomActive, transformState.state.panActive]);
 
   const formatXLabel = (tick: number) => `${timestampToMonthYear(tick)}`;
 
@@ -134,15 +109,6 @@ const MyChart = ({
             max_y_with_threshold + (max_y - min_y) * 0.05,
           ],
         }}
-        // transformState={transformState.state}
-        // transformConfig={{
-        //   pan: {
-        //     activateAfterLongPress: 100, // Delay in ms before pan gesture activates
-        //   },
-        //   pinch: {
-        //     enabled: true, // Enable pinch gesture
-        //   },
-        // }}
       >
         {({points}) => (
           <>
@@ -153,13 +119,13 @@ const MyChart = ({
               points={points.greenMetricValue}
               radius={3}
               style="fill"
-              color="green"
+              color="yellow"
             />
             <Scatter
               points={points.blueMetricValue}
               radius={3}
               style="fill"
-              color="blue"
+              color="green"
             />
             <Scatter
               points={points.redMetricValue}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, View, Text, TextInput, TouchableOpacity, FlatList, RefreshControl, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { ScrollView, Alert, View, Text, TextInput, TouchableOpacity, RefreshControl, Keyboard } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { readMetricsFromFile, saveMetricsToFile } from '../utils/fileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -123,7 +123,6 @@ const DefineScreen = () => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={{ flex: 1, padding: 0, backgroundColor: '#f0f0f0' }}>
                 <View style={{ flexDirection: 'row', marginBottom: 8, padding:16}}>
                     <TextInput
@@ -150,21 +149,23 @@ const DefineScreen = () => {
                         <Icon name="plus" size={15} color="#fff" />
                     </TouchableOpacity>
                 </View>
-                <FlatList
-                    keyboardShouldPersistTaps='handled'
-                    data={metrics}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item, index }) => (
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, marginHorizontal: 16, backgroundColor: generatePastelColor(item.name), padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
-                            <Text style={[styles.common_bold, { flex: 1}]}>{item.name}</Text>
+                <ScrollView
+                    style={{ flex: 1, paddingHorizontal: 16, paddingVertical: 0, backgroundColor: '#f0f0f0'}} // Light grey background
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                >
+                    {metrics.map((metric, index) => (
+                        <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, backgroundColor: generatePastelColor(metric.name), padding: 12, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
+                            <Text style={[styles.common_bold, { flex: 1}]}>{metric.name}</Text>
                             <TextInput
-                                value={item.min_threshold.toString()}
+                                value={metric.min_threshold.toString()}
                                 onChangeText={(text) => updateMetric(index, 'min_threshold', text)}
                                 keyboardType="numeric"
                                 style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 4, padding: 8, borderRadius: 8 }}
                             />
                             <TextInput
-                                value={item.max_threshold.toString()}
+                                value={metric.max_threshold.toString()}
                                 onChangeText={(text) => updateMetric(index, 'max_threshold', text)}
                                 keyboardType="numeric"
                                 style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 4, padding: 8, borderRadius: 8 }}
@@ -182,13 +183,10 @@ const DefineScreen = () => {
                                 <Icon name="trash" size={20} color={isDarkMode ? '#888' : '#555'} />
                             </TouchableOpacity>
                         </View>
-                    )}
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                    }
-                />
+                    ))}
+
+                </ScrollView>
             </View>
-        </TouchableWithoutFeedback>
     );
 };
 
