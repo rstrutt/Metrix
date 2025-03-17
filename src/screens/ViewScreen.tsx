@@ -138,10 +138,13 @@ const ViewScreen = () => {
                 }
             >
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8, paddingBottom: 18, paddingRight: 16, backgroundColor: '#f0f0f0', borderBottomWidth: 1, borderBottomColor: 'lightgrey'}}>
-                <Button
-                    title={`Switch to ${useVictoryChart ? 'SVG' : 'Victory'} Chart`}
-                    onPress={() => setUseVictoryChart(!useVictoryChart)}
-                />
+                {/*<Button*/}
+                {/*    title={`Switch to ${useVictoryChart ? 'SVG' : 'Victory'} Chart`}*/}
+                {/*    onPress={() => setUseVictoryChart(!useVictoryChart)}*/}
+                {/*/>*/}
+                <TouchableOpacity onPress={() => setUseVictoryChart(!useVictoryChart)} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 8, borderRadius: 8, alignItems: 'center' }}>
+                    <Text style={[styles.common_bold, {color: '#000'}]}>{`Switch to ${useVictoryChart ? 'SVG' : 'Victory'} Chart`}</Text>
+                </TouchableOpacity>
                 </View>
                 {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
