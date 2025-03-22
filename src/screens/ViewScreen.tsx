@@ -158,8 +158,10 @@ const ViewScreen = () => {
                 {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
                         <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 8, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
-                            <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name} (mean={(mean(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)}, sd={(sd(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)})</Text>
-
+                            <Text>
+                                <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name}</Text>
+                                <Text style={[styles.common_regular, { marginBottom: 8 }]}> ({'\u03BC'} ={(mean(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)}, {'\u03C3'}={(sd(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)})</Text>
+                            </Text>
                             {useVictoryChart ? (
                                 <MyVictoryChart
                                     data={groupedEntries[metric.name]
