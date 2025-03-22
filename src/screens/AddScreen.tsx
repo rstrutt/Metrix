@@ -5,6 +5,8 @@ import { useColorScheme } from 'react-native';
 import { readMetricsFromFile, saveMetricValuesToFile } from '../utils/fileUtils.ts';
 import { generatePastelColor } from "../utils/uiUtils.ts";
 import { styles } from "../utils/fontUtils.ts";
+import eventEmitter from '../utils/eventEmitter';
+
 
 import Icon from "react-native-vector-icons/FontAwesome";
 
@@ -27,6 +29,10 @@ const AddScreen = () => {
 
     useEffect(() => {
         loadMetrics();
+
+        // If we add, delete, amend any metric definitions then reload the metrics for this screen
+        eventEmitter.on('metricDefinitionsAmended', loadMetrics);
+
     }, []);
 
     const onRefresh = async () => {
@@ -59,6 +65,8 @@ const AddScreen = () => {
         await saveMetricValuesToFile(parsedMetricValues, combinedDateTimeString);
         // Clear all input fields
         setMetricValues({});
+
+        eventEmitter.emit('metricAdded'); // Emit the event so other tabs can upadate
     };
 
     const handleDateChange = (event: any, selectedDate?: Date) => {

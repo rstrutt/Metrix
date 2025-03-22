@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
+import eventEmitter from '../utils/eventEmitter';
 
 import {
     readMetricValuesFromFile,
@@ -42,6 +43,15 @@ const ViewScreen = () => {
 
     useEffect(() => {
         loadEntries();
+
+        const handleMetricAdded = () => {
+            loadEntries();
+        };
+
+        // Update the plots if we add a metric or amend/add any definitions
+        eventEmitter.on('metricAdded', handleMetricAdded);
+        eventEmitter.on('metricDefinitionsAmended', handleMetricAdded);
+
     }, []);
 
     const onRefresh = async () => {

@@ -5,6 +5,7 @@ import { readMetricsFromFile, saveMetricsToFile } from '../utils/fileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { generatePastelColor } from "../utils/uiUtils.ts";
 import { styles } from "../utils/fontUtils.ts";
+import eventEmitter from "../utils/eventEmitter.ts";
 
 const DefineScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);
@@ -39,6 +40,7 @@ const DefineScreen = () => {
         } else {
             Alert.alert('Invalid Input', 'Please enter valid values for all fields.');
         }
+        eventEmitter.emit('metricDefinitionsAmended'); // Emit the event so other tabs can upadate
     };
 
     const updateMetric = (index: number, field: string, value: string) => {
@@ -48,6 +50,7 @@ const DefineScreen = () => {
             );
             setMetrics(updatedMetrics);
         }
+        eventEmitter.emit('metricDefinitionsAmended'); // Emit the event so other tabs can upadate
     };
 
     const saveMetric = () => {
@@ -60,6 +63,7 @@ const DefineScreen = () => {
         try {
             saveMetricsToFile(parsedMetrics);
             setOriginalMetrics(parsedMetrics);
+            eventEmitter.emit('metricDefinitionsAmended'); // Emit the event so other tabs can upadate
         } catch (error) {
             Alert.alert("Error", "There was an error saving the metrics.");
         }
@@ -71,6 +75,9 @@ const DefineScreen = () => {
             setMetrics(updatedMetrics);
             saveMetricsToFile(updatedMetrics);
         }
+
+        eventEmitter.emit('metricDefinitionsAmended'); // Emit the event so other tabs can upadate
+
     };
 
     const moveMetric = (index: number, direction: 'up' | 'down') => {
