@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Dimensions, useWindowDimensions} from 'react-native';
+import {View, useWindowDimensions} from 'react-native';
 import {
   CartesianChart,
   Line,
@@ -157,8 +157,11 @@ export const MySVGChart = ({
 }) => {
 
     // const width = Dimensions.get('window').width - 64;
-    const { width: screenWidth } = useWindowDimensions();
-    const width = screenWidth - 64
+    const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+    const isLandscape = screenWidth > screenHeight;
+    // When we go full screen, we don't want to have padding on the right
+    // (might need to tweak on Apple as we won't have removed the nav bar)
+    const width = screenWidth - (isLandscape?0:64);
     const height = 175;
     const padding = 20;
     const leftPadding = 30;
