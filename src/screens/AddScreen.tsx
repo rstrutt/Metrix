@@ -64,20 +64,20 @@ const AddScreen = () => {
     const handleDateChange = (event: any, selectedDate?: Date) => {
         setShowDatePicker(false);
         if (selectedDate) {
-            setDateString(selectedDate.toISOString().split('T')[0]);
+            setDateString(selectedDate.toLocaleDateString('en-CA')); // 'en-CA' locale ensures 'yyyy-mm-dd' format in the current timezone
         }
     };
 
     const handleTimeChange = (event: any, selectedTime?: Date) => {
         setShowTimePicker(false);
         if (selectedTime) {
-            setTimeString(selectedTime.toTimeString().split(' ')[0].slice(0, 5)); // Only hours and minutes
+            setTimeString(selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })); // 'hh:mm' format
         }
     };
 
     const setCurrentTime = () => {
         const now = new Date();
-        const formattedDate = now.toLocaleDateString('en-CA'); // 'en-CA' locale ensures 'yyyy-mm-dd' format
+        const formattedDate = now.toLocaleDateString('en-CA'); // 'en-CA' locale ensures 'yyyy-mm-dd' format in the current timezone
         const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); // 'hh:mm' format
         setDateString(formattedDate);
         setTimeString(formattedTime);
