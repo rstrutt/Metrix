@@ -56,6 +56,28 @@ const App = (): React.JSX.Element => {
         return <Icon name={route.icon} size={20} color={color} />;
     };
 
+    const renderTabBar = (props: any) => {
+        if (isLandscape) {
+            return null; // Hide the tab bar in landscape
+        }
+        return (
+            <View style={{ flexDirection: 'row', backgroundColor: isDarkMode ? Colors.darker : Colors.lighter , borderTopWidth: 1, borderTopColor: 'lightgrey', borderBottomWidth: 1, borderBottomColor: 'lightgrey'}}>
+                {props.navigationState.routes.map((route: any, i: any) => (
+                    <TouchableOpacity
+                        key={i}
+                        onPress={() => setIndex(i)}
+                        style={{ flex: 1, alignItems: 'center', padding: 8 }}
+                    >
+                        {renderIcon({ route, color: i === index ? (isDarkMode ? Colors.light : Colors.dark) : (isDarkMode ? Colors.dark : Colors.light) })}
+                        <Text style={{ color: i === index ? (isDarkMode ? Colors.light : Colors.dark) : (isDarkMode ? Colors.dark : Colors.light) }}>
+                            {route.title}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+        );
+    };
+
     return (
         <NavigationContainer>
             <TabView
@@ -65,22 +87,7 @@ const App = (): React.JSX.Element => {
                 initialLayout={initialLayout}
                 tabBarPosition={'bottom'}
                 swipeEnabled={true}
-                renderTabBar={props => (
-                    <View style={{ flexDirection: 'row', backgroundColor: isDarkMode ? Colors.darker : Colors.lighter , borderTopWidth: 1, borderTopColor: 'lightgrey', borderBottomWidth: 1, borderBottomColor: 'lightgrey'}}>
-                        {props.navigationState.routes.map((route, i) => (
-                            <TouchableOpacity
-                                key={i}
-                                onPress={() => setIndex(i)}
-                                style={{ flex: 1, alignItems: 'center', padding: 8 }}
-                            >
-                                {renderIcon({ route, color: i === index ? (isDarkMode ? Colors.light : Colors.dark) : (isDarkMode ? Colors.dark : Colors.light) })}
-                                <Text style={{ color: i === index ? (isDarkMode ? Colors.light : Colors.dark) : (isDarkMode ? Colors.dark : Colors.light) }}>
-                                    {route.title}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                )}
+                renderTabBar={renderTabBar}
             />
         </NavigationContainer>
     );
