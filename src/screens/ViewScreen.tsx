@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl} from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    ScrollView,
+    TouchableOpacity,
+    RefreshControl,
+    Dimensions, useWindowDimensions
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
 import eventEmitter from '../utils/EventEmitter.ts';
-
-import {
-    readMetricValuesFromFile,
-    updateMetricValueInFile,
-    deleteMetricValueFromFile,
-    readMetricsFromFile
-} from '../utils/FileUtils.ts';
-
+import { readMetricValuesFromFile, updateMetricValueInFile, deleteMetricValueFromFile, readMetricsFromFile } from '../utils/FileUtils.ts';
 import { Alert } from 'react-native';
 import { generatePastelColor } from "../utils/UIUtils.ts";
-
 import { styles } from "../utils/FontUtils.ts";
-
-import {MyVictoryChart, MySVGChart} from "../utils/ChartUtils.tsx";
+import { MyVictoryChart, MySVGChart } from "../utils/ChartUtils.tsx";
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);
@@ -27,12 +26,17 @@ const ViewScreen = () => {
     const [editedValues, setEditedValues] = useState<{ [key: string]: string }>({});
     const [originalValues, setOriginalValues] = useState<{ [key: string]: string }>({});
     const [useVictoryChart, setUseVictoryChart] = useState(false);
+    const [fullScreenChart, setFullScreenChart] = useState<{ visible: boolean, metric: string | null }>({ visible: false, metric: null });
+    const { width, height } = useWindowDimensions();
+    const { screenWidth, screenHeight } = Dimensions.get('screen')
+    const isLandscape = width > height;
 
     const loadEntries = async () => {
         const loadedMericValues = await readMetricValuesFromFile(true);
         const loadedMetrics = await readMetricsFromFile();
         setEntries(loadedMericValues);
         setLoadedMetrics(loadedMetrics);
+
         const initialEditedValues = loadedMericValues.reduce((acc, entry) => {
             acc[`${entry.dateTime}-${entry.metric}`] = entry.value.toString();
             return acc;
@@ -150,18 +154,23 @@ const ViewScreen = () => {
             >
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8, paddingBottom: 18, paddingRight: 16, backgroundColor: '#f0f0f0', borderBottomWidth: 1, borderBottomColor: 'lightgrey'}}>
 
-                <TouchableOpacity onPress={() => setUseVictoryChart(!useVictoryChart)} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 8, borderRadius: 8, alignItems: 'center' }}>
-                    <Text style={[styles.common_bold, {color: '#000'}]}>{`Switch to ${useVictoryChart ? 'SVG' : 'Victory'} Chart`}</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setUseVictoryChart(!useVictoryChart)} style={{ backgroundColor: isDarkMode ? '#444' : '#87CEEB', padding: 8, borderRadius: 8, alignItems: 'center' }}>
+                        <Text style={[styles.common_bold, {color: '#000'}]}>{`Switch to ${useVictoryChart ? 'SVG' : 'Victory'} Chart`}</Text>
+                    </TouchableOpacity>
                 </View>
 
                 {loadedMetrics.map((metric, index) => (
                     groupedEntries[metric.name] && (
                         <View key={`${metric.name}-${index}`} style={{ marginBottom: 16, marginHorizontal: 16, backgroundColor: generatePastelColor(metric.name), padding: 8, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
-                            <Text>
-                                <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name}</Text>
-                                <Text style={[styles.common_regular, { marginBottom: 8 }]}> ({'\u03BC'} ={(mean(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)}, {'\u03C3'}={(sd(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)})</Text>
-                            </Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text>
+                                    <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name}</Text>
+                                    <Text style={[styles.common_regular, { marginBottom: 8 }]}> ({'\u03BC'} ={(mean(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)}, {'\u03C3'}={(sd(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)})</Text>
+                                </Text>
+                                <TouchableOpacity onPress={() => setFullScreenChart({ visible: true, metric: metric.name })}>
+                                    <Icon name="expand" size={15} color="#007AFF" />
+                                </TouchableOpacity>
+                            </View>
                             {useVictoryChart ? (
                                 <MyVictoryChart
                                     data={groupedEntries[metric.name]
@@ -179,13 +188,14 @@ const ViewScreen = () => {
                                     }
                                     minThreshold={metric.min_threshold}
                                     maxThreshold={metric.max_threshold}
+                                    fullScreen={false}
                                 />
                             )}
 
                             {expandedMetrics[metric.name] && (
                                 <>
                                     <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center', padding: 8 }}>
-                                        <Icon name="chevron-up" size={18} color="#007AFF" />
+                                        <Icon name="chevron-up" size={15} color="#007AFF" />
                                     </TouchableOpacity>
                                     {groupedEntries[metric.name]
                                         .sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()) // Sort in reverse order
@@ -209,12 +219,70 @@ const ViewScreen = () => {
                                 </>
                             )}
                             <TouchableOpacity onPress={() => toggleExpand(metric.name)} style={{ marginTop: 8, alignItems: 'center', padding: 0 }}>
-                                <Icon name={expandedMetrics[metric.name] ? 'chevron-up' : 'chevron-down'} size={18} color="#007AFF" />
+                                <Icon name={expandedMetrics[metric.name] ? 'chevron-up' : 'chevron-down'} size={15} color="#007AFF" />
                             </TouchableOpacity>
                         </View>
                     )
                 ))}
             </ScrollView>
+
+            {/*<Modal*/}
+            {/*    visible={fullScreenChart.visible}*/}
+            {/*    animationType="slide"*/}
+            {/*    presentationStyle="fullScreen"*/}
+            {/*    transparent={false}*/}
+            {/*    supportedOrientations={['portrait', 'landscape']}*/}
+
+            {/*>*/}
+                {
+                    fullScreenChart.visible && fullScreenChart.metric ? (
+                        <View
+                            key={`${fullScreenChart.metric}-fullscreen`}
+                            style={{ flex: 1, backgroundColor: generatePastelColor(fullScreenChart.metric), padding: 8}}
+                            position="absolute"
+                            top={0}
+                            left={0}
+                            height={height}
+                            width={isLandscape?width+80:width}
+                            zIndex={10}
+                        >
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text>
+                                    <Text style={[styles.common_bold, { marginBottom: 8 }]}>{fullScreenChart.metric}</Text>
+                                    <Text style={[styles.common_regular, { marginBottom: 8 }]}> ({'\u03BC'} ={(mean(groupedEntries[fullScreenChart.metric].map(entry => entry.value))).toFixed(2)}, {'\u03C3'}={(sd(groupedEntries[fullScreenChart.metric].map(entry => entry.value))).toFixed(2)})</Text>
+                                </Text>
+                                <TouchableOpacity onPress={() => setFullScreenChart({ visible: false, metric: null })} style={{ padding: 16, alignItems: 'flex-end' }}>
+                                    <Icon name="close" size={15} color="#007AFF" />
+                                </TouchableOpacity>
+                            </View>
+                            {
+                                useVictoryChart ? (
+                                    <MyVictoryChart
+                                        data={groupedEntries[fullScreenChart.metric]
+                                            .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
+                                            .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
+                                        }
+                                        minThreshold={loadedMetrics.find(m => m.name === fullScreenChart.metric)?.min_threshold || 0}
+                                        maxThreshold={loadedMetrics.find(m => m.name === fullScreenChart.metric)?.max_threshold || 0}
+                                    />
+                                ) : (
+                                    <MySVGChart
+                                        data={groupedEntries[fullScreenChart.metric]
+                                            .map(entry => ({ dateTime: entry.dateTime, value: entry.value }))
+                                            .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
+                                        }
+                                        minThreshold={loadedMetrics.find(m => m.name === fullScreenChart.metric)?.min_threshold || 0}
+                                        maxThreshold={loadedMetrics.find(m => m.name === fullScreenChart.metric)?.max_threshold || 0}
+                                        fullScreen={true}
+                                    />
+                                )
+                            }
+                        </View>
+                    ):(
+                        <View/>
+                    )
+                }
+            {/*</Modal>*/}
         </View>
     );
 };

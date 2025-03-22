@@ -149,18 +149,20 @@ export const MyVictoryChart = ({
 export const MySVGChart = ({
                                data,
                                minThreshold,
-                               maxThreshold
+                               maxThreshold,
+                               fullScreen
                            }: {
     data: { dateTime: string; value: number }[];
     minThreshold: number;
     maxThreshold: number;
+    fullScreen: boolean;
 }) => {
     const { width: screenWidth, height: screenHeight } = useWindowDimensions();
     const isLandscape = screenWidth > screenHeight;
     // When we go full screen, we don't want to have padding on the right
     // (might need to tweak on Apple as we won't have removed the nav bar)
-    const width = screenWidth - (isLandscape?0:64);
-    const height = 175;
+    const width = (fullScreen)? screenWidth - ((isLandscape) ? -45 : 32) : screenWidth - ((isLandscape) ? 0 : 64);
+    const height = (fullScreen) ? screenHeight - ((isLandscape)?80:125) : 175;
     const padding = 20;
     const leftPadding = 30;
     const rightPadding = 15;
@@ -198,7 +200,7 @@ export const MySVGChart = ({
         }
     };
 
-    const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, x_value: number, y_value: number } | null>(null);
+    const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, x_value: number, y_value: string } | null>(null);
 
     return (
         <View style={{ height: height, paddingHorizontal: 0 }}>
