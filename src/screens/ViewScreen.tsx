@@ -146,6 +146,7 @@ const ViewScreen = () => {
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
+                keyboardShouldPersistTaps={"always"}
             >
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8, paddingBottom: 18, paddingRight: 16, backgroundColor: '#f0f0f0', borderBottomWidth: 1, borderBottomColor: 'lightgrey'}}>
 

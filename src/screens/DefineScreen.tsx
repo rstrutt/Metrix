@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Alert, View, Text, TextInput, TouchableOpacity, RefreshControl, Keyboard } from 'react-native';
+import { ScrollView, Alert, View, Text, TextInput, TouchableOpacity, RefreshControl } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { readMetricsFromFile, saveMetricsToFile } from '../utils/fileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -50,11 +50,9 @@ const DefineScreen = () => {
             );
             setMetrics(updatedMetrics);
         }
-        eventEmitter.emit('metricDefinitionsAmended'); // Emit the event so other tabs can upadate
     };
 
     const saveMetric = () => {
-        Keyboard.dismiss();
         const parsedMetrics = metrics.map(metric => ({
             ...metric,
             min_threshold: parseFloat(metric.min_threshold.toString()),
@@ -161,6 +159,7 @@ const DefineScreen = () => {
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                     }
+                    keyboardShouldPersistTaps={"always"}
                 >
                     {metrics.map((metric, index) => (
                         <View key={metric.name} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, backgroundColor: generatePastelColor(metric.name), padding: 8, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 10 }}>
