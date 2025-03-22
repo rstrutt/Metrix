@@ -303,7 +303,7 @@ export const MySVGChart = ({
                             fill="black"
                             textAnchor="middle"
                         >
-                            {new Date(t).toLocaleDateString()}
+                            {new Date(t).toLocaleDateString('en-CA', { year: "numeric", month: "short"})}
                         </SVGText>
                     ))}
                     {yTicks.map((t, i) => (
