@@ -17,6 +17,7 @@ import {
 } from './DateUtils.ts';
 
 import { Svg, Line as SVGLine, G, Text as SVGText, Rect, Circle as SVGCircle, Polygon } from 'react-native-svg';
+import eventEmitter from "./EventEmitter.ts";
 
 function ToolTip({state, font}: {state: any; font: any}) {
   return (
@@ -209,6 +210,7 @@ export const MySVGChart = ({
         };
 
         Dimensions.addEventListener('change', handleOrientationChange);
+        eventEmitter.on('clearTooltips', handleOrientationChange);
 
         return () => {
         };

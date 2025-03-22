@@ -49,6 +49,10 @@ const ViewScreen = () => {
         loadEntries();
 
         const handleMetricAdded = () => {
+            // Clear any tooltips
+            eventEmitter.emit('clearTooltips');
+
+            // And load the entries again
             loadEntries();
         };
 
@@ -91,6 +95,8 @@ const ViewScreen = () => {
         } catch (error) {
             Alert.alert("Error", "There was an error saving the metric entry.");
         }
+        // Clear any tooltips
+        eventEmitter.emit('clearTooltips');
     };
 
     const handleDelete = async (dateTime: string, metric: string, value: number) => {
@@ -112,6 +118,8 @@ const ViewScreen = () => {
                 }
             ]
         );
+        // Clear any tooltips
+        eventEmitter.emit('clearTooltips');
     };
 
     const formatDateTime = (dateTime: string) => {
