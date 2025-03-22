@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useColorScheme } from 'react-native';
-import { readMetricsFromFile, saveMetricValuesToFile } from '../utils/fileUtils.ts';
-import { generatePastelColor } from "../utils/uiUtils.ts";
-import { styles } from "../utils/fontUtils.ts";
-import eventEmitter from '../utils/eventEmitter';
+import { readMetricsFromFile, saveMetricValuesToFile } from '../utils/FileUtils.ts';
+import { generatePastelColor } from "../utils/UIUtils.ts";
+import { styles } from "../utils/FontUtils.ts";
+import eventEmitter from '../utils/EventEmitter.ts';
 
 
 import Icon from "react-native-vector-icons/FontAwesome";

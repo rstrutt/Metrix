@@ -14,7 +14,7 @@ import {useChartPressState} from 'victory-native';
 import {
   timestampToDateTimeString,
   timestampToMonthYear,
-} from './dateUtils.ts';
+} from './DateUtils.ts';
 
 import { Svg, Line as SVGLine, G, Text as SVGText, Rect, Circle as SVGCircle, Polygon } from 'react-native-svg';
 

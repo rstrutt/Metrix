@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, Alert, View, Text, TextInput, TouchableOpacity, RefreshControl } from 'react-native';
 import { useColorScheme } from 'react-native';
-import { readMetricsFromFile, saveMetricsToFile } from '../utils/fileUtils.ts';
+import { readMetricsFromFile, saveMetricsToFile } from '../utils/FileUtils.ts';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { generatePastelColor } from "../utils/uiUtils.ts";
-import { styles } from "../utils/fontUtils.ts";
-import eventEmitter from "../utils/eventEmitter.ts";
+import { generatePastelColor } from "../utils/UIUtils.ts";
+import { styles } from "../utils/FontUtils.ts";
+import eventEmitter from "../utils/EventEmitter.ts";
 
 const DefineScreen = () => {
     const [metrics, setMetrics] = useState<{ name: string, min_threshold: number, max_threshold: number }[]>([]);

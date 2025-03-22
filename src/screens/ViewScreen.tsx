@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, RefreshControl} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from 'react-native';
-import eventEmitter from '../utils/eventEmitter';
+import eventEmitter from '../utils/EventEmitter.ts';
 
 import {
     readMetricValuesFromFile,
     updateMetricValueInFile,
     deleteMetricValueFromFile,
     readMetricsFromFile
-} from '../utils/fileUtils.ts';
+} from '../utils/FileUtils.ts';
 
 import { Alert } from 'react-native';
-import { generatePastelColor } from "../utils/uiUtils.ts";
+import { generatePastelColor } from "../utils/UIUtils.ts";
 
-import { styles } from "../utils/fontUtils.ts";
+import { styles } from "../utils/FontUtils.ts";
 
-import {MyVictoryChart, MySVGChart} from "../utils/myChart.tsx";
+import {MyVictoryChart, MySVGChart} from "../utils/ChartUtils.tsx";
 
 const ViewScreen = () => {
     const [entries, setEntries] = useState<{ dateTime: string, metric: string, value: number }[]>([]);

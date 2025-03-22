@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, ScrollView } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { readAppFile, writeAppFile, METRIC_VALUES_FILE_PATH,  METRICS_FILE_PATH} from '../utils/fileUtils.ts';
-import {generatePastelColor} from "../utils/uiUtils.ts";
-import {styles} from "../utils/fontUtils.ts";
+import { readAppFile, writeAppFile, METRIC_VALUES_FILE_PATH,  METRICS_FILE_PATH} from '../utils/FileUtils.ts';
+import {generatePastelColor} from "../utils/UIUtils.ts";
+import {styles} from "../utils/FontUtils.ts";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const ShareScreen = () => {
