@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import {View, useWindowDimensions} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, useWindowDimensions, Dimensions} from 'react-native';
 import {
   CartesianChart,
   Line,
@@ -201,6 +201,18 @@ export const MySVGChart = ({
     };
 
     const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, x_value: number, y_value: string } | null>(null);
+
+    useEffect(() => {
+        // This set-up is to clear the tooltips on a rotation change, as they will be in the wrong place...
+        const handleOrientationChange = () => {
+            setTooltip(null);
+        };
+
+        Dimensions.addEventListener('change', handleOrientationChange);
+
+        return () => {
+        };
+    }, []);
 
     return (
         <View style={{ height: height, paddingHorizontal: 0 }}>
