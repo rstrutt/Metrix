@@ -113,7 +113,7 @@ const AddScreen = () => {
                         <Text style={[styles.common_bold, {color: '#000'}]}>Now</Text>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={isSaveButtonEnabled() ? handleSave : undefined} style={{ backgroundColor: isSaveButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', padding: 8, borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
+                <TouchableOpacity onPress={isSaveButtonEnabled() ? handleSave : undefined} style={{ backgroundColor: isSaveButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', padding: 12, borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
                     <Icon name="plus" size={15} color="#000"/>
                 </TouchableOpacity>
             </View>

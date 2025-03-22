@@ -151,7 +151,7 @@ const DefineScreen = () => {
                         style={{ borderColor: 'gray', borderWidth: 1, width: 60, marginRight: 8, padding: 8, borderRadius: 8 }}
                     />
                     <TouchableOpacity onPress={isAddButtonEnabled() ? addMetric : undefined} style={{ backgroundColor: isAddButtonEnabled() ? (isDarkMode ? '#444' : '#87CEEB') : '#888', padding: 12, borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
-                        <Icon name="plus" size={15} color="#fff" />
+                        <Icon name="plus" size={15} color="#000"/>
                     </TouchableOpacity>
                 </View>
                 <ScrollView
