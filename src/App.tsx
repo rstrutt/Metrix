@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useState } from 'react';
-import { View, useColorScheme, Dimensions, TouchableOpacity, Text } from 'react-native';
+import { useState, useEffect } from 'react';
+import { StatusBar, View, useColorScheme, Dimensions, TouchableOpacity, Text, useWindowDimensions, Platform  } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -9,6 +9,8 @@ import AddScreen from "./screens/AddScreen";
 import ViewScreen from "./screens/ViewScreen";
 import DefineScreen from "./screens/DefineScreen";
 import ShareScreen from "./screens/ShareScreen";
+import ImmersiveMode from 'react-native-immersive';
+
 
 const initialLayout = { width: Dimensions.get('window').width };
 
@@ -21,6 +23,27 @@ const App = (): React.JSX.Element => {
         { key: 'define', title: 'Define', icon: 'list' },
         { key: 'share', title: 'Share', icon: 'cloud-download' },
     ]);
+    const { width, height } = useWindowDimensions();
+    const isLandscape = width > height;
+
+    // Hide status bar and Android nav bar on landscape mode
+    useEffect(() => {
+        // Hide status bar in landscape, show in portrait
+        StatusBar.setHidden(isLandscape, 'slide');
+
+        // Optional: tweak Android nav bar (if you add immersive mode)
+        if (Platform.OS === 'android') {
+            if (isLandscape) {
+                ImmersiveMode.on()
+            } else {
+                ImmersiveMode.off()
+            }
+        }
+
+        return () => {
+            StatusBar.setHidden(false, 'fade'); // Ensure it resets
+        };
+    }, [isLandscape]);
 
     const renderScene = SceneMap({
         add: AddScreen,
