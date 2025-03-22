@@ -10,6 +10,7 @@ import ViewScreen from "./screens/ViewScreen";
 import DefineScreen from "./screens/DefineScreen";
 import ShareScreen from "./screens/ShareScreen";
 import ImmersiveMode from 'react-native-immersive';
+import eventEmitter from './utils/EventEmitter.ts';
 
 
 const initialLayout = { width: Dimensions.get('window').width };
@@ -25,6 +26,7 @@ const App = (): React.JSX.Element => {
     ]);
     const { width, height } = useWindowDimensions();
     const isLandscape = width > height;
+    const [swipeEnabled, setSwipeEnabled] = useState(true);
 
     // Hide status bar and Android nav bar on landscape mode
     useEffect(() => {
@@ -40,10 +42,22 @@ const App = (): React.JSX.Element => {
             }
         }
 
+        // If we open or close the full screen chart, disable or enable swipe as appropriate
+        eventEmitter.on('fullScreenChartOpened', fullScreenChartOpened);
+        eventEmitter.on('fullScreenChartClosed', fullScreenChartClosed);
+
         return () => {
             StatusBar.setHidden(false, 'fade'); // Ensure it resets
         };
     }, [isLandscape]);
+
+    const fullScreenChartOpened = () => {
+        setSwipeEnabled(false);
+    }
+    const fullScreenChartClosed = () => {
+        setSwipeEnabled(true);
+    }
+
 
     const renderScene = SceneMap({
         add: AddScreen,
@@ -86,7 +100,7 @@ const App = (): React.JSX.Element => {
                 onIndexChange={setIndex}
                 initialLayout={initialLayout}
                 tabBarPosition={'bottom'}
-                swipeEnabled={true}
+                swipeEnabled={swipeEnabled}
                 renderTabBar={renderTabBar}
             />
         </NavigationContainer>

@@ -143,6 +143,16 @@ const ViewScreen = () => {
     const variance = (arr: number[]) => mean(arr.map(x => x ** 2)) - mean(arr) ** 2;
     const sd = (arr: number[]) => Math.sqrt(variance(arr));
 
+    const onFullScreenChange = (visible: boolean, metric: string) => {
+        setFullScreenChart({ visible: visible, metric: metric })
+        if (visible) {
+            eventEmitter.emit('fullScreenChartOpened')
+        }
+        else {
+            eventEmitter.emit('fullScreenChartClosed')
+        }
+    }
+
     return (
         <View style={{ flex: 1, paddingHorizontal: 0, backgroundColor: '#f0f0f0' }}>
             <ScrollView
@@ -167,7 +177,7 @@ const ViewScreen = () => {
                                     <Text style={[styles.common_bold, { marginBottom: 8 }]}>{metric.name}</Text>
                                     <Text style={[styles.common_regular, { marginBottom: 8 }]}> ({'\u03BC'} ={(mean(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)}, {'\u03C3'}={(sd(groupedEntries[metric.name].map(entry => entry.value))).toFixed(2)})</Text>
                                 </Text>
-                                <TouchableOpacity onPress={() => setFullScreenChart({ visible: true, metric: metric.name })}>
+                                <TouchableOpacity onPress={() => onFullScreenChange(true, metric.name)}>
                                     <Icon name="expand" size={15} color="#007AFF" />
                                 </TouchableOpacity>
                             </View>
@@ -251,7 +261,7 @@ const ViewScreen = () => {
                                     <Text style={[styles.common_bold, { marginBottom: 8 }]}>{fullScreenChart.metric}</Text>
                                     <Text style={[styles.common_regular, { marginBottom: 8 }]}> ({'\u03BC'} ={(mean(groupedEntries[fullScreenChart.metric].map(entry => entry.value))).toFixed(2)}, {'\u03C3'}={(sd(groupedEntries[fullScreenChart.metric].map(entry => entry.value))).toFixed(2)})</Text>
                                 </Text>
-                                <TouchableOpacity onPress={() => setFullScreenChart({ visible: false, metric: null })} style={{ padding: 16, alignItems: 'flex-end' }}>
+                                <TouchableOpacity onPress={() => onFullScreenChange(false, null)} style={{ padding: 16, alignItems: 'flex-end' }}>
                                     <Icon name="close" size={15} color="#007AFF" />
                                 </TouchableOpacity>
                             </View>
