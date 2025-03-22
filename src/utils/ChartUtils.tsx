@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {View, useWindowDimensions} from 'react-native';
 import {
   CartesianChart,
@@ -147,16 +147,14 @@ export const MyVictoryChart = ({
 };
 
 export const MySVGChart = ({
-                        data,
-                        minThreshold,
-                        maxThreshold
-                    }: {
-    data: {dateTime: string; value: number}[];
+                               data,
+                               minThreshold,
+                               maxThreshold
+                           }: {
+    data: { dateTime: string; value: number }[];
     minThreshold: number;
     maxThreshold: number;
 }) => {
-
-    // const width = Dimensions.get('window').width - 64;
     const { width: screenWidth, height: screenHeight } = useWindowDimensions();
     const isLandscape = screenWidth > screenHeight;
     // When we go full screen, we don't want to have padding on the right
@@ -168,22 +166,16 @@ export const MySVGChart = ({
     const rightPadding = 15;
     const xMin = Math.min(...data.map(d => new Date(d.dateTime).getTime()));
     const xMax = Math.max(...data.map(d => new Date(d.dateTime).getTime()));
-
-    const yMinValue = Math.min(...data.map(d => d.value))
-    const yMaxValue = Math.max(...data.map(d => d.value))
-
-    const yMinValueWithThreashold = Math.min(yMinValue, minThreshold)
-    const yMaxValueWithThreshold = Math.max(yMaxValue, maxThreshold)
-
-    const yMin = minThreshold === 0 ? 0 : yMinValueWithThreashold - (yMaxValueWithThreshold - yMinValueWithThreashold) * 0.1;
-    const yMax = yMaxValueWithThreshold + (yMaxValueWithThreshold - yMinValueWithThreashold) * 0.1;
-
+    const yMinValue = Math.min(...data.map(d => d.value));
+    const yMaxValue = Math.max(...data.map(d => d.value));
+    const yMinValueWithThreshold = Math.min(yMinValue, minThreshold);
+    const yMaxValueWithThreshold = Math.max(yMaxValue, maxThreshold);
+    const yMin = minThreshold === 0 ? 0 : yMinValueWithThreshold - (yMaxValueWithThreshold - yMinValueWithThreshold) * 0.1;
+    const yMax = yMaxValueWithThreshold + (yMaxValueWithThreshold - yMinValueWithThreshold) * 0.1;
     const scaleX = (value: number) => ((value - xMin) / (xMax - xMin)) * (width - leftPadding - rightPadding) + leftPadding;
     const scaleY = (value: number) => height - ((value - yMin) / (yMax - yMin)) * (height - 2 * padding) - padding;
-
     const xTicks = Array.from({ length: 6 }, (_, i) => xMin + (i * (xMax - xMin)) / 5);
     const yTicks = Array.from({ length: 5 }, (_, i) => yMin + (i * (yMax - yMin)) / 4);
-
     const getPointColor = (value: number, minThreshold: number, maxThreshold: number): string => {
         if (maxThreshold > minThreshold) {
             if (value < minThreshold) {
@@ -206,8 +198,10 @@ export const MySVGChart = ({
         }
     };
 
+    const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, x_value: number, y_value: number } | null>(null);
+
     return (
-        <View style={{height: height, paddingHorizontal: 0}}>
+        <View style={{ height: height, paddingHorizontal: 0 }}>
             <Svg width={width + rightPadding} height={height}>
                 <Rect x="0" y="0" width={width + rightPadding} height={height} fill="#d3d3d3" rx="10" ry="10" />
                 <G>
@@ -292,8 +286,23 @@ export const MySVGChart = ({
                             cy={scaleY(d.value)}
                             r={3}
                             fill={getPointColor(d.value, minThreshold, maxThreshold)}
+                            // onPressIn={() => setTooltip({ visible: true, x: scaleX(new Date(d.dateTime).getTime()), y: scaleY(d.value), x_value: d.value, y_value: d.dateTime})}
+                            // onPressOut={() => setTooltip(null)}
                         />
                     ))}
+                    {/*Bigger, transparent circles to act as the tooltip trigger*/}
+                    {data.map((d, i) => (
+                        <SVGCircle
+                            key={`circle-${i}`}
+                            cx={scaleX(new Date(d.dateTime).getTime())}
+                            cy={scaleY(d.value)}
+                            r={10}
+                            fill="none"
+                            onPressIn={() => setTooltip({ visible: true, x: scaleX(new Date(d.dateTime).getTime()), y: scaleY(d.value), x_value: d.value, y_value: d.dateTime})}
+                            // onPressOut={() => setTooltip(null)}
+                        />
+                    ))}
+
                     {xTicks.map((t, i) => (
                         <SVGText
                             key={`x-label-${i}`}
@@ -303,7 +312,7 @@ export const MySVGChart = ({
                             fill="black"
                             textAnchor="middle"
                         >
-                            {new Date(t).toLocaleDateString('en-CA', { year: "numeric", month: "short"})}
+                            {new Date(t).toLocaleDateString('en-CA', { year: "numeric", month: "short" })}
                         </SVGText>
                     ))}
                     {yTicks.map((t, i) => (
@@ -336,6 +345,18 @@ export const MySVGChart = ({
                     >
                         {maxThreshold}
                     </SVGText>
+                    {tooltip && (
+                        <G>
+                            <SVGCircle cx={tooltip.x} cy={tooltip.y} r={6} stroke="blue" strokeWidth="3" fill="none"/>
+                            <SVGText x={width/2 - 50} y={15} fontSize="12" fill="black">
+                                {tooltip.x_value} ({tooltip.y_value})
+                            </SVGText>
+                            {/*Overlay with Bold, just for the value*/}
+                            <SVGText x={width/2 - 50} y={15} fontSize="12" fill="black" fontWeight="bold">
+                                {tooltip.x_value}
+                            </SVGText>
+                        </G>
+                    )}
                 </G>
             </Svg>
         </View>
