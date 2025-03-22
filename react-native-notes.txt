@@ -1,0 +1,131 @@
+---------------------------------------
+
+Getting a skeleton app built and editable
+
+Install node 
+Install webstorm
+
+New project wizard fails.  From this link:
+
+https://youtrack.jetbrains.com/issue/WEB-63693/WebStorm-React-Native-project-creation-doesnt-work
+
+Had to force the version in the string in the new project wizard:
+
+npx --package react-native-cli react-native --version 0.68.2
+
+^^ Went back over this as I didn't want to be on an old version.  Using the manual/command-line to create a new project
+All you need is node on your path, npx comes with node
+From the directory above the project (i.e. c:\projects):
+
+npx @react-native-community/cli init Metrics
+
+It'll create the project structure (using react native 0.78.0 - lates right now that pulls in react 19)
+
+Later on, went back to react 18 (because I couldn't get victory-native charts working on 19), by using react-native 0.76.7
+
+npx @react-native-community/cli init Metrix2 --version 0.76.7
+
+..but then I couldn't get MY code working so went back to using react native 0.78.0 - lates right now that pulls in react 19
+
+Run instructions for Android:
+    • Have an Android emulator running (quickest way to get started), or a device connected.
+    • cd "c:\projects\Metrics" && npx react-native run-android
+
+See below for spinning-up an emulator.  Once it's up...
+cd Metrics
+npx react-native run-android
+
+^^ This takes a while first-time-round
+
+it's UP!!!
+
+Now create a new project in WebStorm, using "Open" on the new project screen to open the dir.  Looks like it sets up it's  .idea stuff in there
+
+THIS IS ENOUGH!  Editing the file in WebStorm causes edits to be updated on the phone!
+
+
+--------------------------------------
+
+I find it better performance-wise to run it on the phone.  Just turn on USB Debugging and start the app mormally (npx react-native run-android) and it'll find the phone and run the app on it.
+
+
+For the emulator
+https://docs.expo.dev/get-started/set-up-your-environment/?platform=android&device=simulated
+Install android studio
+Set up an emulator
+
+Needed Java:
+https://openjdk.org/projects/jdk/23/
+
+FFS - compilation errors.  Looks like we need Java 17
+https://jdk.java.net/java-se-ri/17-MR1
+Support for Java 17
+
+---------------------------------------
+
+Trying react-navigation
+Needed to update react-native in package.json, and make all the other dependencies >=, then do an npm -i to install t hem all
+THen ran the commend below, which updates the package.json
+npm install @react-navigation/native @react-navigation/bottom-tabs react-native-screens react-native-safe-area-context
+
+---------------------------------------
+Icons
+
+npm install react-native-vector-icons
+npm install --save-dev @types/react-native-vector-icons
+npm install --save @types/react-native-vector-icons
+
+For generating icon sets for the app
+https://easyappicon.com/
+
+---------------------------------------
+To release
+
+cd android
+gradlew clean
+gradlew assembleRelease
+
+adb install app/build/outputs/apk/release/app-release.apk
+
+--------------------------------------
+
+https://commerce.nearform.com/open-source/victory-native/docs/getting-started
+
+Got to use @next version of skia for react 19 and react native 0.78:
+
+https://github.com/Shopify/react-native-skia/blob/main/apps/docs/docs/getting-started/installation.md
+
+so dependencies re:
+
+npm install react-native-reanimated react-native-gesture-handler @shopify/react-native-skia@next
+
+Then got this error installing victory-native:
+
+npm ERR! code ERESOLVE
+npm ERR! ERESOLVE unable to resolve dependency tree
+npm ERR!
+npm ERR! While resolving: MetricsReact19VirctoryTest@0.0.1
+npm ERR! Found: @shopify/react-native-skia@2.0.0-next.1
+npm ERR! node_modules/@shopify/react-native-skia
+npm ERR!   @shopify/react-native-skia@"^2.0.0-next.1" from the root project
+npm ERR!
+npm ERR! Could not resolve dependency:
+npm ERR! peer @shopify/react-native-skia@">=1.2.3" from victory-native@41.16.1
+npm ERR! node_modules/victory-native
+npm ERR!   victory-native@"*" from the root project
+npm ERR!
+npm ERR! Fix the upstream dependency conflict, or retry
+npm ERR! this command with --force or --legacy-peer-deps
+npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
+npm ERR!
+npm ERR!
+npm ERR! For a full report see:
+npm ERR! C:\Users\Richard Strutt\AppData\Local\npm-cache\_logs\2025-03-15T13_04_09_932Z-eresolve-report.txt
+
+Looks like the version labeling string in ski is wonky - it's @"^2.0.0-next.1" which does not look >=1.2.3 as required by victory native.  But it is, it's just  badly formatted
+So I forced the install;
+
+npm install --force victory-native
+
+
+
