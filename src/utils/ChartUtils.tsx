@@ -230,6 +230,8 @@ export const MySVGChart = ({
     }, []);
 
     const scale = useSharedValue(1);
+    const startScale = useSharedValue(1);
+
     const translationX = useSharedValue(0);
     const translationY = useSharedValue(0);
     // const lastOffset = useRef({ x: 0, y: 0 });
@@ -274,10 +276,13 @@ export const MySVGChart = ({
 
     const pinchGesture = useMemo(() =>
             Gesture.Pinch()
-                .onUpdate((e) => {
-                    scale.value = e.scale;
+                .onStart(() => {
+                    startScale.value = scale.value;
                 })
-        , []);
+                .onUpdate((e) => {
+                    scale.value = startScale.value * e.scale;
+                }),
+        []);
 
     const panGesture = useMemo(() =>
             Gesture.Pan()
