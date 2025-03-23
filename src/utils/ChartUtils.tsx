@@ -238,18 +238,26 @@ export const MySVGChart = ({
     const lastOffsetX = useSharedValue(0);
     const lastOffsetY = useSharedValue(0);
 
+    const focalX = useSharedValue(0);
+    const focalY = useSharedValue(0);
+    const offsetX = useSharedValue(0);
+    const offsetY = useSharedValue(0);
+
     const [transformStringBothAxes, setTransformStringBothAxesBothAxes] = useState('translate(0, 0) scale(1)');
     const [transformStringXAxis, setTransformStringXAxis] = useState('translate(0, 0) scale(1)');
     const [transformStringYAxis, setTransformStringYAxis] = useState('translate(0, 0) scale(1)');
 
+
     const transformDerivedBothAxes = useDerivedValue(() => {
-        return `translate(${translationX.value}, ${translationY.value}) scale(${scale.value})`;
+        return `translate(${translationX.value + offsetX.value}, ${translationY.value + offsetY.value}) scale(${scale.value})`;
     });
+
     const transformDerivedXaxis = useDerivedValue(() => {
-        return `translate(${translationX.value}, 0)`;
+        return `translate(${translationX.value + offsetX.value}, 0)`;
     });
+
     const transformDerivedYaxis = useDerivedValue(() => {
-        return `translate(0, ${translationY.value})`;
+        return `translate(0, ${translationY.value + offsetY.value})`;
     });
 
 
@@ -276,11 +284,30 @@ export const MySVGChart = ({
 
     const pinchGesture = useMemo(() =>
             Gesture.Pinch()
-                .onStart(() => {
+                .onStart((e) => {
                     startScale.value = scale.value;
+                    focalX.value = e.focalX;
+                    focalY.value = e.focalY;
                 })
                 .onUpdate((e) => {
-                    scale.value = startScale.value * e.scale;
+                    const newScale = startScale.value * e.scale;
+                    const dx = (focalX.value - translationX.value) * (1 - e.scale);
+                    const dy = (focalY.value - translationY.value) * (1 - e.scale);
+
+                    scale.value = newScale;
+                    offsetX.value = dx;
+                    offsetY.value = dy;
+                })
+                .onEnd(() => {
+                    // Apply the focal offset permanently into the pan translation
+                    translationX.value += offsetX.value;
+                    translationY.value += offsetY.value;
+
+                    lastOffsetX.value = translationX.value;
+                    lastOffsetY.value = translationY.value;
+
+                    offsetX.value = 0;
+                    offsetY.value = 0;
                 }),
         []);
 
