@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {View, useWindowDimensions, Dimensions} from 'react-native';
+import { PanGestureHandler, PinchGestureHandler, State } from 'react-native-gesture-handler';
+import { Svg, Line as SVGLine, G, Text as SVGText, Rect, Circle as SVGCircle, Polygon } from 'react-native-svg';
 import {
   CartesianChart,
   Line,
@@ -16,8 +18,6 @@ import {
   timestampToMonthYear,
 } from './DateUtils.ts';
 
-import { Svg, Line as SVGLine, G, Text as SVGText, Rect, Circle as SVGCircle, Polygon } from 'react-native-svg';
-import eventEmitter from "./EventEmitter.ts";
 
 function ToolTip({state, font}: {state: any; font: any}) {
   return (
@@ -202,6 +202,9 @@ export const MySVGChart = ({
     };
 
     const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, x_value: number, y_value: string } | null>(null);
+    const [scale, setScale] = useState(1);
+    const [translateX, setTranslateX] = useState(0);
+    const [translateY, setTranslateY] = useState(0);
 
     useEffect(() => {
         // This set-up is to clear the tooltips on a rotation change, as they will be in the wrong place...
@@ -210,17 +213,36 @@ export const MySVGChart = ({
         };
 
         Dimensions.addEventListener('change', handleOrientationChange);
-        eventEmitter.on('clearTooltips', handleOrientationChange);
 
         return () => {
+            // Dimensions.removeEventListener('change', handleOrientationChange);
         };
     }, []);
 
-    return (
+    const handlePinch = (event: any) => {
+        // Only do zooming and panning if we're in full screen mode
+        if (fullScreen) {
+            if (event.nativeEvent.state === State.ACTIVE) {
+                setScale(event.nativeEvent.scale);
+            }
+        }
+    };
+
+    const handlePan = (event: any) => {
+        // Only do zooming and panning if we're in full screen mode
+        if (fullScreen) {
+            if (event.nativeEvent.state === State.ACTIVE) {
+                setTranslateX(event.nativeEvent.translationX);
+                setTranslateY(event.nativeEvent.translationY);
+            }
+        }
+    };
+
+    const theChart = (
         <View style={{ height: height, paddingHorizontal: 0 }}>
             <Svg width={width + rightPadding} height={height}>
                 <Rect x="0" y="0" width={width + rightPadding} height={height} fill="#d3d3d3" rx="10" ry="10" />
-                <G>
+                <G transform={`scale(${scale}) translate(${translateX}, ${translateY})`}>
                     {xTicks.map((t, i) => (
                         <SVGLine
                             key={`x-grid-${i}`}
@@ -302,8 +324,6 @@ export const MySVGChart = ({
                             cy={scaleY(d.value)}
                             r={3}
                             fill={getPointColor(d.value, minThreshold, maxThreshold)}
-                            // onPressIn={() => setTooltip({ visible: true, x: scaleX(new Date(d.dateTime).getTime()), y: scaleY(d.value), x_value: d.value, y_value: d.dateTime})}
-                            // onPressOut={() => setTooltip(null)}
                         />
                     ))}
                     {/*Bigger, transparent circles to act as the tooltip trigger*/}
@@ -314,11 +334,9 @@ export const MySVGChart = ({
                             cy={scaleY(d.value)}
                             r={10}
                             fill="none"
-                            onPressIn={() => setTooltip({ visible: true, x: scaleX(new Date(d.dateTime).getTime()), y: scaleY(d.value), x_value: d.value, y_value: d.dateTime})}
-                            // onPressOut={() => setTooltip(null)}
+                            onPressIn={() => setTooltip({ visible: true, x: scaleX(new Date(d.dateTime).getTime()), y: scaleY(d.value), x_value: d.value, y_value: d.dateTime })}
                         />
                     ))}
-
                     {xTicks.map((t, i) => (
                         <SVGText
                             key={`x-label-${i}`}
@@ -364,8 +382,8 @@ export const MySVGChart = ({
                     </SVGText>
                     {tooltip && (
                         <G>
-                            <SVGCircle cx={tooltip.x} cy={tooltip.y} r={6} stroke="blue" strokeWidth="3" fill="none"/>
-                            <SVGText x={width/2 - 50} y={15} fontSize="12" fill="black">
+                            <SVGCircle cx={tooltip.x} cy={tooltip.y} r={6} stroke="blue" strokeWidth="3" fill="none" />
+                            <SVGText x={width / 2 - 50} y={15} fontSize="12" fill="black">
                                 {tooltip.x_value} ({tooltip.y_value})
                             </SVGText>
                             {/*Overlay with Bold, just for the value*/}
@@ -377,6 +395,19 @@ export const MySVGChart = ({
                 </G>
             </Svg>
         </View>
+    );
+
+    return (
+        // If we're in full screen mode, we need to handle gestures, so wrap in the gesture haandlers,
+        // otherwise just return the chart
+        fullScreen? (
+        <PanGestureHandler onGestureEvent={handlePan}>
+            <PinchGestureHandler onGestureEvent={handlePinch}>
+                {theChart}
+            </PinchGestureHandler>
+        </PanGestureHandler>
+        ): theChart
+
     );
 };
 

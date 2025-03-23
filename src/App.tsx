@@ -11,6 +11,8 @@ import DefineScreen from "./screens/DefineScreen";
 import ShareScreen from "./screens/ShareScreen";
 import ImmersiveMode from 'react-native-immersive';
 import eventEmitter from './utils/EventEmitter.ts';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 
 
 const initialLayout = { width: Dimensions.get('window').width };
@@ -93,17 +95,20 @@ const App = (): React.JSX.Element => {
     };
 
     return (
-        <NavigationContainer>
-            <TabView
-                navigationState={{ index, routes }}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={initialLayout}
-                tabBarPosition={'bottom'}
-                swipeEnabled={swipeEnabled}
-                renderTabBar={renderTabBar}
-            />
-        </NavigationContainer>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <NavigationContainer>
+                <TabView
+                    navigationState={{ index, routes }}
+                    renderScene={renderScene}
+                    onIndexChange={setIndex}
+                    initialLayout={initialLayout}
+                    tabBarPosition={'bottom'}
+                    swipeEnabled={swipeEnabled}
+                    renderTabBar={renderTabBar}
+                />
+            </NavigationContainer>
+        </GestureHandlerRootView>
+
     );
 };
 
