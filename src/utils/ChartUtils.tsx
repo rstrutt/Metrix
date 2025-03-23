@@ -242,6 +242,18 @@ export const MySVGChart = ({
         <View style={{ height: height, paddingHorizontal: 0 }}>
             <Svg width={width + rightPadding} height={height}>
                 <Rect x="0" y="0" width={width + rightPadding} height={height} fill="#d3d3d3" rx="10" ry="10" />
+                {tooltip && (
+                    <G>
+                        {/*The tooltip text that we put at the top of the plot*/}
+                        <SVGText x={width / 2 - 50} y={15} fontSize="12" fill="black">
+                            {tooltip.x_value} ({tooltip.y_value})
+                        </SVGText>
+                        {/*Overlay with Bold, just for the value*/}
+                        <SVGText x={width/2 - 50} y={15} fontSize="12" fill="black" fontWeight="bold">
+                            {tooltip.x_value}
+                        </SVGText>
+                    </G>
+                )}
                 {/* Render the axes without translation */}
                 {xTicks.map((t, i) => (
                     <SVGLine
@@ -281,48 +293,62 @@ export const MySVGChart = ({
                     stroke="black"
                     strokeWidth="2"
                 />
-                {xTicks.map((t, i) => (
-                    <SVGText
-                        key={`x-label-${i}`}
-                        x={scaleX(t)}
-                        y={(height - padding / 2) + 5}
-                        fontSize="10"
-                        fill="black"
-                        textAnchor="middle"
-                    >
-                        {new Date(t).toLocaleDateString('en-CA', { year: "numeric", month: "short" })}
-                    </SVGText>
-                ))}
-                {yTicks.map((t, i) => (
-                    <SVGText
-                        key={`y-label-${i}`}
-                        x={leftPadding - 5}
-                        y={scaleY(t) + 5}
-                        fontSize="10"
-                        fill="black"
-                        textAnchor="end"
-                    >
-                        {/*0dp if a large range, else 1dp*/}
-                        {((yMax  -yMin)>3)?Math.round(t):t.toFixed(1)}
-                    </SVGText>
-                ))}
+
                 {/* Apply translation to the plot contents */}
+                <G transform={`translate(${translateX}, 0)`}>
+                    {xTicks.map((t, i) => (
+                        <SVGText
+                            key={`x-label-${i}`}
+                            x={scaleX(t)}
+                            y={(height - padding / 2) + 5}
+                            fontSize="10"
+                            fill="black"
+                            textAnchor="middle"
+                        >
+                            {new Date(t).toLocaleDateString('en-CA', { year: "numeric", month: "short" })}
+                        </SVGText>
+                    ))}
+                </G>
+                <G transform={`translate(0, ${translateY})`}>
+                    {yTicks.map((t, i) => (
+                        <SVGText
+                            key={`y-label-${i}`}
+                            x={leftPadding - 5}
+                            y={scaleY(t) + 5}
+                            fontSize="10"
+                            fill="black"
+                            textAnchor="end"
+                        >
+                            {/*0dp if a large range, else 1dp*/}
+                            {((yMax  -yMin)>3)?Math.round(t):t.toFixed(1)}
+                        </SVGText>
+                    ))}
+                </G>
                 <G transform={`translate(${translateX}, ${translateY})`}>
-                    <SVGLine
-                        x1={leftPadding}
-                        y1={scaleY(minThreshold)}
-                        x2={width - rightPadding}
-                        y2={scaleY(minThreshold)}
-                        stroke="yellow"
-                        strokeWidth="2"
-                        strokeDasharray="4"
-                    />
                     <SVGLine
                         x1={leftPadding}
                         y1={scaleY(maxThreshold)}
                         x2={width - rightPadding}
                         y2={scaleY(maxThreshold)}
                         stroke="red"
+                        strokeWidth="2"
+                        strokeDasharray="4"
+                    />
+                    <SVGText
+                        x={width - rightPadding + 5}
+                        y={scaleY(maxThreshold) + 3}
+                        fontSize="10"
+                        fill="red"
+                        textAnchor="start"
+                    >
+                        {maxThreshold}
+                    </SVGText>
+                    <SVGLine
+                        x1={leftPadding}
+                        y1={scaleY(minThreshold)}
+                        x2={width - rightPadding}
+                        y2={scaleY(minThreshold)}
+                        stroke="yellow"
                         strokeWidth="2"
                         strokeDasharray="4"
                     />
@@ -335,15 +361,7 @@ export const MySVGChart = ({
                     >
                         {minThreshold}
                     </SVGText>
-                    <SVGText
-                        x={width - rightPadding + 5}
-                        y={scaleY(maxThreshold) + 3}
-                        fontSize="10"
-                        fill="red"
-                        textAnchor="start"
-                    >
-                        {maxThreshold}
-                    </SVGText>
+
                     <Polygon
                         points={`${leftPadding},${scaleY(minThreshold)} ${width - rightPadding},${scaleY(minThreshold)} ${width - rightPadding},${scaleY(maxThreshold)} ${leftPadding},${scaleY(maxThreshold)}`}
                         fill="lightgreen"
@@ -389,18 +407,6 @@ export const MySVGChart = ({
                         </G>
                     )}
                 </G>
-                {tooltip && (
-                    <G>
-                        {/*The tooltip text that we put at the top of the plot*/}
-                        <SVGText x={width / 2 - 50} y={15} fontSize="12" fill="black">
-                            {tooltip.x_value} ({tooltip.y_value})
-                        </SVGText>
-                        {/*Overlay with Bold, just for the value*/}
-                        <SVGText x={width/2 - 50} y={15} fontSize="12" fill="black" fontWeight="bold">
-                            {tooltip.x_value}
-                        </SVGText>
-                    </G>
-                )}
             </Svg>
         </View>
     );
