@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useMemo} from 'react';
 import {View, useWindowDimensions, Dimensions} from 'react-native';
 import { Svg, Line as SVGLine, G, Text as SVGText, Rect, Circle as SVGCircle, Polygon } from 'react-native-svg';
 import {
@@ -225,40 +225,58 @@ export const MySVGChart = ({
     const scale = useSharedValue(1);
     const translationX = useSharedValue(0);
     const translationY = useSharedValue(0);
-    const lastOffset = useRef({ x: 0, y: 0 });
+    // const lastOffset = useRef({ x: 0, y: 0 });
+    const lastOffsetX = useSharedValue(0);
+    const lastOffsetY = useSharedValue(0);
 
     const [transformStringBothAxes, setTransformStringBothAxesBothAxes] = useState('translate(0, 0) scale(1)');
+    const [transformStringXAxis, setTransformStringXAxis] = useState('translate(0, 0) scale(1)');
+    const [transformStringYAxis, setTransformStringYAxis] = useState('translate(0, 0) scale(1)');
 
     const transformDerivedBothAxes = useDerivedValue(() => {
         return `translate(${translationX.value}, ${translationY.value}) scale(${scale.value})`;
+    });
+    const transformDerivedXaxis = useDerivedValue(() => {
+        return `translate(${translationX.value}, 0)`;
+    });
+    const transformDerivedYaxis = useDerivedValue(() => {
+        return `translate(0, ${translationY.value})`;
     });
 
     useEffect(() => {
         const id = setInterval(() => {
             setTransformStringBothAxesBothAxes(transformDerivedBothAxes.value);
+            setTransformStringXAxis(transformDerivedXaxis.value);
+            setTransformStringYAxis(transformDerivedYaxis.value);
         }, 16); // ~60fps
 
         return () => clearInterval(id);
     }, []);
 
-    const pinchGesture = Gesture.Pinch()
-        .onUpdate((e) => {
-            scale.value = e.scale;
-        });
 
-    const panGesture = Gesture.Pan()
-        .onUpdate((e) => {
-            translationX.value = lastOffset.current.x + e.translationX;
-            translationY.value = lastOffset.current.y + e.translationY;
-            console.log("panGesture onUpdate: ", translationX.value, translationY.value);
-        })
-        .onEnd((e) => {
-            lastOffset.current.x += e.translationX;
-            lastOffset.current.y += e.translationY;
-            console.log("panGesture onEnd: ", lastOffset.current.x, lastOffset.current.y);
-        });
+    const pinchGesture = useMemo(() =>
+            Gesture.Pinch()
+                .onUpdate((e) => {
+                    scale.value = e.scale;
+                })
+        , []);
 
-    const composedGesture = Gesture.Simultaneous(pinchGesture, panGesture);
+    const panGesture = useMemo(() =>
+            Gesture.Pan()
+                .onUpdate((e) => {
+                    translationX.value = lastOffsetX.value + e.translationX;
+                    translationY.value = lastOffsetY.value + e.translationY;
+                })
+                .onEnd((e) => {
+                    lastOffsetX.value += e.translationX;
+                    lastOffsetY.value += e.translationY;
+                })
+        , []);
+
+    const composedGesture = useMemo(
+        () => Gesture.Simultaneous(pinchGesture, panGesture),
+        [pinchGesture, panGesture]
+    );
 
     const theChart = (
         <View style={{ height: height, paddingHorizontal: 0 }}>
@@ -317,7 +335,7 @@ export const MySVGChart = ({
                 />
 
                 {/* Apply translation to the plot contents */}
-                <G transform={transformStringBothAxes}>
+                <G transform={transformStringXAxis}>
                     {xTicks.map((t, i) => (
                         <SVGText
                             key={`x-label-${i}`}
@@ -331,7 +349,7 @@ export const MySVGChart = ({
                         </SVGText>
                     ))}
                 </G>
-                <G transform={transformStringBothAxes}>
+                <G transform={transformStringYAxis}>
                     {yTicks.map((t, i) => (
                         <SVGText
                             key={`y-label-${i}`}
