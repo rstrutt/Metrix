@@ -1,4 +1,6 @@
 import React, {useEffect, useState, useRef, useMemo} from 'react';
+import { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
+
 import {View, useWindowDimensions, Dimensions} from 'react-native';
 import { Svg, Line as SVGLine, G, Text as SVGText, Rect, Circle as SVGCircle, Polygon } from 'react-native-svg';
 import {
@@ -213,6 +215,11 @@ export const MySVGChart = ({
         // This set-up is to clear the tooltips on a rotation change, as they will be in the wrong place...
         const handleOrientationChange = () => {
             setTooltip(null);
+            translationX.value = 0;
+            translationY.value = 0;
+            lastOffsetX.value = 0;
+            lastOffsetY.value = 0;
+            scale.value = 1;
         };
 
         Dimensions.addEventListener('change', handleOrientationChange);
@@ -243,16 +250,27 @@ export const MySVGChart = ({
         return `translate(0, ${translationY.value})`;
     });
 
-    useEffect(() => {
-        const id = setInterval(() => {
-            setTransformStringBothAxesBothAxes(transformDerivedBothAxes.value);
-            setTransformStringXAxis(transformDerivedXaxis.value);
-            setTransformStringYAxis(transformDerivedYaxis.value);
-        }, 16); // ~60fps
 
-        return () => clearInterval(id);
-    }, []);
+    useAnimatedReaction(
+        () => transformDerivedBothAxes.value,
+        (value) => {
+            runOnJS(setTransformStringBothAxesBothAxes)(value);
+        }
+    );
 
+    useAnimatedReaction(
+        () => transformDerivedXaxis.value,
+        (value) => {
+            runOnJS(setTransformStringXAxis)(value);
+        }
+    );
+
+    useAnimatedReaction(
+        () => transformDerivedYaxis.value,
+        (value) => {
+            runOnJS(setTransformStringYAxis)(value);
+        }
+    );
 
     const pinchGesture = useMemo(() =>
             Gesture.Pinch()
