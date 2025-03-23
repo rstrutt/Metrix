@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {View, useWindowDimensions, Dimensions} from 'react-native';
-import { PanGestureHandler, PinchGestureHandler, State } from 'react-native-gesture-handler';
+import { PanGestureHandler, PinchGestureHandler, State, Gesture } from 'react-native-gesture-handler';
 import { Svg, Line as SVGLine, G, Text as SVGText, Rect, Circle as SVGCircle, Polygon } from 'react-native-svg';
 import {
   CartesianChart,
@@ -205,6 +205,8 @@ export const MySVGChart = ({
     const [scale, setScale] = useState(1);
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
+    const [accumulatedTranslateX, setAccumulatedTranslateX] = useState(0);
+    const [accumulatedTranslateY, setAccumulatedTranslateY] = useState(0);
 
     useEffect(() => {
         // This set-up is to clear the tooltips on a rotation change, as they will be in the wrong place...
@@ -221,6 +223,7 @@ export const MySVGChart = ({
 
     const handlePinch = (event: any) => {
         // Only do zooming and panning if we're in full screen mode
+        console.log("Pinch event: ", event.nativeEvent);
         if (fullScreen) {
             if (event.nativeEvent.state === State.ACTIVE) {
                 setScale(event.nativeEvent.scale);
@@ -229,12 +232,20 @@ export const MySVGChart = ({
     };
 
     const handlePan = (event: any) => {
-        // Only do zooming and panning if we're in full screen mode
         if (fullScreen) {
+            // console.log("Pan event: ", event.nativeEvent);
             if (event.nativeEvent.state === State.ACTIVE) {
-                setTranslateX(event.nativeEvent.translationX);
-                setTranslateY(event.nativeEvent.translationY);
+                setTranslateX(accumulatedTranslateX + event.nativeEvent.translationX);
+                setTranslateY(accumulatedTranslateY + event.nativeEvent.translationY);
             }
+        }
+    };
+
+    const handlePanStateChange = (event: any) => {
+        // console.log("Pan State Change event: ", event.nativeEvent);
+        if (fullScreen && event.nativeEvent.state === State.END) {
+            setAccumulatedTranslateX(accumulatedTranslateX + event.nativeEvent.translationX);
+            setAccumulatedTranslateY(accumulatedTranslateY + event.nativeEvent.translationY);
         }
     };
 
