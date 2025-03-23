@@ -340,7 +340,8 @@ export const MySVGChart = ({
                             fill="black"
                             textAnchor="end"
                         >
-                            {Math.round(t)}
+                            {/*0dp if a large range, else 1dp*/}
+                            {((yMax  -yMin)>3)?Math.round(t):t.toFixed(1)}
                         </SVGText>
                     ))}
                     <SVGText
