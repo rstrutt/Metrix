@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {View, useWindowDimensions, Dimensions} from 'react-native';
-import { PanGestureHandler, PinchGestureHandler, State, Gesture } from 'react-native-gesture-handler';
 import { Svg, Line as SVGLine, G, Text as SVGText, Rect, Circle as SVGCircle, Polygon } from 'react-native-svg';
 import {
   CartesianChart,
@@ -17,6 +16,13 @@ import {
   timestampToDateTimeString,
   timestampToMonthYear,
 } from './DateUtils.ts';
+
+import Animated, {
+    useSharedValue,
+    useAnimatedProps,
+    useDerivedValue
+} from 'react-native-reanimated';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 
 function ToolTip({state, font}: {state: any; font: any}) {
@@ -202,11 +208,6 @@ export const MySVGChart = ({
     };
 
     const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, x_value: number, y_value: string } | null>(null);
-    const [scale, setScale] = useState(1);
-    const [translateX, setTranslateX] = useState(0);
-    const [translateY, setTranslateY] = useState(0);
-    const [accumulatedTranslateX, setAccumulatedTranslateX] = useState(0);
-    const [accumulatedTranslateY, setAccumulatedTranslateY] = useState(0);
 
     useEffect(() => {
         // This set-up is to clear the tooltips on a rotation change, as they will be in the wrong place...
@@ -221,33 +222,43 @@ export const MySVGChart = ({
         };
     }, []);
 
-    const handlePinch = (event: any) => {
-        // Only do zooming and panning if we're in full screen mode
-        console.log("Pinch event: ", event.nativeEvent);
-        if (fullScreen) {
-            if (event.nativeEvent.state === State.ACTIVE) {
-                setScale(event.nativeEvent.scale);
-            }
-        }
-    };
+    const scale = useSharedValue(1);
+    const translationX = useSharedValue(0);
+    const translationY = useSharedValue(0);
+    const lastOffset = useRef({ x: 0, y: 0 });
 
-    const handlePan = (event: any) => {
-        if (fullScreen) {
-            // console.log("Pan event: ", event.nativeEvent);
-            if (event.nativeEvent.state === State.ACTIVE) {
-                setTranslateX(accumulatedTranslateX + event.nativeEvent.translationX);
-                setTranslateY(accumulatedTranslateY + event.nativeEvent.translationY);
-            }
-        }
-    };
+    const [transformStringBothAxes, setTransformStringBothAxesBothAxes] = useState('translate(0, 0) scale(1)');
 
-    const handlePanStateChange = (event: any) => {
-        // console.log("Pan State Change event: ", event.nativeEvent);
-        if (fullScreen && event.nativeEvent.state === State.END) {
-            setAccumulatedTranslateX(accumulatedTranslateX + event.nativeEvent.translationX);
-            setAccumulatedTranslateY(accumulatedTranslateY + event.nativeEvent.translationY);
-        }
-    };
+    const transformDerivedBothAxes = useDerivedValue(() => {
+        return `translate(${translationX.value}, ${translationY.value}) scale(${scale.value})`;
+    });
+
+    useEffect(() => {
+        const id = setInterval(() => {
+            setTransformStringBothAxesBothAxes(transformDerivedBothAxes.value);
+        }, 16); // ~60fps
+
+        return () => clearInterval(id);
+    }, []);
+
+    const pinchGesture = Gesture.Pinch()
+        .onUpdate((e) => {
+            scale.value = e.scale;
+        });
+
+    const panGesture = Gesture.Pan()
+        .onUpdate((e) => {
+            translationX.value = lastOffset.current.x + e.translationX;
+            translationY.value = lastOffset.current.y + e.translationY;
+            console.log("panGesture onUpdate: ", translationX.value, translationY.value);
+        })
+        .onEnd((e) => {
+            lastOffset.current.x += e.translationX;
+            lastOffset.current.y += e.translationY;
+            console.log("panGesture onEnd: ", lastOffset.current.x, lastOffset.current.y);
+        });
+
+    const composedGesture = Gesture.Simultaneous(pinchGesture, panGesture);
 
     const theChart = (
         <View style={{ height: height, paddingHorizontal: 0 }}>
@@ -306,7 +317,7 @@ export const MySVGChart = ({
                 />
 
                 {/* Apply translation to the plot contents */}
-                <G transform={`translate(${translateX}, 0)`}>
+                <G transform={transformStringBothAxes}>
                     {xTicks.map((t, i) => (
                         <SVGText
                             key={`x-label-${i}`}
@@ -320,7 +331,7 @@ export const MySVGChart = ({
                         </SVGText>
                     ))}
                 </G>
-                <G transform={`translate(0, ${translateY})`}>
+                <G transform={transformStringBothAxes}>
                     {yTicks.map((t, i) => (
                         <SVGText
                             key={`y-label-${i}`}
@@ -335,7 +346,7 @@ export const MySVGChart = ({
                         </SVGText>
                     ))}
                 </G>
-                <G transform={`translate(${translateX}, ${translateY})`}>
+                <G transform={transformStringBothAxes}>
                     <SVGLine
                         x1={leftPadding}
                         y1={scaleY(maxThreshold)}
@@ -422,15 +433,14 @@ export const MySVGChart = ({
         </View>
     );
 
+
     return (
         // If we're in full screen mode, we need to handle gestures, so wrap in the gesture haandlers,
         // otherwise just return the chart
         fullScreen? (
-        <PanGestureHandler onGestureEvent={handlePan}>
-            <PinchGestureHandler onGestureEvent={handlePinch}>
+            <GestureDetector gesture={composedGesture}>
                 {theChart}
-            </PinchGestureHandler>
-        </PanGestureHandler>
+            </GestureDetector>
         ): theChart
 
     );
